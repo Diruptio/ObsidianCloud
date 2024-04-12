@@ -8,3 +8,5 @@ ObsidianCloud is a Minecraft Cloud orchestrator
 - [x] Paper/Purpur support
 - [ ] Bungeecord/Waterfall support
 - [ ] Velocity support
+- [ ] Forge support
+- [ ] Fabric support
