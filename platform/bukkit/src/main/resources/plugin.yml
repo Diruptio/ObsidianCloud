@@ -1,0 +1,4 @@
+name: ObsidianCloud
+main: de.obsidiancloud.platform.bukkit.OCBukkit
+version: ${version}
+api-version: 1.20
