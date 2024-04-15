@@ -5,8 +5,6 @@ import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.node.Node;
 import de.obsidiancloud.node.local.LocalOCServer;
-import java.util.HashMap;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenCommand extends Command {
