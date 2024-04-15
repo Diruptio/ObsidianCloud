@@ -6,6 +6,7 @@ import de.obsidiancloud.node.local.template.OCTemplate;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.logging.Level;
 import org.springframework.util.FileSystemUtils;
 
 public class ServerLoadThread extends Thread {
@@ -29,13 +30,16 @@ public class ServerLoadThread extends Thread {
             Files.createDirectories(directory);
             for (String template : templates) {
                 OCTemplate t = Node.getInstance().getTemplate(template);
-                if (t != null) {
-                    t.apply(directory);
-                }
+                if (t != null) t.apply(directory);
             }
             server.setStatus(LocalOCServer.Status.OFFLINE);
         } catch (Throwable exception) {
-            exception.printStackTrace(System.err);
+            Node.getInstance()
+                    .getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "An error occurred while loading server " + server.getName(),
+                            exception);
         }
     }
 }

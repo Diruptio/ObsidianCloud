@@ -14,8 +14,10 @@ public class RemoteOCServer extends OCServer {
     public RemoteOCServer(
             @Nullable String task,
             @NotNull String name,
+            @NotNull OCServer.LifecycleState lifecycleState,
             @NotNull OCServer.Status status,
             @NotNull Type type,
+            @NotNull String executable,
             int port,
             List<OCPlayer> players,
             int maxPlayers,
@@ -28,8 +30,10 @@ public class RemoteOCServer extends OCServer {
         super(
                 task,
                 name,
+                lifecycleState,
                 status,
                 type,
+                executable,
                 port,
                 players,
                 maxPlayers,
@@ -49,6 +53,11 @@ public class RemoteOCServer extends OCServer {
     @Override
     public void stop() {
         // TODO: Send stop server packet to node
+    }
+
+    @Override
+    public void kill() {
+        // TODO: Send kill server packet to node
     }
 
     @Override

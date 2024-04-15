@@ -15,6 +15,7 @@ public class TaskParser {
     public static @Nullable OCTask parse(Path file) throws IOException {
         String name = null;
         OCServer.Type type = null;
+        String executable = "java";
         int port = 25565;
         int maxPlayers = -1;
         boolean autoStart = false;
@@ -34,6 +35,9 @@ public class TaskParser {
             }
             if (command.equalsIgnoreCase("TYPE") && parts.length == 2) {
                 type = OCServer.Type.valueOf(parts[1]);
+            }
+            if (command.equalsIgnoreCase("EXECUTABLE") && parts.length == 2) {
+                executable = parts[1];
             }
             if (command.equalsIgnoreCase("PORT") && parts.length == 2) {
                 port = Integer.parseInt(parts[1]);
@@ -61,12 +65,13 @@ public class TaskParser {
             }
         }
 
-        if (name == null || templates.isEmpty()) {
+        if (name == null || type == null || templates.isEmpty()) {
             return null;
         } else {
             return new OCTask(
                     name,
                     type,
+                    executable,
                     port,
                     maxPlayers,
                     autoStart,

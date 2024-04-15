@@ -6,6 +6,7 @@ import java.util.Map;
 public record OCTask(
         String name,
         OCServer.Type type,
+        String executable,
         int port,
         int maxPlayers,
         boolean autoStart,

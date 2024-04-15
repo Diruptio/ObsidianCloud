@@ -33,11 +33,10 @@ public class PaperTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
-            if (Files.exists(buildDirectory)) return;
-            Files.createDirectories(buildDirectory);
-
-            download(buildDirectory);
-            prepare(buildDirectory);
+            if (!Files.exists(buildDirectory)) {
+                download(buildDirectory);
+                prepare(buildDirectory);
+            }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
                 for (Path file : files.toList()) {
@@ -68,7 +67,8 @@ public class PaperTemplate extends OCTemplate {
     }
 
     private void prepare(@NotNull Path directory) throws IOException, InterruptedException {
-        String[] command = AikarsFlags.generate("java", "512M", "server.jar", "--nogui");
+        String[] command =
+                AikarsFlags.generate("java", "512M", new String[0], "server.jar", "--nogui");
 
         // First run
         new ProcessBuilder(command).directory(directory.toFile()).start().waitFor();

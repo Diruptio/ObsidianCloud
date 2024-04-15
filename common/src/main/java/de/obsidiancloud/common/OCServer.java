@@ -8,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class OCServer {
     private final String task;
     private final String name;
+    protected LifecycleState lifecycleState;
     private Status status;
+    private final String executable;
     private final Type type;
     private final int port;
     private final List<OCPlayer> players;
@@ -24,8 +26,10 @@ public abstract class OCServer {
      *
      * @param task The list of tasks of the server
      * @param name The name of the server
+     * @param lifecycleState The lifecycle state of the server
      * @param status The status of the server
      * @param type The type of the server
+     * @param executable The java executable of the server
      * @param port The port number on which the server is running
      * @param players The list of players currently connected to the server
      * @param maxPlayers The maximum number of players that can connect to the server
@@ -38,8 +42,10 @@ public abstract class OCServer {
     public OCServer(
             @Nullable String task,
             @NotNull String name,
+            @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             @NotNull Type type,
+            @NotNull String executable,
             int port,
             @NotNull List<OCPlayer> players,
             int maxPlayers,
@@ -50,8 +56,10 @@ public abstract class OCServer {
             boolean maintenance) {
         this.task = task;
         this.name = name;
+        this.lifecycleState = lifecycleState;
         this.status = status;
         this.type = type;
+        this.executable = executable;
         this.port = port;
         this.players = players;
         this.maxPlayers = maxPlayers;
@@ -67,6 +75,9 @@ public abstract class OCServer {
 
     /** Stops the server. */
     public abstract void stop();
+
+    /** Kills the server. */
+    public abstract void kill();
 
     /**
      * Gets the node of the server.
@@ -94,6 +105,15 @@ public abstract class OCServer {
     }
 
     /**
+     * Gets the lifecycle state of the server.
+     *
+     * @return Returns the lifecycle state of the server.
+     */
+    public @NotNull LifecycleState getLifecycleState() {
+        return lifecycleState;
+    }
+
+    /**
      * Gets the status of the server.
      *
      * @return Returns the status of the server.
@@ -118,6 +138,15 @@ public abstract class OCServer {
      */
     public @NotNull Type getType() {
         return type;
+    }
+
+    /**
+     * Gets the java executable of the server.
+     *
+     * @return Returns the java executable of the server.
+     */
+    public @NotNull String getExecutable() {
+        return executable;
     }
 
     /**
@@ -193,26 +222,39 @@ public abstract class OCServer {
     }
 
     public static enum Type {
-        BUKKIT(false),
-        FABRIC(false),
-        FORGE(false),
-        BUNGEECORD(true),
-        VELOCITY(true);
+        BUKKIT(false, "stop"),
+        FABRIC(false, "stop"),
+        FORGE(false, "stop"),
+        BUNGEECORD(true, "end"),
+        VELOCITY(true, "shutdown");
 
         private final boolean proxy;
+        private final String stopCommand;
 
-        Type(boolean proxy) {
+        Type(boolean proxy, @NotNull String stopCommand) {
             this.proxy = proxy;
+            this.stopCommand = stopCommand;
         }
 
         public boolean isProxy() {
             return proxy;
         }
+
+        public @NotNull String getStopCommand() {
+            return stopCommand;
+        }
+    }
+
+    public static enum LifecycleState {
+        CREATING,
+        ONLINE,
+        OFFLINE
     }
 
     public static enum Status {
-        LOADING,
-        ONLINE,
+        STARTING,
+        READY,
+        NOT_READY,
         OFFLINE
     }
 }

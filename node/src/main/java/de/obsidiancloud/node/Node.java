@@ -10,6 +10,7 @@ import de.obsidiancloud.common.config.Config;
 import de.obsidiancloud.common.config.ConfigSection;
 import de.obsidiancloud.common.console.Console;
 import de.obsidiancloud.common.console.ConsoleCommandExecutor;
+import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
@@ -19,6 +20,7 @@ import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.remote.RemoteOCNode;
+import de.obsidiancloud.node.threads.ServerDeleteThread;
 import de.obsidiancloud.node.threads.ServerLoadThread;
 import de.obsidiancloud.node.util.TaskParser;
 import java.nio.file.Files;
@@ -67,6 +69,7 @@ public class Node extends BaseCommandProvider {
 
         Command.registerProvider(this);
         registerCommand(new HelpCommand());
+        registerCommand(new ScreenCommand());
         registerCommand(new ShutdownCommand());
         // TODO: servers command
         // TODO: server command
@@ -91,56 +94,9 @@ public class Node extends BaseCommandProvider {
 
         while (running) {
             try {
-                for (OCTask task : getTasks()) {
-                    // Count servers
-                    int servers = 0;
-                    synchronized (localNode.getServers()) {
-                        for (OCServer server : localNode.getServers()) {
-                            if (task.name().equals(server.getTask())) {
-                                servers++;
-                            }
-                        }
-                    }
-
-                    while (servers < task.minAmount()) {
-                        // Find name
-                        int n = 1;
-                        while (getServer(task.name() + "-" + n) != null) {
-                            n++;
-                        }
-                        String name = task.name() + "-" + n;
-
-                        // Create server instance
-                        LocalOCServer server =
-                                new LocalOCServer(
-                                        task.name(),
-                                        name,
-                                        OCServer.Status.LOADING,
-                                        task.type(),
-                                        task.port(),
-                                        task.maxPlayers(),
-                                        task.autoStart(),
-                                        task.autoDelete(),
-                                        task.memory(),
-                                        task.environmentVariables(),
-                                        false);
-                        getLocalNode().getServers().add(server);
-
-                        // Load server
-                        new ServerLoadThread(server, task.templates()).start();
-
-                        servers++;
-                    }
-                }
-
-                // Start servers
-                for (OCServer server : localNode.getServers()) {
-                    if (server.isAutoStart() && server.getStatus() == OCServer.Status.OFFLINE) {
-                        server.start();
-                    }
-                }
-
-                // TODO: Delete servers if autoDelete is true and server is offline
+                createServers();
+                startServers();
+                deleteServers();
 
                 Thread.sleep(1000);
             } catch (InterruptedException ignored) {
@@ -196,6 +152,8 @@ public class Node extends BaseCommandProvider {
                 assert section != null;
                 String task = section.getString("task");
                 OCServer.Type type = OCServer.Type.valueOf(section.getString("type"));
+                String executable = section.getString("executable");
+                assert executable != null;
                 int port = section.getInt("port");
                 int maxPlayers = section.getInt("max_players");
                 boolean autoStart = section.getBoolean("auto_start");
@@ -212,8 +170,10 @@ public class Node extends BaseCommandProvider {
                         new LocalOCServer(
                                 task,
                                 name,
+                                OCServer.LifecycleState.OFFLINE,
                                 OCServer.Status.OFFLINE,
                                 type,
+                                executable,
                                 port,
                                 maxPlayers,
                                 autoStart,
@@ -240,9 +200,71 @@ public class Node extends BaseCommandProvider {
         return new LocalOCNode(name, host, port, servers);
     }
 
+    private void createServers() {
+        for (OCTask task : getTasks()) {
+            // Count servers
+            int servers = 0;
+            synchronized (localNode.getServers()) {
+                for (OCServer server : localNode.getServers()) {
+                    if (task.name().equals(server.getTask())
+                            && server.getStatus() == OCServer.Status.READY) {
+                        servers++;
+                    }
+                }
+            }
+
+            while (servers < task.minAmount()) {
+                // Find name
+                int n = 1;
+                while (getServer(task.name() + "-" + n) != null) {
+                    n++;
+                }
+                String name = task.name() + "-" + n;
+
+                // Create server instance
+                LocalOCServer server =
+                        new LocalOCServer(
+                                task.name(),
+                                name,
+                                OCServer.LifecycleState.CREATING,
+                                OCServer.Status.OFFLINE,
+                                task.type(),
+                                task.executable(),
+                                task.port(),
+                                task.maxPlayers(),
+                                task.autoStart(),
+                                task.autoDelete(),
+                                task.memory(),
+                                task.environmentVariables(),
+                                false);
+
+                getLocalNode().getServers().add(server);
+                new ServerLoadThread(server, task.templates()).start();
+                servers++;
+            }
+        }
+    }
+
+    private void startServers() {
+        for (OCServer server : localNode.getServers()) {
+            if (server.getStatus() == OCServer.Status.OFFLINE && server.isAutoStart()) {
+                server.start();
+            }
+        }
+    }
+
+    private void deleteServers() {
+        for (OCServer server : localNode.getServers()) {
+            if (server.getStatus() == OCServer.Status.OFFLINE && server.isAutoDelete()) {
+                new ServerDeleteThread((LocalOCServer) server).run();
+            }
+        }
+    }
+
     /** Shuts down the node. */
     public void shutdown() {
         running = false;
+        localNode.getServers().forEach(OCServer::kill);
         if (console != null) console.stop();
     }
 

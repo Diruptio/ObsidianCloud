@@ -2,8 +2,8 @@ package de.obsidiancloud.node.util;
 
 public class AikarsFlags {
     public static String[] generate(
-            String executable, String memory, String file, String... flags) {
-        String[] array = new String[25 + flags.length];
+            String executable, String memory, String[] jvmArguments, String file, String... flags) {
+        String[] array = new String[25 + jvmArguments.length + flags.length];
         array[0] = executable;
         array[1] = "-Xms" + memory;
         array[2] = "-Xmx" + memory;
@@ -27,9 +27,10 @@ public class AikarsFlags {
         array[20] = "-XX:MaxTenuringThreshold=1";
         array[21] = "-Dusing.aikars.flags=https://mcflags.emc.gs";
         array[22] = "-Daikars.new.flags=true";
-        array[23] = "-jar";
-        array[24] = file;
-        System.arraycopy(flags, 0, array, 25, flags.length);
+        System.arraycopy(flags, 0, array, 23, jvmArguments.length);
+        array[jvmArguments.length + 23] = "-jar";
+        array[jvmArguments.length + 24] = file;
+        System.arraycopy(flags, 0, array, jvmArguments.length + 25, flags.length);
         return array;
     }
 }

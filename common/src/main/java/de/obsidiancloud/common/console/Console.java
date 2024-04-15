@@ -66,7 +66,7 @@ public class Console implements Runnable {
     public void run() {
         try {
             String line;
-            while (running && (line = reader.readLine("> ")) != null) {
+            while (running && (line = reader.readLine()) != null) {
                 String[] parts = line.split(" ");
                 if (parts.length > 0) {
                     Command command = null;
