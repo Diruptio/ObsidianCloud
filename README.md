@@ -6,7 +6,6 @@ ObsidianCloud is a Minecraft Cloud orchestrator
 - [x] Single Node support
 - [ ] Multi Node support
 - [x] Paper/Purpur support
-- [ ] Bungeecord/Waterfall support
-- [ ] Velocity support
-- [ ] Forge support
 - [ ] Fabric support
+- [ ] Forge support
+- [ ] Velocity support
