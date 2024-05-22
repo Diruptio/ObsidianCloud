@@ -46,6 +46,7 @@ public class ConfigSection {
     /**
      * Gets the value of the section.
      *
+     * @param <T> The type of the value.
      * @param key The key of the value.
      * @param type The type of the value.
      * @return Returns the value for the key.
@@ -57,6 +58,7 @@ public class ConfigSection {
     /**
      * Gets the value of the section.
      *
+     * @param <T> The type of the value.
      * @param key The key of the value.
      * @param type The type of the value.
      * @param def The default value if the key is not present.
@@ -83,6 +85,7 @@ public class ConfigSection {
      * Gets an integer value of the section.
      *
      * @param key The key of the value.
+     * @param def The default value if the key is not present.
      * @return Returns the value for the key.
      */
     public int getInt(@NotNull String key, int def) {
@@ -213,6 +216,7 @@ public class ConfigSection {
     /**
      * Gets a list value of the section.
      *
+     * @param <T> The type of the values in the list.
      * @param key The key of the value.
      * @param def The default value if the key is not present.
      * @return Returns the value for the key.
@@ -247,6 +251,18 @@ public class ConfigSection {
             data.remove(key);
         } else {
             data.put(key, value);
+        }
+    }
+
+    /**
+     * Sets a default value for a key in the section.
+     *
+     * @param key The key of the value.
+     * @param value The value to set.
+     */
+    public void setDefault(@NotNull String key, @Nullable Object value) {
+        if (!contains(key)) {
+            set(key, value);
         }
     }
 
