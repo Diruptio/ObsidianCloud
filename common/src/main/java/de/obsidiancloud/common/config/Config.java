@@ -19,7 +19,8 @@ public class Config extends ConfigSection {
      * @param type The type of the config.
      */
     public Config(@NotNull Path file, @NotNull Type type) {
-        super(new HashMap<>());
+        super(null, new HashMap<>());
+        root = this;
         this.file = file;
         this.type = type;
         reload();

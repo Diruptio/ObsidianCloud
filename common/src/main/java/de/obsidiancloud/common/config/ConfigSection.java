@@ -6,9 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ConfigSection {
+    protected Config root;
     protected Map<String, Object> data;
 
-    public ConfigSection(@NotNull Map<String, Object> data) {
+    public ConfigSection(@Nullable Config root, @NotNull Map<String, Object> data) {
+        this.root = root;
         this.data = data;
     }
 
@@ -236,7 +238,7 @@ public class ConfigSection {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public @Nullable ConfigSection getSection(@NotNull String key) {
         return data.containsKey(key)
-                ? data.get(key) instanceof Map map ? new ConfigSection(map) : null
+                ? data.get(key) instanceof Map map ? new ConfigSection(root, map) : null
                 : null;
     }
 
@@ -263,6 +265,7 @@ public class ConfigSection {
     public void setDefault(@NotNull String key, @Nullable Object value) {
         if (!contains(key)) {
             set(key, value);
+            root.save();
         }
     }
 
