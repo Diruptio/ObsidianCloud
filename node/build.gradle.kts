@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("application")
 }
 
 repositories {
@@ -28,5 +29,16 @@ tasks {
         manifest.attributes["Implementation-Title"] = "ObsidianCloud"
         manifest.attributes["Implementation-Version"] = version
         manifest.attributes["Main-Class"] = "de.obsidiancloud.node.Node"
+    }
+
+
+}
+
+application {
+    mainClass = "de.obsidiancloud.node.Node"
+    tasks.getByName("run", JavaExec::class) {
+        workingDir = file("run")
+        standardOutput = System.out
+        standardInput = System.`in`
     }
 }
