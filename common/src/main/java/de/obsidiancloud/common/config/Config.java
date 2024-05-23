@@ -19,7 +19,8 @@ public class Config extends ConfigSection {
      * @param type The type of the config.
      */
     public Config(@NotNull Path file, @NotNull Type type) {
-        super(new HashMap<>());
+        super(null, new HashMap<>());
+        root = this;
         this.file = file;
         this.type = type;
         reload();
@@ -32,8 +33,8 @@ public class Config extends ConfigSection {
                 Files.createDirectories(file.toAbsolutePath().getParent());
             }
             Files.writeString(file, type.serializer.serialize(data));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable exception) {
+            exception.printStackTrace(System.err);
         }
     }
 
@@ -45,11 +46,9 @@ public class Config extends ConfigSection {
             }
             if (Files.exists(file)) {
                 data = type.serializer.deserialize(Files.readString(file));
-            } else {
-                data = new HashMap<>();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+            } else data = new HashMap<>();
+        } catch (Throwable exception) {
+            exception.printStackTrace(System.err);
         }
     }
 

@@ -7,7 +7,7 @@ import org.yaml.snakeyaml.Yaml;
 public class YamlConfigSerializer implements ConfigSerializer {
     @Override
     public String serialize(Map<String, Object> map) {
-        return new Yaml().dumpAs(map, null, DumperOptions.FlowStyle.BLOCK);
+        return new Yaml().dumpAs(map, null, DumperOptions.FlowStyle.FLOW);
     }
 
     @Override
