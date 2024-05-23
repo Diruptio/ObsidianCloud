@@ -30,8 +30,6 @@ tasks {
         manifest.attributes["Implementation-Version"] = version
         manifest.attributes["Main-Class"] = "de.obsidiancloud.node.Node"
     }
-
-
 }
 
 application {
