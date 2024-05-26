@@ -16,6 +16,10 @@ dependencies {
     implementation("org.springframework:spring-core:6.1.7")
 }
 
+java {
+    withJavadocJar()
+}
+
 tasks {
     compileJava {
         options.encoding = "UTF-8"
