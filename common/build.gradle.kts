@@ -16,6 +16,10 @@ dependencies {
     implementation("org.jline:jline:3.26.1")
 }
 
+java {
+    withJavadocJar()
+}
+
 tasks {
     compileJava {
         options.encoding = "UTF-8"

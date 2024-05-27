@@ -1,8 +1,8 @@
 package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCNode;
-import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -14,34 +14,33 @@ public class RemoteOCServer extends OCServer {
     public RemoteOCServer(
             @Nullable String task,
             @NotNull String name,
-            @NotNull OCServer.LifecycleState lifecycleState,
-            @NotNull OCServer.Status status,
             @NotNull Type type,
-            @NotNull String executable,
-            int port,
-            List<OCPlayer> players,
-            int maxPlayers,
+            @NotNull LifecycleState lifecycleState,
+            @NotNull Status status,
             boolean autoStart,
-            boolean deleteOnStop,
+            boolean autoDelete,
+            @NotNull String executable,
             int memory,
-            Map<String, String> environmentVariables,
-            boolean maintenance,
+            @NotNull List<String> jvmArgs,
+            @NotNull List<String> args,
+            @NotNull Map<String, String> environmentVariables,
+            int port,
             @NotNull RemoteOCNode node) {
         super(
                 task,
                 name,
+                type,
                 lifecycleState,
                 status,
-                type,
-                executable,
-                port,
-                players,
-                maxPlayers,
                 autoStart,
-                deleteOnStop,
+                autoDelete,
+                executable,
                 memory,
+                jvmArgs,
+                args,
                 environmentVariables,
-                maintenance);
+                port,
+                new ArrayList<>());
         this.node = node;
     }
 

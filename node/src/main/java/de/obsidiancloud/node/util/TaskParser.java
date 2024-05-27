@@ -5,23 +5,21 @@ import de.obsidiancloud.common.OCTask;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 public class TaskParser {
     public static @Nullable OCTask parse(Path file) throws IOException {
         String name = null;
         OCServer.Type type = null;
-        String executable = "java";
-        int port = 25565;
-        int maxPlayers = -1;
         boolean autoStart = false;
         boolean autoDelete = false;
+        String executable = "java";
         int memory = 1024;
+        List<String> jvmArgs = new ArrayList<>();
+        List<String> args = new ArrayList<>();
         Map<String, String> environmentVariables = new HashMap<>();
+        int port = 25565;
         List<String> templates = new ArrayList<>();
         int minAmount = 1;
 
@@ -36,26 +34,35 @@ public class TaskParser {
             if (command.equalsIgnoreCase("TYPE") && parts.length == 2) {
                 type = OCServer.Type.valueOf(parts[1]);
             }
-            if (command.equalsIgnoreCase("EXECUTABLE") && parts.length == 2) {
-                executable = parts[1];
-            }
-            if (command.equalsIgnoreCase("PORT") && parts.length == 2) {
-                port = Integer.parseInt(parts[1]);
-            }
             if (command.equalsIgnoreCase("AUTOSTART")) {
                 autoStart = true;
             }
             if (command.equalsIgnoreCase("AUTODELETE")) {
                 autoDelete = true;
             }
+            if (command.equalsIgnoreCase("EXECUTABLE") && parts.length == 2) {
+                executable = parts[1];
+            }
             if (command.equalsIgnoreCase("MEMORY") && parts.length == 2) {
                 memory = Integer.parseInt(parts[1]);
             }
-            if (command.equalsIgnoreCase("MAX_PLAYERS") && parts.length == 2) {
-                maxPlayers = Integer.parseInt(parts[1]);
+            if (command.equalsIgnoreCase("JVM_ARGS") && parts.length >= 2) {
+                for (int i = 1; i < parts.length; i++) {
+                    if (parts[i].equals("%AikarsFlags%")) {
+                        jvmArgs.addAll(List.of(AikarsFlags.DEFAULT));
+                    } else {
+                        jvmArgs.add(parts[i]);
+                    }
+                }
+            }
+            if (command.equalsIgnoreCase("ARGS") && parts.length >= 2) {
+                args.addAll(List.of(parts).subList(1, parts.length));
             }
             if (command.equalsIgnoreCase("ENV") && parts.length == 3) {
                 environmentVariables.put(parts[1], parts[2]);
+            }
+            if (command.equalsIgnoreCase("PORT") && parts.length == 2) {
+                port = Integer.parseInt(parts[1]);
             }
             if (command.equalsIgnoreCase("FROM") && parts.length == 2) {
                 templates.add(parts[1]);
@@ -71,13 +78,14 @@ public class TaskParser {
             return new OCTask(
                     name,
                     type,
-                    executable,
-                    port,
-                    maxPlayers,
                     autoStart,
                     autoDelete,
+                    executable,
                     memory,
+                    jvmArgs,
+                    args,
                     environmentVariables,
+                    port,
                     templates,
                     minAmount);
         }

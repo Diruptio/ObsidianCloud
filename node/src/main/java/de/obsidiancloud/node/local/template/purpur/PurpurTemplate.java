@@ -11,6 +11,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -64,8 +66,13 @@ public class PurpurTemplate extends OCTemplate {
     }
 
     private void prepare(@NotNull Path directory) throws IOException, InterruptedException {
-        String[] command =
-                AikarsFlags.generate("java", "512M", new String[0], "server.jar", "--nogui");
+        List<String> command = new ArrayList<>();
+        command.add("java");
+        command.add("-Xmx512M");
+        command.add("-Xms512M");
+        command.addAll(List.of(AikarsFlags.DEFAULT));
+        command.add("-jar");
+        command.add("server.jar");
 
         // First run
         new ProcessBuilder(command).directory(directory.toFile()).start().waitFor();

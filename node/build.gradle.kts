@@ -34,13 +34,15 @@ tasks {
         manifest.attributes["Implementation-Version"] = version
         manifest.attributes["Main-Class"] = "de.obsidiancloud.node.Node"
     }
+
+    named<JavaExec>("run") {
+        workingDir = file("run")
+        workingDir.mkdirs()
+        standardOutput = System.out
+        standardInput = System.`in`
+    }
 }
 
 application {
     mainClass = "de.obsidiancloud.node.Node"
-    tasks.getByName("run", JavaExec::class) {
-        workingDir = file("run")
-        standardOutput = System.out
-        standardInput = System.`in`
-    }
 }
