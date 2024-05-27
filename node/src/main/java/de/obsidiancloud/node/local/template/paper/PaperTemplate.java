@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.local.template.paper;
 
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
@@ -21,7 +21,7 @@ import org.springframework.util.FileSystemUtils;
 
 public class PaperTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
-    private final Logger logger = Node.getInstance().getLogger();
+    private final Logger logger = ObsidianCloudNode.getLogger();
     private final String version;
     private final String build;
 
@@ -50,7 +50,6 @@ public class PaperTemplate extends OCTemplate {
             }
         } catch (Throwable exception) {
             logger.log(Level.SEVERE, "Failed to compose template " + getPath(), exception);
-            exception.printStackTrace(System.err);
         }
     }
 

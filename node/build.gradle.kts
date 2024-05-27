@@ -32,7 +32,7 @@ tasks {
         archiveBaseName = "OCNode"
         manifest.attributes["Implementation-Title"] = "ObsidianCloud"
         manifest.attributes["Implementation-Version"] = version
-        manifest.attributes["Main-Class"] = "de.obsidiancloud.node.Node"
+        manifest.attributes["Main-Class"] = "de.obsidiancloud.node.ObsidianCloudNode"
     }
 
     named<JavaExec>("run") {
@@ -44,5 +44,5 @@ tasks {
 }
 
 application {
-    mainClass = "de.obsidiancloud.node.Node"
+    mainClass = "de.obsidiancloud.node.ObsidianCloudNode"
 }

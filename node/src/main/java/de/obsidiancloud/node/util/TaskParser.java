@@ -9,6 +9,13 @@ import java.util.*;
 import org.jetbrains.annotations.Nullable;
 
 public class TaskParser {
+    /**
+     * Parses a task from a file.
+     *
+     * @param file The file to parse the task from.
+     * @return The parsed task or null if the file is invalid.
+     * @throws IOException If an I/O error occurs.
+     */
     public static @Nullable OCTask parse(Path file) throws IOException {
         String name = null;
         OCServer.Type type = null;

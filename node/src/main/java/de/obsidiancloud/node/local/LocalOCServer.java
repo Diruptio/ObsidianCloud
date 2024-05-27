@@ -2,7 +2,8 @@ package de.obsidiancloud.node.local;
 
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -12,7 +13,6 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,7 +56,7 @@ public class LocalOCServer extends OCServer {
         try {
             setLifecycleState(LifecycleState.ONLINE);
             setStatus(Status.STARTING);
-            Node.getInstance().getLogger().info("Starting server " + getName() + "...");
+            ObsidianCloudNode.getLogger().info("Starting server " + getName() + "...");
 
             int port = getPort();
             while (true) {
@@ -85,9 +85,7 @@ public class LocalOCServer extends OCServer {
             process.onExit().thenRun(this::run);
             new ScreenThread().start();
         } catch (Throwable exception) {
-            Node.getInstance()
-                    .getLogger()
-                    .log(Level.SEVERE, "Failed to start Server " + getName(), exception);
+            exception.printStackTrace(System.err);
         }
     }
 
@@ -95,16 +93,14 @@ public class LocalOCServer extends OCServer {
     public void stop() {
         try {
             if (process != null && process.isAlive()) {
-                Node.getInstance().getLogger().info("Stopping server " + getName() + "...");
+                ObsidianCloudNode.getLogger().info("Stopping server " + getName() + "...");
                 try (BufferedWriter writer = process.outputWriter()) {
                     writer.write(getType().getStopCommand() + "\n");
                     writer.flush();
                 }
             }
         } catch (Throwable exception) {
-            Node.getInstance()
-                    .getLogger()
-                    .log(Level.SEVERE, "Failed to stop Server " + getName(), exception);
+            exception.printStackTrace(System.err);
         }
     }
 
@@ -112,19 +108,17 @@ public class LocalOCServer extends OCServer {
     public void kill() {
         try {
             if (process != null && process.isAlive()) {
-                Node.getInstance().getLogger().info("Killing server " + getName() + "...");
+                ObsidianCloudNode.getLogger().info("Killing server " + getName() + "...");
                 process.destroy();
             }
         } catch (Throwable exception) {
-            Node.getInstance()
-                    .getLogger()
-                    .log(Level.SEVERE, "Failed to kill Server " + getName(), exception);
+            exception.printStackTrace(System.err);
         }
     }
 
     @Override
     public @NotNull OCNode getNode() {
-        return Node.getInstance().getLocalNode();
+        return ObsidianCloudAPI.get().getLocalNode();
     }
 
     public @NotNull Path getDirectory() {
@@ -132,7 +126,7 @@ public class LocalOCServer extends OCServer {
     }
 
     private void run() {
-        Node.getInstance().getLogger().info("Server " + getName() + " stopped");
+        ObsidianCloudNode.getLogger().info("Server " + getName() + " stopped");
         setLifecycleState(LifecycleState.OFFLINE);
         setStatus(Status.OFFLINE);
     }
@@ -152,8 +146,7 @@ public class LocalOCServer extends OCServer {
                 while (process.isAlive()) {
                     String line = reader.readLine();
                     if (screen && line != null) {
-                        Node.getInstance()
-                                .getLogger()
+                        ObsidianCloudNode.getLogger()
                                 .info("[%s] %s".formatted(LocalOCServer.this.getName(), line));
                     }
                 }

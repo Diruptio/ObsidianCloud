@@ -2,7 +2,6 @@ package de.obsidiancloud.common;
 
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public abstract class OCNode {
     private final String name;
@@ -27,8 +26,9 @@ public abstract class OCNode {
      * Gets the servers of this node.
      *
      * @return Returns the servers of this node.
+     * @throws IllegalStateException If the node is not connected.
      */
-    public abstract @Nullable List<OCServer> getServers();
+    public abstract @NotNull List<OCServer> getServers();
 
     /**
      * Gets the name of the node.

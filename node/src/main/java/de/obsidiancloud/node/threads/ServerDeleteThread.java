@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.threads;
 
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import java.util.logging.Level;
 import org.springframework.util.FileSystemUtils;
@@ -14,12 +14,11 @@ public class ServerDeleteThread implements Runnable {
 
     @Override
     public void run() {
-        Node.getInstance().getLogger().info("Deleting server " + server.getName() + "...");
+        ObsidianCloudNode.getLogger().info("Deleting server " + server.getName() + "...");
         try {
             FileSystemUtils.deleteRecursively(server.getDirectory());
         } catch (Throwable exception) {
-            Node.getInstance()
-                    .getLogger()
+            ObsidianCloudNode.getLogger()
                     .log(
                             Level.SEVERE,
                             "An error occurred while deleting server " + server.getName(),

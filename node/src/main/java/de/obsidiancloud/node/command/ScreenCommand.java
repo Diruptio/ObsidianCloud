@@ -1,9 +1,9 @@
 package de.obsidiancloud.node.command;
 
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
-import de.obsidiancloud.node.Node;
 import de.obsidiancloud.node.local.LocalOCServer;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,7 +22,7 @@ public class ScreenCommand extends Command {
             return;
         }
 
-        OCServer server = Node.getInstance().getServer(args[0]);
+        OCServer server = ObsidianCloudAPI.get().getServer(args[0]);
         if (server == null) {
             executor.sendMessage("§cThe server §e" + args[0] + " §cdoes not exist.");
             return;
