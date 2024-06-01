@@ -1,5 +1,6 @@
 package de.obsidiancloud.node.threads;
 
+import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.node.Node;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -32,6 +33,7 @@ public class ServerLoadThread extends Thread {
                 OCTemplate t = Node.getInstance().getTemplate(template);
                 if (t != null) t.apply(directory);
             }
+            server.setLifecycleState(OCServer.LifecycleState.OFFLINE);
             server.setStatus(LocalOCServer.Status.OFFLINE);
         } catch (Throwable exception) {
             Node.getInstance()

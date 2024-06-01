@@ -8,66 +8,66 @@ import org.jetbrains.annotations.Nullable;
 public abstract class OCServer {
     private final String task;
     private final String name;
-    protected LifecycleState lifecycleState;
-    private Status status;
-    private final String executable;
     private final Type type;
-    private final int port;
-    private final List<OCPlayer> players;
-    private final int maxPlayers;
+    private LifecycleState lifecycleState;
+    private Status status;
     private final boolean autoStart;
     private final boolean autoDelete;
+    private final String executable;
     private final int memory;
+    private final List<String> jvmArgs;
+    private final List<String> args;
     private final Map<String, String> environmentVariables;
-    private final boolean maintenance;
+    private final int port;
+    private final List<OCPlayer> players;
 
     /**
      * Constructs a new OCServer with the specified parameters.
      *
-     * @param task The list of tasks of the server
+     * @param task The task which created the server
      * @param name The name of the server
+     * @param type The type of the server
      * @param lifecycleState The lifecycle state of the server
      * @param status The status of the server
-     * @param type The type of the server
-     * @param executable The java executable of the server
-     * @param port The port number on which the server is running
-     * @param players The list of players currently connected to the server
-     * @param maxPlayers The maximum number of players that can connect to the server
      * @param autoStart Whether the server should automatically start
      * @param autoDelete Whether the server should be deleted when it is stopped
+     * @param executable The java executable of the server
      * @param memory The amount of memory allocated to the server
+     * @param jvmArgs The JVM arguments of the server
+     * @param args The arguments of the server
      * @param environmentVariables The environment variables of the server
-     * @param maintenance Whether the server is currently in maintenance mode
+     * @param port The minimum port number on which the server is running
+     * @param players The list of players currently connected to the server
      */
     public OCServer(
             @Nullable String task,
             @NotNull String name,
+            @NotNull Type type,
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
-            @NotNull Type type,
-            @NotNull String executable,
-            int port,
-            @NotNull List<OCPlayer> players,
-            int maxPlayers,
             boolean autoStart,
             boolean autoDelete,
+            @NotNull String executable,
             int memory,
-            Map<String, String> environmentVariables,
-            boolean maintenance) {
+            @NotNull List<String> jvmArgs,
+            @NotNull List<String> args,
+            @NotNull Map<String, String> environmentVariables,
+            int port,
+            @NotNull List<OCPlayer> players) {
         this.task = task;
         this.name = name;
+        this.type = type;
         this.lifecycleState = lifecycleState;
         this.status = status;
-        this.type = type;
-        this.executable = executable;
-        this.port = port;
-        this.players = players;
-        this.maxPlayers = maxPlayers;
         this.autoStart = autoStart;
         this.autoDelete = autoDelete;
+        this.executable = executable;
         this.memory = memory;
+        this.jvmArgs = jvmArgs;
+        this.args = args;
         this.environmentVariables = environmentVariables;
-        this.maintenance = maintenance;
+        this.port = port;
+        this.players = players;
     }
 
     /** Starts the server. */
@@ -87,7 +87,7 @@ public abstract class OCServer {
     public abstract @NotNull OCNode getNode();
 
     /**
-     * Gets the task of the server.
+     * Gets the task which created the server.
      *
      * @return Returns the task of the server.
      */
@@ -105,12 +105,30 @@ public abstract class OCServer {
     }
 
     /**
+     * Gets the type of the server.
+     *
+     * @return Returns the type of the server.
+     */
+    public @NotNull Type getType() {
+        return type;
+    }
+
+    /**
      * Gets the lifecycle state of the server.
      *
      * @return Returns the lifecycle state of the server.
      */
     public @NotNull LifecycleState getLifecycleState() {
         return lifecycleState;
+    }
+
+    /**
+     * Sets the lifecycle state of the server.
+     *
+     * @param lifecycleState The new lifecycle state of the server.
+     */
+    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
+        this.lifecycleState = lifecycleState;
     }
 
     /**
@@ -132,12 +150,21 @@ public abstract class OCServer {
     }
 
     /**
-     * Gets the type of the server.
+     * Checks whether the server should automatically start.
      *
-     * @return Returns the type of the server.
+     * @return Returns whether the server should automatically start.
      */
-    public @NotNull Type getType() {
-        return type;
+    public boolean isAutoStart() {
+        return autoStart;
+    }
+
+    /**
+     * Checks whether the server should be deleted when it is stopped.
+     *
+     * @return Returns whether the server should be deleted when it is stopped.
+     */
+    public boolean isAutoDelete() {
+        return autoDelete;
     }
 
     /**
@@ -147,6 +174,42 @@ public abstract class OCServer {
      */
     public @NotNull String getExecutable() {
         return executable;
+    }
+
+    /**
+     * Gets the amount of memory allocated to the server.
+     *
+     * @return Returns the amount of memory allocated to the server.
+     */
+    public int getMemory() {
+        return memory;
+    }
+
+    /**
+     * Gets the JVM arguments of the server.
+     *
+     * @return Returns the JVM arguments of the server.
+     */
+    public @NotNull List<String> getJvmArgs() {
+        return jvmArgs;
+    }
+
+    /**
+     * Gets the arguments of the server.
+     *
+     * @return Returns the arguments of the server.
+     */
+    public @NotNull List<String> getArgs() {
+        return args;
+    }
+
+    /**
+     * Gets the environment variables of the server.
+     *
+     * @return Returns the environment variables of the server.
+     */
+    public @NotNull Map<String, String> getEnvironmentVariables() {
+        return environmentVariables;
     }
 
     /**
@@ -167,65 +230,10 @@ public abstract class OCServer {
         return players;
     }
 
-    /**
-     * Gets the maximum number of players that can connect to the server.
-     *
-     * @return Returns the maximum number of players that can connect to the server.
-     */
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    /**
-     * Checks whether the server should automatically start.
-     *
-     * @return Returns whether the server should automatically start.
-     */
-    public boolean isAutoStart() {
-        return autoStart;
-    }
-
-    /**
-     * Checks whether the server should be deleted when it is stopped.
-     *
-     * @return Returns whether the server should be deleted when it is stopped.
-     */
-    public boolean isAutoDelete() {
-        return autoDelete;
-    }
-
-    /**
-     * Gets the amount of memory allocated to the server.
-     *
-     * @return Returns the amount of memory allocated to the server.
-     */
-    public int getMemory() {
-        return memory;
-    }
-
-    /**
-     * Gets the environment variables of the server.
-     *
-     * @return Returns the environment variables of the server.
-     */
-    public @NotNull Map<String, String> getEnvironmentVariables() {
-        return environmentVariables;
-    }
-
-    /**
-     * Checks whether the server is currently in maintenance mode.
-     *
-     * @return Returns whether the server is currently in maintenance mode.
-     */
-    public boolean isMaintenance() {
-        return maintenance;
-    }
-
-    public static enum Type {
+    public enum Type {
         BUKKIT(false, "stop"),
         FABRIC(false, "stop"),
         FORGE(false, "stop"),
-        BUNGEECORD(true, "end"),
         VELOCITY(true, "shutdown");
 
         private final boolean proxy;
@@ -245,13 +253,13 @@ public abstract class OCServer {
         }
     }
 
-    public static enum LifecycleState {
+    public enum LifecycleState {
         CREATING,
         ONLINE,
         OFFLINE
     }
 
-    public static enum Status {
+    public enum Status {
         STARTING,
         READY,
         NOT_READY,

@@ -3,7 +3,6 @@ package de.obsidiancloud.node.local;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.node.Node;
-import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -11,50 +10,51 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LocalOCServer extends OCServer implements Runnable {
+public class LocalOCServer extends OCServer {
     private boolean screen = false;
     private Process process;
 
     public LocalOCServer(
             @Nullable String task,
             @NotNull String name,
-            @NotNull OCServer.LifecycleState lifecycleState,
-            @NotNull OCServer.Status status,
             @NotNull Type type,
-            @NotNull String executable,
-            int port,
-            int maxPlayers,
+            @NotNull LifecycleState lifecycleState,
+            @NotNull Status status,
             boolean autoStart,
             boolean autoDelete,
+            @NotNull String executable,
             int memory,
-            Map<String, String> environmentVariables,
-            boolean maintenance) {
+            @NotNull List<String> jvmArgs,
+            @NotNull List<String> args,
+            @NotNull Map<String, String> environmentVariables,
+            int port) {
         super(
                 task,
                 name,
+                type,
                 lifecycleState,
                 status,
-                type,
-                executable,
-                port,
-                new ArrayList<>(),
-                maxPlayers,
                 autoStart,
                 autoDelete,
+                executable,
                 memory,
+                jvmArgs,
+                args,
                 environmentVariables,
-                maintenance);
+                port,
+                new ArrayList<>());
     }
 
     @Override
     public void start() {
         try {
-            lifecycleState = LifecycleState.ONLINE;
+            setLifecycleState(LifecycleState.ONLINE);
             setStatus(Status.STARTING);
             Node.getInstance().getLogger().info("Starting server " + getName() + "...");
 
@@ -70,16 +70,19 @@ public class LocalOCServer extends OCServer implements Runnable {
                 }
             }
 
-            String executable = getExecutable();
-            String memory = getMemory() + "M";
-            String[] jvmArgs = new String[0];
-            String file = "server.jar";
-            String[] args = AikarsFlags.generate(executable, memory, jvmArgs, file /*, "--nogui"*/);
-            ProcessBuilder builder = new ProcessBuilder(args);
+            List<String> command = new ArrayList<>();
+            command.add(getExecutable());
+            command.add("-Xms" + getMemory() + "M");
+            command.add("-Xmx" + getMemory() + "M");
+            command.addAll(getJvmArgs());
+            command.add("-jar");
+            command.add("server.jar");
+            command.addAll(getArgs());
+            ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getEnvironmentVariables());
             process = builder.start();
-            process.onExit().thenRun(this);
+            process.onExit().thenRun(this::run);
             new ScreenThread().start();
         } catch (Throwable exception) {
             Node.getInstance()
@@ -115,7 +118,7 @@ public class LocalOCServer extends OCServer implements Runnable {
         } catch (Throwable exception) {
             Node.getInstance()
                     .getLogger()
-                    .log(Level.SEVERE, "Failed to stop Server " + getName(), exception);
+                    .log(Level.SEVERE, "Failed to kill Server " + getName(), exception);
         }
     }
 
@@ -128,10 +131,9 @@ public class LocalOCServer extends OCServer implements Runnable {
         return Path.of("servers").resolve(getName());
     }
 
-    @Override
-    public void run() {
+    private void run() {
         Node.getInstance().getLogger().info("Server " + getName() + " stopped");
-        lifecycleState = LifecycleState.OFFLINE;
+        setLifecycleState(LifecycleState.OFFLINE);
         setStatus(Status.OFFLINE);
     }
 

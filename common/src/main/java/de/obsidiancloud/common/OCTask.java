@@ -6,12 +6,13 @@ import java.util.Map;
 public record OCTask(
         String name,
         OCServer.Type type,
-        String executable,
-        int port,
-        int maxPlayers,
         boolean autoStart,
         boolean autoDelete,
+        String executable,
         int memory,
+        List<String> jvmArgs,
+        List<String> args,
         Map<String, String> environmentVariables,
+        int port,
         List<String> templates,
         int minAmount) {}

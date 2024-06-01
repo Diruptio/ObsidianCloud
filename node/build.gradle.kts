@@ -16,6 +16,10 @@ dependencies {
     implementation("org.springframework:spring-core:6.1.7")
 }
 
+java {
+    withJavadocJar()
+}
+
 tasks {
     compileJava {
         options.encoding = "UTF-8"
@@ -30,13 +34,15 @@ tasks {
         manifest.attributes["Implementation-Version"] = version
         manifest.attributes["Main-Class"] = "de.obsidiancloud.node.Node"
     }
+
+    named<JavaExec>("run") {
+        workingDir = file("run")
+        workingDir.mkdirs()
+        standardOutput = System.out
+        standardInput = System.`in`
+    }
 }
 
 application {
     mainClass = "de.obsidiancloud.node.Node"
-    tasks.getByName("run", JavaExec::class) {
-        workingDir = file("run")
-        standardOutput = System.out
-        standardInput = System.`in`
-    }
 }

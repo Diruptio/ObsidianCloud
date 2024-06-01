@@ -152,12 +152,13 @@ public class Node extends BaseCommandProvider {
                 assert section != null;
                 String task = section.getString("task");
                 OCServer.Type type = OCServer.Type.valueOf(section.getString("type"));
+                boolean autoStart = section.getBoolean("auto_start");
                 String executable = section.getString("executable");
                 assert executable != null;
-                int port = section.getInt("port");
-                int maxPlayers = section.getInt("max_players");
-                boolean autoStart = section.getBoolean("auto_start");
                 int memory = section.getInt("memory");
+                List<String> jvmArgs = section.getList("jvm_args", new ArrayList<>());
+                List<String> args = section.getList("args", new ArrayList<>());
+                int port = section.getInt("port");
                 Map<String, String> environmentVariables = new HashMap<>();
                 ConfigSection environmentVariablesSection =
                         section.getSection("environment_variables");
@@ -165,22 +166,21 @@ public class Node extends BaseCommandProvider {
                 environmentVariablesSection
                         .getData()
                         .forEach((key, value) -> environmentVariables.put(key, value.toString()));
-                boolean maintenance = section.getBoolean("maintenance");
                 servers.add(
                         new LocalOCServer(
                                 task,
                                 name,
+                                type,
                                 OCServer.LifecycleState.OFFLINE,
                                 OCServer.Status.OFFLINE,
-                                type,
-                                executable,
-                                port,
-                                maxPlayers,
                                 autoStart,
                                 false,
+                                executable,
                                 memory,
+                                jvmArgs,
+                                args,
                                 environmentVariables,
-                                maintenance));
+                                port));
             } catch (Throwable ignored) {
             }
         }
@@ -206,48 +206,58 @@ public class Node extends BaseCommandProvider {
             int servers = 0;
             synchronized (localNode.getServers()) {
                 for (OCServer server : localNode.getServers()) {
-                    if (task.name().equals(server.getTask())
-                            && server.getStatus() == OCServer.Status.READY) {
-                        servers++;
-                    }
+                    boolean isFromTask = task.name().equals(server.getTask());
+                    boolean isNotReady = server.getStatus() == OCServer.Status.NOT_READY;
+                    if (isFromTask && !isNotReady) servers++;
                 }
             }
 
+            // Create servers
             while (servers < task.minAmount()) {
-                // Find name
-                int n = 1;
-                while (getServer(task.name() + "-" + n) != null) {
-                    n++;
-                }
-                String name = task.name() + "-" + n;
-
-                // Create server instance
-                LocalOCServer server =
-                        new LocalOCServer(
-                                task.name(),
-                                name,
-                                OCServer.LifecycleState.CREATING,
-                                OCServer.Status.OFFLINE,
-                                task.type(),
-                                task.executable(),
-                                task.port(),
-                                task.maxPlayers(),
-                                task.autoStart(),
-                                task.autoDelete(),
-                                task.memory(),
-                                task.environmentVariables(),
-                                false);
-
-                getLocalNode().getServers().add(server);
-                new ServerLoadThread(server, task.templates()).start();
+                createServer(task);
                 servers++;
             }
         }
     }
 
+    /**
+     * Creates a server from the given task.
+     *
+     * @param task The task to create the server with.
+     */
+    public void createServer(@NotNull OCTask task) {
+        // Find name
+        int n = 1;
+        while (getServer(task.name() + "-" + n) != null) {
+            n++;
+        }
+        String name = task.name() + "-" + n;
+
+        // Create server instance
+        LocalOCServer server =
+                new LocalOCServer(
+                        task.name(),
+                        name,
+                        task.type(),
+                        OCServer.LifecycleState.CREATING,
+                        OCServer.Status.OFFLINE,
+                        task.autoStart(),
+                        task.autoDelete(),
+                        task.executable(),
+                        task.memory(),
+                        task.jvmArgs(),
+                        task.args(),
+                        task.environmentVariables(),
+                        task.port());
+
+        getLocalNode().getServers().add(server);
+        new ServerLoadThread(server, task.templates()).start();
+    }
+
     private void startServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getStatus() == OCServer.Status.OFFLINE && server.isAutoStart()) {
+            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
+                    && server.isAutoStart()) {
                 server.start();
             }
         }
@@ -255,7 +265,8 @@ public class Node extends BaseCommandProvider {
 
     private void deleteServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getStatus() == OCServer.Status.OFFLINE && server.isAutoDelete()) {
+            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
+                    && server.isAutoDelete()) {
                 new ServerDeleteThread((LocalOCServer) server).run();
             }
         }
@@ -298,7 +309,7 @@ public class Node extends BaseCommandProvider {
     /**
      * Gets the remote nodes.
      *
-     * @return A {@code List<RemoteOCNode>} of the remote nodes.
+     * @return The list of the remote nodes.
      */
     public synchronized @NotNull List<RemoteOCNode> getRemoteNodes() {
         return remoteNodes;
@@ -316,7 +327,7 @@ public class Node extends BaseCommandProvider {
     /**
      * Gets all connected nodes.
      *
-     * @return A {@code List<OCNode>} of all connected nodes.
+     * @return A list of all connected nodes.
      */
     public synchronized @NotNull List<OCNode> getConnectedNodes() {
         List<OCNode> nodes = new ArrayList<>();
@@ -374,8 +385,8 @@ public class Node extends BaseCommandProvider {
      * Gets a template by its name.
      *
      * @param name The name of the template.
-     * @return The template with the given name or {@code null} if no template with the given name
-     *     was found.
+     * @return The template with the given name or null if no template with the given name was
+     *     found.
      */
     public synchronized @Nullable OCTemplate getTemplate(String name) {
         for (TemplateProvider provider : templateProviders) {
