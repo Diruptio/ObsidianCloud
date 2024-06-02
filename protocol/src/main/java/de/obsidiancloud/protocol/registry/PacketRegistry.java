@@ -58,6 +58,14 @@ public class PacketRegistry {
         packetIds.put(packetClass, packetId);
     }
 
+    public Optional<Class<? extends Packet>> getPacketClassById(int packetId) {
+        return Optional.ofNullable(packetClasses.get(packetId));
+    }
+
+    public int getPacketIdByClass(Class<? extends Packet> packetClass) {
+        return packetIds.getOrDefault(packetClass, -1);
+    }
+
     public void registerPacketListener(PacketListener listener) {
         List<Type> list = Arrays.stream(listener.getClass().getGenericInterfaces())
                 .filter(type -> ParameterizedType.class.isAssignableFrom(type.getClass()))

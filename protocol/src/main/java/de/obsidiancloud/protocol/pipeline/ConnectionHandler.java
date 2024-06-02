@@ -40,6 +40,8 @@ public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
             backlog.clear();
         }
 
+        NetworkHandler.getBacklog(id).forEach(this::send);
+        NetworkHandler.clearBacklog();
         NetworkHandler.getConnectionRegistry().addConnection(this);
     }
 
@@ -59,7 +61,7 @@ public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
         }
 
         channel.writeAndFlush(packet);
-        System.out.println("Sent packet: " + packetName);
+        log.info("Sent packet: " + packetName);
     }
 
     @Override

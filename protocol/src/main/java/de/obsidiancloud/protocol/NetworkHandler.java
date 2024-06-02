@@ -18,7 +18,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
 import lombok.extern.java.Log;
 
-import java.util.Optional;
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -43,6 +43,8 @@ public class NetworkHandler {
 
     @Getter
     private static final PacketRegistry packetRegistry = new PacketRegistry();
+
+    private static final Map<String, List<Packet>> backlog = new HashMap<>();
 
     public static ConnectionHandler initializeClientConnection(String id, String host, int port) {
         ConnectionHandler handler = new ConnectionHandler(id, true);
@@ -82,18 +84,29 @@ public class NetworkHandler {
     }
 
     public static void broadcastPacket(Packet packet) {
-        System.out.println("Sending packet to " + connectionRegistry.countConnections() + " connections");
+        final String packetName = packet.getClass().getSimpleName();
+        log.info("Broadcasting packet '" + packetName + "' to " + connectionRegistry.countConnections() + " connections");
         connectionRegistry.getConnections().forEach(connection -> connection.send(packet));
     }
 
     public static void sendPacket(String id, Packet packet) {
         Optional<ConnectionHandler> connection = connectionRegistry.getConnection(id);
         if (connection.isEmpty()) {
-            log.severe("No connection with id '" + id + "' found");
+            backlog.computeIfAbsent(id.toLowerCase(),
+                    o -> new ArrayList<>()).add(packet);
+            log.severe("No connection with id '" + id + "' found. Added to backlog");
             return;
         }
 
         connection.get().send(packet);
+    }
+
+    public static List<Packet> getBacklog(String id) {
+        return backlog.getOrDefault(id.toLowerCase(), new ArrayList<>());
+    }
+
+    public static void clearBacklog() {
+        backlog.clear();
     }
 
     public static Logger getLogger() {
