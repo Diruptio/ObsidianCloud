@@ -46,8 +46,8 @@ public class NetworkHandler {
 
     private static final Map<String, List<Packet>> backlog = new HashMap<>();
 
-    public static ConnectionHandler initializeClientConnection(String id, String host, int port) {
-        ConnectionHandler handler = new ConnectionHandler(id, true);
+    public static ConnectionHandler initializeClientConnection(String connectionId, String host, int port) {
+        ConnectionHandler handler = new ConnectionHandler(connectionId, true);
         Bootstrap bootstrap = buildClientBootstrap(handler);
         ChannelFuture future = bootstrap.connect(host, port);
         return handler;
@@ -89,20 +89,20 @@ public class NetworkHandler {
         connectionRegistry.getConnections().forEach(connection -> connection.send(packet));
     }
 
-    public static void sendPacket(String id, Packet packet) {
-        Optional<ConnectionHandler> connection = connectionRegistry.getConnection(id);
+    public static void sendPacket(String connectionId, Packet packet) {
+        Optional<ConnectionHandler> connection = connectionRegistry.getConnection(connectionId);
         if (connection.isEmpty()) {
-            backlog.computeIfAbsent(id.toLowerCase(),
+            backlog.computeIfAbsent(connectionId.toLowerCase(),
                     o -> new ArrayList<>()).add(packet);
-            log.severe("No connection with id '" + id + "' found. Added to backlog");
+            log.severe("No connection with id '" + connectionId + "' found. Added to backlog");
             return;
         }
 
         connection.get().send(packet);
     }
 
-    public static List<Packet> getBacklog(String id) {
-        return backlog.getOrDefault(id.toLowerCase(), new ArrayList<>());
+    public static List<Packet> getBacklog(String connectionId) {
+        return backlog.getOrDefault(connectionId.toLowerCase(), new ArrayList<>());
     }
 
     public static void clearBacklog() {
