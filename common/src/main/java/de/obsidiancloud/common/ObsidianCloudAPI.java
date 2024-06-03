@@ -1,6 +1,7 @@
 package de.obsidiancloud.common;
 
 import java.util.List;
+import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -98,6 +99,45 @@ public abstract class ObsidianCloudAPI {
      */
     public @NotNull OCServer getLocalServer() {
         throw new IllegalStateException("Local server not found!");
+    }
+
+    /**
+     * Gets a list of all players.
+     *
+     * @return A list of all players.
+     */
+    public @NotNull List<OCPlayer> getPlayers() {
+        return getServers().stream().map(OCServer::getPlayers).flatMap(List::stream).toList();
+    }
+
+    /**
+     * Gets a player by its name.
+     *
+     * @param name The name of the player.
+     * @return The player with the given name.
+     */
+    public @Nullable OCPlayer getPlayer(@NotNull String name) {
+        for (OCPlayer player : getPlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Gets a player by its UUID.
+     *
+     * @param uuid The UUID of the player.
+     * @return The player with the given UUID.
+     */
+    public @Nullable OCPlayer getPlayer(@NotNull UUID uuid) {
+        for (OCPlayer player : getPlayers()) {
+            if (player.getUUID().equals(uuid)) {
+                return player;
+            }
+        }
+        return null;
     }
 
     /**
