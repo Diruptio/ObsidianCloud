@@ -2,7 +2,7 @@ package de.obsidiancloud.node.command;
 
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import java.util.HashMap;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ public class ShutdownCommand extends Command {
         if (lastUsed.getOrDefault(executor, 0L) + 10000 > System.currentTimeMillis()) {
             lastUsed.remove(executor);
             executor.sendMessage("§cShutting down...");
-            Node.getInstance().shutdown();
+            ObsidianCloudNode.shutdown();
         } else {
             lastUsed.put(executor, System.currentTimeMillis());
             executor.sendMessage(

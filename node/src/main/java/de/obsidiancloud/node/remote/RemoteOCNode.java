@@ -4,7 +4,6 @@ import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCNode extends OCNode {
     private final List<RemoteOCServer> servers;
@@ -26,7 +25,7 @@ public class RemoteOCNode extends OCNode {
 
     @Override
     @SuppressWarnings("unchecked")
-    public @Nullable List<OCServer> getServers() {
+    public @NotNull List<OCServer> getServers() {
         return isConnected() ? (List<OCServer>) (List<?>) servers : null;
     }
 }

@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.local.template.simple;
 
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("templates");
-    private final Logger logger = Node.getInstance().getLogger();
+    private final Logger logger = ObsidianCloudNode.getLogger();
 
     public SimpleTemplate(@NotNull String path) {
         super(path);

@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.local.template.purpur;
 
-import de.obsidiancloud.node.Node;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
@@ -21,7 +21,7 @@ import org.springframework.util.FileSystemUtils;
 
 public class PurpurTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
-    private final Logger logger = Node.getInstance().getLogger();
+    private final Logger logger = ObsidianCloudNode.getLogger();
     private final String version;
     private final String build;
 
