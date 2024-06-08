@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "diruptio"
-version = "0.0.1-alpha"
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -22,4 +22,9 @@ spotless {
         indentWithSpaces()
         endWithNewline()
     }
+}
+
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
 }
