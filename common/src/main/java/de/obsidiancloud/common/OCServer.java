@@ -231,7 +231,7 @@ public abstract class OCServer {
     }
 
     public enum Type {
-        BUKKIT(false, "stop"),
+        PAPER(false, "stop"),
         FABRIC(false, "stop"),
         FORGE(false, "stop"),
         VELOCITY(true, "shutdown");
