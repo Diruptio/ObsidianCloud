@@ -7,7 +7,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.EmptyByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
-import lombok.extern.java.Log;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,6 @@ import java.util.Optional;
  * @author Miles
  * @since 02.06.2024
  */
-@Log
 public class Decoder extends ByteToMessageDecoder {
 
     @Override
@@ -28,20 +26,24 @@ public class Decoder extends ByteToMessageDecoder {
         if (!byteBuf.isReadable()) {
             return;
         }
-        byteBuf.readInt();
+       // byteBuf.readInt();
 
         int packetId = Packet.readVarInt(byteBuf);
-        log.info("Got packetId: " + packetId);
+        if (packetId == 0
+                || packetId == -1) {
+            return;
+        }
+        System.out.println("Got packetId: " + packetId);
 
         Optional<Class<? extends Packet>> packetClass = NetworkHandler.getPacketRegistry().getPacketClassById(packetId);
         if (packetClass.isEmpty()) {
-            log.warning("No packet with id " + packetId + " registered");
+            System.err.println("No packet with id " + packetId + " registered");
             return;
         }
 
         Packet packet = packetClass.get().getDeclaredConstructor().newInstance();
         packet.read(byteBuf);
         list.add(packet);
-        log.info("Decoded packet: " + packet.toString());
+        System.out.println("Decoded packet: " + packet.toString());
     }
 }

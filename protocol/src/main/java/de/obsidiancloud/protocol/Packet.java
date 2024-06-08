@@ -1,6 +1,7 @@
 package de.obsidiancloud.protocol;
 
 import io.netty.buffer.ByteBuf;
+import lombok.*;
 
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
@@ -9,7 +10,13 @@ import java.util.UUID;
  * @author Miles
  * @since 02.06.2024
  */
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public abstract class Packet {
+
+    protected String targetConnectionId;
 
     public abstract void write(ByteBuf byteBuf);
 

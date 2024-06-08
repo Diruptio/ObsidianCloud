@@ -6,19 +6,17 @@ import de.obsidiancloud.protocol.pipeline.ConnectionHandler;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 
-import java.util.TimerTask;
-
 /**
  * @author Miles
  * @since 02.06.2024
  */
-public class Test {
+public class ServerTest {
 
     public static void main(String[] args) {
-        ConnectionHandler node1Handler = new ConnectionHandler("node-1", false);
-        Thread t = new Thread(() -> {
+        ConnectionHandler nodeHandler = new ConnectionHandler("server-1", false);
+        Thread t1 = new Thread(() -> {
             try {
-                ServerBootstrap b = NetworkHandler.buildServerBootstrap(node1Handler);
+                ServerBootstrap b = NetworkHandler.buildServerBootstrap(nodeHandler);
                 ChannelFuture f = b.bind("localhost", 1337).sync();
                 System.out.println("Connected");
 
@@ -28,17 +26,16 @@ public class Test {
                 e.printStackTrace();
             }
         });
-        t.start();
+        t1.start();
 
-        NetworkHandler.getPacketRegistry().registerPackets();
         NetworkHandler.getPacketRegistry().registerPacketListener(new TestPacketListener());
 
-        ConnectionHandler lobby1Handler = NetworkHandler.initializeClientConnection("lobby-1", "localhost", 1337);
-        ConnectionHandler lobby2Handler = NetworkHandler.initializeClientConnection("lobby-2", "localhost", 1337);
+        /*while (NetworkHandler.getConnectionRegistry().countConnections() != 3) {
+            continue;
+        }
 
-
-        TestPacket p = new TestPacket();
-        p.setName("test-packet?!");
-        NetworkHandler.sendPacket("lobby-2", p);
+        TestPacket p = new TestPacket("node-2");
+        p.setName("test ;:D");
+        NetworkHandler.sendPacket(p);*/
     }
 }

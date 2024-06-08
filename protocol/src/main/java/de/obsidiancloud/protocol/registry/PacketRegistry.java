@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import de.obsidiancloud.protocol.Packet;
 import de.obsidiancloud.protocol.PacketListener;
-import lombok.extern.java.Log;
+import lombok.Getter;
 
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
  * @author Miles
  * @since 02.06.2024
  */
-@Log
 public class PacketRegistry {
 
     private static final String PACKETS_PACKAGE = "de.obsidiancloud.protocol.packets";
@@ -37,7 +36,7 @@ public class PacketRegistry {
         try {
             classes = ClassPath.from(classLoader).getTopLevelClassesRecursive(packageName);
         } catch (IOException e) {
-            log.severe("Error loading packet classes");
+            System.err.println("Error loading packet classes");
             e.printStackTrace();
             return;
         }
@@ -56,6 +55,7 @@ public class PacketRegistry {
 
         packetClasses.put(packetId, packetClass);
         packetIds.put(packetClass, packetId);
+        System.out.println("Registered packet: " + packetId + " - " + packetClass);
     }
 
     public Optional<Class<? extends Packet>> getPacketClassById(int packetId) {

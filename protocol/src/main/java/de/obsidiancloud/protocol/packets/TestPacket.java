@@ -2,15 +2,13 @@ package de.obsidiancloud.protocol.packets;
 
 import de.obsidiancloud.protocol.Packet;
 import io.netty.buffer.ByteBuf;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 /**
  * @author Miles
  * @since 02.06.2024
  */
+@NoArgsConstructor
 @Getter
 @Setter
 @ToString
@@ -19,16 +17,19 @@ public class TestPacket extends Packet {
 
     private String name;
 
+    public TestPacket(String targetConnectionId) {
+        this.targetConnectionId = targetConnectionId;
+    }
+
     @Override
     public void write(ByteBuf byteBuf) {
+        writeString(targetConnectionId, byteBuf);
         writeString(name, byteBuf);
     }
 
     @Override
     public void read(ByteBuf byteBuf) {
-        int length = byteBuf.readableBytes();
-        System.out.println("Packet length: " + length);
-
+        this.targetConnectionId = readString(byteBuf);
         this.name = readString(byteBuf);
     }
 }

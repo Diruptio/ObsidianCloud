@@ -16,16 +16,11 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import lombok.Getter;
-import lombok.extern.java.Log;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 /**
  * @author Miles
  * @since 02.06.2024
  */
-@Log
 public class NetworkHandler {
 
     private static final EventLoopGroup EVENT_GROUP = (Epoll.isAvailable()
@@ -43,13 +38,18 @@ public class NetworkHandler {
 
     @Getter
     private static final PacketRegistry packetRegistry = new PacketRegistry();
-
-    private static final Map<String, List<Packet>> backlog = new HashMap<>();
+    static {
+        packetRegistry.registerPackets();
+    }
 
     public static ConnectionHandler initializeClientConnection(String connectionId, String host, int port) {
         ConnectionHandler handler = new ConnectionHandler(connectionId, true);
         Bootstrap bootstrap = buildClientBootstrap(handler);
-        ChannelFuture future = bootstrap.connect(host, port);
+        try {
+            ChannelFuture future = bootstrap.connect(host, port).sync();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
         return handler;
     }
 
@@ -81,35 +81,5 @@ public class NetworkHandler {
                         Pipeline.prepare(channel, handler);
                     }
                 });
-    }
-
-    public static void broadcastPacket(Packet packet) {
-        final String packetName = packet.getClass().getSimpleName();
-        log.info("Broadcasting packet '" + packetName + "' to " + connectionRegistry.countConnections() + " connections");
-        connectionRegistry.getConnections().forEach(connection -> connection.send(packet));
-    }
-
-    public static void sendPacket(String connectionId, Packet packet) {
-        Optional<ConnectionHandler> connection = connectionRegistry.getConnection(connectionId);
-        if (connection.isEmpty()) {
-            backlog.computeIfAbsent(connectionId.toLowerCase(),
-                    o -> new ArrayList<>()).add(packet);
-            log.severe("No connection with id '" + connectionId + "' found. Added to backlog");
-            return;
-        }
-
-        connection.get().send(packet);
-    }
-
-    public static List<Packet> getBacklog(String connectionId) {
-        return backlog.getOrDefault(connectionId.toLowerCase(), new ArrayList<>());
-    }
-
-    public static void clearBacklog() {
-        backlog.clear();
-    }
-
-    public static Logger getLogger() {
-        return log;
     }
 }

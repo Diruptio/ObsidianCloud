@@ -2,6 +2,7 @@ package de.obsidiancloud.protocol.pipeline;
 
 import de.obsidiancloud.protocol.NetworkHandler;
 import de.obsidiancloud.protocol.Packet;
+import de.obsidiancloud.protocol.packets.HandshakePacket;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,9 +10,9 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import lombok.extern.java.Log;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -20,7 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 
 @ChannelHandler.Sharable
-@Log
 @RequiredArgsConstructor
 @Getter
 public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
@@ -37,12 +37,12 @@ public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
         this.channel = ctx.channel();
         if (client) {
             backlog.forEach(this::send);
+            System.out.println("[" + id + "] Sent backlog: " + backlog.size());
             backlog.clear();
         }
 
-        NetworkHandler.getBacklog(id).forEach(this::send);
-        NetworkHandler.clearBacklog();
-        NetworkHandler.getConnectionRegistry().addConnection(this);
+        NetworkHandler.getConnectionRegistry().addConnection(id, ctx);
+        System.out.println("[" + id + "] Added connection: " + id);
     }
 
     @Override
@@ -53,19 +53,43 @@ public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
 
     public void send(Packet packet) {
         final String packetName = packet.getClass().getSimpleName();
-        log.info("Sending packet: " + packetName);
+        System.out.println("[" + id + "] Sending packet: " + packetName);
         if (channel == null) {
             backlog.add(packet);
-            log.info("Added to backlog: " + packetName);
+            System.out.println("[" + id + "] Added to backlog: " + packetName);
             return;
         }
 
         channel.writeAndFlush(packet);
-        log.info("Sent packet: " + packetName);
+        System.out.println("[" + id + "] Sent packet: " + packetName);
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, Packet packet) {
-        NetworkHandler.getPacketRegistry().getPacketListeners(packet.getClass()).forEach(listener -> listener.handle(packet, this));
+    public void channelRead0(ChannelHandlerContext ctx, Packet packet) {
+        System.out.println("[" + id + "] Handling received packet: " + packet.toString());
+
+        if (!client) {
+            if (packet instanceof HandshakePacket) {
+                final String connectionId = ((HandshakePacket) packet).getId();
+                NetworkHandler.getConnectionRegistry().addConnection(connectionId, ctx);
+                System.out.println("[" + id + "] Added connection: " + connectionId);
+                return;
+            }
+
+            if (packet.getTargetConnectionId() != null) {
+                Optional<ChannelHandlerContext> connection = NetworkHandler.getConnectionRegistry().getConnection(packet.getTargetConnectionId());
+                if (connection.isEmpty()) {
+                    System.out.println("[" + id + "] Could not forward packet to " + packet.getTargetConnectionId() + ": Connection was not found");
+                    return;
+                }
+
+                connection.get().writeAndFlush(packet);
+                System.out.println("[" + id + "] Forwarded packet to " + packet.getTargetConnectionId());
+                return;
+            }
+        }
+
+        NetworkHandler.getPacketRegistry().getPacketListeners(packet.getClass()).
+                forEach(listener -> listener.handle(packet, this));
     }
 }
