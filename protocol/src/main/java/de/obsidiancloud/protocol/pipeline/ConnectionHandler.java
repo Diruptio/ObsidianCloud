@@ -48,7 +48,11 @@ public class ConnectionHandler extends SimpleChannelInboundHandler<Packet> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         super.channelInactive(ctx);
-        NetworkHandler.getConnectionRegistry().removeConnection(id);
+
+        final String connectionId = NetworkHandler.getConnectionRegistry().removeConnection(ctx);
+        if (connectionId != null) {
+            System.out.println("[" + id + "] Removed connection: " + connectionId);
+        }
     }
 
     public void send(Packet packet) {

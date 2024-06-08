@@ -1,6 +1,8 @@
 package de.obsidiancloud.protocol.registry;
 
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.util.Attribute;
+import io.netty.util.AttributeKey;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,12 +20,27 @@ public class ConnectionRegistry {
     public synchronized void addConnection(String id, ChannelHandlerContext ctx) {
         id = id.toLowerCase();
         if (!connections.containsKey(id)) {
+            ctx.channel().attr(AttributeKey.valueOf("id")).set(id);
             connections.put(id, ctx);
         }
     }
 
-    public void removeConnection(String id) {
-        connections.remove(id.toLowerCase());
+    public String removeConnection(ChannelHandlerContext ctx) {
+        if (ctx.channel() == null) {
+            return null;
+        }
+
+        final Attribute<String> connectionIdAttr = ctx.channel().attr(AttributeKey.valueOf("id"));
+        if (connectionIdAttr == null) {
+            return null;
+        }
+
+        final String connectionId = connectionIdAttr.get();
+        if (connectionId != null) {
+            connections.remove(connectionId);
+        }
+
+        return connectionId;
     }
 
     public Optional<ChannelHandlerContext> getConnection(String id) {

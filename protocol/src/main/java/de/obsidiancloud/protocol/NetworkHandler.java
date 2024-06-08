@@ -23,9 +23,13 @@ import lombok.Getter;
  */
 public class NetworkHandler {
 
-    private static final EventLoopGroup EVENT_GROUP = (Epoll.isAvailable()
+    private static final EventLoopGroup BOSS_GROUP = (Epoll.isAvailable()
+            ? new EpollEventLoopGroup(1)
+            : new NioEventLoopGroup(1));
+    private static final EventLoopGroup WORKER_GROUP = (Epoll.isAvailable()
             ? new EpollEventLoopGroup()
             : new NioEventLoopGroup());
+
     private static final Class<? extends ServerChannel> SERVER_CHANNEL = (Epoll.isAvailable()
             ? EpollServerSocketChannel.class
             : NioServerSocketChannel.class);
@@ -55,8 +59,8 @@ public class NetworkHandler {
 
     public static ServerBootstrap buildServerBootstrap(ConnectionHandler handler) {
         return new ServerBootstrap()
+                .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
-                .group(EVENT_GROUP)
                 .childOption(ChannelOption.TCP_NODELAY, true)
                 .childOption(ChannelOption.SO_LINGER, 0)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
@@ -72,7 +76,7 @@ public class NetworkHandler {
 
     public static Bootstrap buildClientBootstrap(ConnectionHandler handler) {
         return new Bootstrap()
-                .group(EVENT_GROUP)
+                .group(WORKER_GROUP)
                 .channel(CLIENT_CHANNEL)
                 .handler(new ChannelInitializer<>() {
                     @Override

@@ -37,7 +37,7 @@ public class Decoder extends ByteToMessageDecoder {
 
         Optional<Class<? extends Packet>> packetClass = NetworkHandler.getPacketRegistry().getPacketClassById(packetId);
         if (packetClass.isEmpty()) {
-            System.err.println("No packet with id " + packetId + " registered");
+            System.out.println("Packet with id " + packetId + " was not registered");
             return;
         }
 

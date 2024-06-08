@@ -17,7 +17,7 @@ public class Encoder extends MessageToByteEncoder<Packet> {
         System.out.println("Encoding packet: " + packet.getClass().getSimpleName());
         final int packetId = NetworkHandler.getPacketRegistry().getPacketIdByClass(packet.getClass());
         if (packetId == -1) {
-            System.err.println("Packet " + packet.getClass() + " was not registered");
+            System.out.println("Packet " + packet.getClass() + " was not registered");
             return;
         }
 
