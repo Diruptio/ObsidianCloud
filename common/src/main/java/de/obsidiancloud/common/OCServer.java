@@ -5,6 +5,7 @@ import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** Represents a server in the cluster. */
 public abstract class OCServer {
     private final String task;
     private final String name;
@@ -230,10 +231,18 @@ public abstract class OCServer {
         return players;
     }
 
+    /** Represents the type of a server. */
     public enum Type {
+        /** Represents a paper server. */
         PAPER(false, "stop"),
+
+        /** Represents a fabric server. */
         FABRIC(false, "stop"),
+
+        /** Represents a forge server. */
         FORGE(false, "stop"),
+
+        /** Represents a velocity server. */
         VELOCITY(true, "shutdown");
 
         private final boolean proxy;
@@ -244,25 +253,49 @@ public abstract class OCServer {
             this.stopCommand = stopCommand;
         }
 
+        /**
+         * Checks whether the server type is a proxy.
+         *
+         * @return Returns true if the server is a proxy, otherwise false.
+         */
         public boolean isProxy() {
             return proxy;
         }
 
+        /**
+         * Gets the command to stop the server.
+         *
+         * @return Returns the command to stop the server.
+         */
         public @NotNull String getStopCommand() {
             return stopCommand;
         }
     }
 
+    /** Represents the lifecycle state of a server. */
     public enum LifecycleState {
+        /** The server is being created. */
         CREATING,
+
+        /** The server is online. */
         ONLINE,
+
+        /** The server is offline. */
         OFFLINE
     }
 
+    /** Represents the status of a server. */
     public enum Status {
+        /** The server is starting. */
         STARTING,
+
+        /** The server is running. */
         READY,
+
+        /** The server is running. */
         NOT_READY,
+
+        /** The server is offline. */
         OFFLINE
     }
 }

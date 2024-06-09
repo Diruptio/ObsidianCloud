@@ -3,6 +3,7 @@ package de.obsidiancloud.common.network.packets;
 import de.obsidiancloud.common.network.Packet;
 import io.netty.buffer.ByteBuf;
 import lombok.*;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Miles
@@ -14,21 +15,20 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 public class TestPacket extends Packet {
-
     private String name;
 
-    public TestPacket(String targetConnectionId) {
+    public TestPacket(@NotNull String targetConnectionId) {
         this.targetConnectionId = targetConnectionId;
     }
 
     @Override
-    public void write(ByteBuf byteBuf) {
+    public void write(@NotNull ByteBuf byteBuf) {
         writeString(targetConnectionId, byteBuf);
         writeString(name, byteBuf);
     }
 
     @Override
-    public void read(ByteBuf byteBuf) {
+    public void read(@NotNull ByteBuf byteBuf) {
         this.targetConnectionId = readString(byteBuf);
         this.name = readString(byteBuf);
     }

@@ -6,10 +6,17 @@ import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** Represents a player on the network. */
 public abstract class OCPlayer implements CommandExecutor {
-    private final UUID uuid;
-    private final String name;
+    private final @NotNull UUID uuid;
+    private final @NotNull String name;
 
+    /**
+     * Create a new player.
+     *
+     * @param uuid The uuid of the player
+     * @param name The name of the player
+     */
     public OCPlayer(@NotNull UUID uuid, @NotNull String name) {
         this.uuid = uuid;
         this.name = name;
