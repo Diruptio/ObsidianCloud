@@ -18,6 +18,7 @@ import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
 import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
+import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.threads.NodeThread;
@@ -145,6 +146,7 @@ public class ObsidianCloudNode {
     private static void loadTemplateProviders() {
         templateProviders.clear();
         templateProviders.add(new SimpleTemplateProvider());
+        templateProviders.add(new PlatformTemplateProvider());
         templateProviders.add(new PaperTemplateProvider());
         templateProviders.add(new PurpurTemplateProvider());
     }

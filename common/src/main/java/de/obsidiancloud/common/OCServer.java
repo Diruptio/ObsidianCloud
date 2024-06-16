@@ -234,23 +234,25 @@ public abstract class OCServer {
     /** Represents the type of a server. */
     public enum Type {
         /** Represents a paper server. */
-        PAPER(false, "stop"),
+        PAPER(false, "stop", "platform/paper"),
 
         /** Represents a fabric server. */
-        FABRIC(false, "stop"),
+        FABRIC(false, "stop", "platform/fabric"),
 
         /** Represents a forge server. */
-        FORGE(false, "stop"),
+        FORGE(false, "stop", "platform/forge"),
 
         /** Represents a velocity server. */
-        VELOCITY(true, "shutdown");
+        VELOCITY(true, "shutdown", "platform/velocity");
 
         private final boolean proxy;
         private final String stopCommand;
+        private final String template;
 
-        Type(boolean proxy, @NotNull String stopCommand) {
+        Type(boolean proxy, @NotNull String stopCommand, @NotNull String template) {
             this.proxy = proxy;
             this.stopCommand = stopCommand;
+            this.template = template;
         }
 
         /**
@@ -269,6 +271,15 @@ public abstract class OCServer {
          */
         public @NotNull String getStopCommand() {
             return stopCommand;
+        }
+
+        /**
+         * Gets the template of the server.
+         *
+         * @return Returns the template of the server.
+         */
+        public @NotNull String getTemplate() {
+            return template;
         }
     }
 

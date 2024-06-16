@@ -6,6 +6,7 @@ import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import org.springframework.util.FileSystemUtils;
@@ -29,6 +30,8 @@ public class ServerCreateThread extends Thread {
                 FileSystemUtils.deleteRecursively(directory);
             }
             Files.createDirectories(directory);
+            List<String> templates = new ArrayList<>(this.templates);
+            templates.add(server.getType().getTemplate());
             for (String template : templates) {
                 OCTemplate t = ObsidianCloudNode.getTemplate(template);
                 if (t != null) t.apply(directory);
