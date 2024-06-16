@@ -9,7 +9,10 @@ import de.obsidiancloud.node.local.template.TemplateProvider;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class PaperTemplateProvider implements TemplateProvider {

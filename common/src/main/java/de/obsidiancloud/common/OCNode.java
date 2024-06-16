@@ -3,11 +3,19 @@ package de.obsidiancloud.common;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
+/** Represents a node in the cluster. */
 public abstract class OCNode {
-    private final String name;
-    private final String host;
+    private final @NotNull String name;
+    private final @NotNull String host;
     private final int port;
 
+    /**
+     * Create a new node.
+     *
+     * @param name The name of the node.
+     * @param host The host of the node.
+     * @param port The port of the node.
+     */
     public OCNode(@NotNull String name, @NotNull String host, int port) {
         this.name = name;
         this.host = host;
@@ -17,8 +25,7 @@ public abstract class OCNode {
     /**
      * Checks if the node is connected to the cluster.
      *
-     * @return Returns {@code true} if the node is connected to the cluster, otherwise {@code
-     *     false}.
+     * @return Returns true if the node is connected to the cluster, otherwise false.
      */
     public abstract boolean isConnected();
 

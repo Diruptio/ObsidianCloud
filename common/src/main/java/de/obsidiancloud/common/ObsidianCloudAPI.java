@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** The ObsidianCloudAPI class is the main class to interact with the ObsidianCloud system. */
 public abstract class ObsidianCloudAPI {
     private static ObsidianCloudAPI instance = null;
 

@@ -124,7 +124,7 @@ public class ConfigSection {
      * @return Returns the value for the key.
      */
     public @Nullable String getString(@NotNull String key) {
-        return getString(key, null);
+        return contains(key) ? (String) get(key) : null;
     }
 
     /**
@@ -134,7 +134,7 @@ public class ConfigSection {
      * @param def The default value if the key is not present.
      * @return Returns the value for the key.
      */
-    public @Nullable String getString(@NotNull String key, @Nullable String def) {
+    public @NotNull String getString(@NotNull String key, @NotNull String def) {
         Object value = get(key);
         return value == null ? def : value instanceof String str ? str : def;
     }

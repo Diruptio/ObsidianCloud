@@ -43,7 +43,7 @@ public class Console implements Runnable {
                         .history(new DefaultHistory())
                         .build();
         reader.setAutosuggestion(LineReader.SuggestionType.COMPLETER);
-        this.thread = new Thread(this);
+        thread = new Thread(this);
     }
 
     public void start() {
