@@ -15,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
 public class Connection {
     private @Nullable Channel channel;
     private final @NotNull Queue<Packet> backlog = new ArrayDeque<>();
-    private final @NotNull List<PacketListener<? extends Packet>> packetListeners = new CopyOnWriteArrayList<>();
+    private final @NotNull List<PacketListener<? extends Packet>> packetListeners =
+            new CopyOnWriteArrayList<>();
 
     public void send(@NotNull Packet packet) {
         if (channel == null) {
