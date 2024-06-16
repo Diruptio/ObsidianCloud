@@ -29,7 +29,8 @@ public class Decoder extends ByteToMessageDecoder {
         Class<? extends Packet> packetClass =
                 NetworkHandler.getPacketRegistry().getPacketClass(packetName);
         if (packetClass == null) {
-            NetworkHandler.getLogger().severe("Packet with name " + packetName + " was not registered");
+            NetworkHandler.getLogger()
+                    .severe("Packet with name " + packetName + " was not registered");
             return;
         }
 

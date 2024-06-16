@@ -15,9 +15,8 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.logging.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * @author Miles
@@ -73,7 +72,7 @@ public class NetworkHandler {
                 .handler(
                         new ChannelInitializer<>() {
                             @Override
-                            protected void initChannel(Channel channel) throws Exception {
+                            protected void initChannel(Channel channel) {
                                 channel.config().setOption(ChannelOption.IP_TOS, 0x18);
                                 Pipeline.prepare(channel, new ClientChannelHandler(connection));
                             }

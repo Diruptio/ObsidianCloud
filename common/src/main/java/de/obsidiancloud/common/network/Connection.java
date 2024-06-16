@@ -3,7 +3,10 @@ package de.obsidiancloud.common.network;
 import io.netty.channel.Channel;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class Connection {
     private @Nullable Channel channel;
     private final @NotNull Queue<Packet> backlog = new ArrayDeque<>();
-    private final @NotNull List<PacketListener<?>> packetListeners = new CopyOnWriteArrayList<>();
+    private final @NotNull List<PacketListener<? extends Packet>> packetListeners = new CopyOnWriteArrayList<>();
 
     public void send(@NotNull Packet packet) {
         if (channel == null) {
@@ -47,7 +50,7 @@ public class Connection {
         return backlog;
     }
 
-    public @NotNull List<PacketListener<?>> getPacketListeners() {
+    public @NotNull List<PacketListener<? extends Packet>> getPacketListeners() {
         return packetListeners;
     }
 
