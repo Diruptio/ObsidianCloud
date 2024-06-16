@@ -2,13 +2,11 @@ package de.obsidiancloud.node.local.template.simple;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
+import org.springframework.util.FileSystemUtils;
 
 public class SimpleTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("templates");
@@ -20,13 +18,8 @@ public class SimpleTemplate extends OCTemplate {
 
     @Override
     public void apply(@NotNull Path targetDirectory) {
-        try (Stream<Path> files = Files.list(templatesDirectory)) {
-            for (Path file : files.toList()) {
-                Files.copy(
-                        file,
-                        targetDirectory.resolve(file.getFileName()),
-                        StandardCopyOption.REPLACE_EXISTING);
-            }
+        try {
+            FileSystemUtils.copyRecursively(templatesDirectory.resolve(getPath()), targetDirectory);
         } catch (Throwable exception) {
             logger.log(Level.SEVERE, "Failed to apply template " + getPath(), exception);
         }

@@ -1,10 +1,13 @@
 package de.obsidiancloud.common.network.pipeline;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandler;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
 
 /**
+ * The pipeline for the network.
+ *
  * @author Miles
  * @since 02.06.2024
  */
@@ -16,7 +19,7 @@ public class Pipeline {
     private static final String ENCODER = "encoder";
     private static final String HANDLER = "handler";
 
-    public static void prepare(Channel channel, ConnectionHandler handler) {
+    public static void prepare(Channel channel, ChannelHandler handler) {
         channel.pipeline()
                 .addLast(FRAME_DECODER, new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
         channel.pipeline().addLast(DECODER, new Decoder());

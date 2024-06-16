@@ -3,27 +3,10 @@ package de.obsidiancloud.common.network;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A packet
- *
- * @author Miles
- * @since 02.06.2024
- */
-@NoArgsConstructor
-@Getter
-@Setter
-@ToString
 public abstract class Packet {
-    /** The id of the packet */
-    protected String targetConnectionId;
-
     /**
      * Write the packet to the byte buffer
      *
@@ -39,56 +22,15 @@ public abstract class Packet {
     public abstract void read(@NotNull ByteBuf byteBuf);
 
     /**
-     * Write an integer to the byte buffer
-     *
-     * @param value The value
-     * @param buf The byte buffer
-     */
-    public static void writeVarInt(int value, @NotNull ByteBuf buf) {
-        while ((value & 0xFFFFFF80) != 0L) {
-            buf.writeByte((value & 0x7F) | 0x80);
-            value >>>= 7;
-        }
-
-        buf.writeByte(value & 0x7F);
-    }
-
-    /**
-     * Read an integer from the byte buffer
-     *
-     * @param buf The byte buffer
-     * @return The value
-     */
-    public static int readVarInt(@NotNull ByteBuf buf) {
-        int value = 0;
-        int i = 0;
-        int b;
-
-        while (((b = buf.readByte()) & 0x80) != 0) {
-            value |= (b & 0x7F) << i;
-            i += 7;
-            if (i > 35) {
-                throw new IllegalArgumentException("Variable length quantity is too long");
-            }
-        }
-
-        return value | (b << i);
-    }
-
-    /**
      * Write a string to the byte buffer
      *
-     * @param str The value
      * @param byteBuf The byte buffer
+     * @param str The value
      */
-    public static void writeString(@Nullable String str, @NotNull ByteBuf byteBuf) {
-        if (str == null) {
-            str = "";
-        }
-
+    public static void writeString(@NotNull ByteBuf byteBuf, @Nullable String str) {
+        if (str == null) str = "";
         byte[] bytes = str.getBytes(StandardCharsets.UTF_8);
-        int byteLength = bytes.length;
-        writeVarInt(byteLength, byteBuf);
+        byteBuf.writeInt(bytes.length);
         byteBuf.writeBytes(bytes);
     }
 
@@ -98,22 +40,20 @@ public abstract class Packet {
      * @param byteBuf The byte buffer
      * @return The value
      */
-    public static @Nullable String readString(@NotNull ByteBuf byteBuf) {
-        int byteLength = readVarInt(byteBuf);
-        byte[] bytes = new byte[byteLength];
+    public static @NotNull String readString(@NotNull ByteBuf byteBuf) {
+        int length = byteBuf.readInt();
+        byte[] bytes = new byte[length];
         byteBuf.readBytes(bytes);
-
-        String str = new String(bytes, StandardCharsets.UTF_8);
-        return str.isEmpty() ? null : str;
+        return new String(bytes, StandardCharsets.UTF_8);
     }
 
     /**
      * Write a UUID to the byte buffer
      *
-     * @param uuid The value
      * @param byteBuf The byte buffer
+     * @param uuid The value
      */
-    public static void writeUUID(@NotNull UUID uuid, @NotNull ByteBuf byteBuf) {
+    public static void writeUUID(@NotNull ByteBuf byteBuf, @NotNull UUID uuid) {
         byteBuf.writeLong(uuid.getMostSignificantBits());
         byteBuf.writeLong(uuid.getLeastSignificantBits());
     }
@@ -133,10 +73,10 @@ public abstract class Packet {
     /**
      * Write an enum to the byte buffer
      *
-     * @param value The value
      * @param byteBuf The byte buffer
+     * @param value The value
      */
-    public static void writeEnum(@NotNull Enum<?> value, @NotNull ByteBuf byteBuf) {
+    public static void writeEnum(@NotNull ByteBuf byteBuf, @NotNull Enum<?> value) {
         byteBuf.writeByte(value.ordinal());
     }
 
@@ -153,7 +93,6 @@ public abstract class Packet {
         if (values.length <= ordinal) {
             throw new RuntimeException("No Enum found");
         }
-
         return values[ordinal];
     }
 }

@@ -1,8 +1,8 @@
 package de.obsidiancloud.common.network;
 
-import de.obsidiancloud.common.network.pipeline.ConnectionHandler;
+import de.obsidiancloud.common.network.pipeline.ClientChannelHandler;
 import de.obsidiancloud.common.network.pipeline.Pipeline;
-import de.obsidiancloud.common.network.registry.ConnectionRegistry;
+import de.obsidiancloud.common.network.pipeline.ServerChannelHandler;
 import de.obsidiancloud.common.network.registry.PacketRegistry;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
@@ -15,45 +15,38 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.logging.Logger;
 
 /**
  * @author Miles
  * @since 02.06.2024
  */
 public class NetworkHandler {
-
-    private static final EventLoopGroup BOSS_GROUP =
+    private static final @NotNull Logger logger = Logger.getLogger("NetworkHandler");
+    private static final @NotNull EventLoopGroup BOSS_GROUP =
             (Epoll.isAvailable() ? new EpollEventLoopGroup(1) : new NioEventLoopGroup(1));
-    private static final EventLoopGroup WORKER_GROUP =
+    private static final @NotNull EventLoopGroup WORKER_GROUP =
             (Epoll.isAvailable() ? new EpollEventLoopGroup() : new NioEventLoopGroup());
-
-    private static final Class<? extends ServerChannel> SERVER_CHANNEL =
+    private static final @NotNull Class<? extends ServerChannel> SERVER_CHANNEL =
             (Epoll.isAvailable() ? EpollServerSocketChannel.class : NioServerSocketChannel.class);
-    private static final Class<? extends Channel> CLIENT_CHANNEL =
+    private static final @NotNull Class<? extends Channel> CLIENT_CHANNEL =
             (Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class);
+    private static final @NotNull PacketRegistry packetRegistry = new PacketRegistry();
 
-    @Getter private static final ConnectionRegistry connectionRegistry = new ConnectionRegistry();
-
-    @Getter private static final PacketRegistry packetRegistry = new PacketRegistry();
-
-    static {
-        packetRegistry.registerPackets();
-    }
-
-    public static ConnectionHandler initializeClientConnection(
-            String connectionId, String host, int port) {
-        ConnectionHandler handler = new ConnectionHandler(connectionId, true);
-        Bootstrap bootstrap = buildClientBootstrap(handler);
+    public static @NotNull Connection initializeClientConnection(String host, int port) {
+        Connection connection = new Connection();
+        Bootstrap bootstrap = buildClientBootstrap(connection);
         try {
-            ChannelFuture future = bootstrap.connect(host, port).sync();
+            bootstrap.connect(host, port).sync();
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        return handler;
+        return connection;
     }
 
-    public static ServerBootstrap buildServerBootstrap(ConnectionHandler handler) {
+    public static @NotNull ServerBootstrap buildServerBootstrap() {
         return new ServerBootstrap()
                 .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
@@ -68,12 +61,12 @@ public class NetworkHandler {
                         new ChannelInitializer<>() {
                             @Override
                             protected void initChannel(Channel channel) {
-                                Pipeline.prepare(channel, handler);
+                                Pipeline.prepare(channel, new ServerChannelHandler());
                             }
                         });
     }
 
-    public static Bootstrap buildClientBootstrap(ConnectionHandler handler) {
+    public static @NotNull Bootstrap buildClientBootstrap(@NotNull Connection connection) {
         return new Bootstrap()
                 .group(WORKER_GROUP)
                 .channel(CLIENT_CHANNEL)
@@ -82,8 +75,16 @@ public class NetworkHandler {
                             @Override
                             protected void initChannel(Channel channel) throws Exception {
                                 channel.config().setOption(ChannelOption.IP_TOS, 0x18);
-                                Pipeline.prepare(channel, handler);
+                                Pipeline.prepare(channel, new ClientChannelHandler(connection));
                             }
                         });
+    }
+
+    public static @NotNull PacketRegistry getPacketRegistry() {
+        return packetRegistry;
+    }
+
+    public static @NotNull Logger getLogger() {
+        return logger;
     }
 }

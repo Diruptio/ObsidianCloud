@@ -1,89 +1,38 @@
 package de.obsidiancloud.common.network.registry;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.reflect.ClassPath;
 import de.obsidiancloud.common.network.Packet;
-import de.obsidiancloud.common.network.PacketListener;
-import java.io.IOException;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.*;
+import de.obsidiancloud.common.network.packets.C2SHandshakePacket;
+import de.obsidiancloud.common.network.packets.S2CHandshakePacket;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * @author Miles
  * @since 02.06.2024
  */
 public class PacketRegistry {
-
-    private static final String PACKETS_PACKAGE = "de.obsidiancloud.common.network.packets";
-
-    private final Map<Integer, Class<? extends Packet>> packetClasses = new ConcurrentHashMap<>();
-    private final Map<Class<? extends Packet>, Integer> packetIds = new ConcurrentHashMap<>();
-    private final Map<Class<? extends Packet>, Collection<PacketListener>> packetListeners =
+    private final @NotNull Map<String, Class<? extends Packet>> nameToClass =
+            new ConcurrentHashMap<>();
+    private final @NotNull Map<Class<? extends Packet>, String> classToName =
             new ConcurrentHashMap<>();
 
     public void registerPackets() {
-        registerPackets(PACKETS_PACKAGE);
+        registerPacket(C2SHandshakePacket.class);
+        registerPacket(S2CHandshakePacket.class);
     }
 
-    public void registerPackets(String packageName) {
-        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        ImmutableSet<ClassPath.ClassInfo> classes;
-        try {
-            classes = ClassPath.from(classLoader).getTopLevelClassesRecursive(packageName);
-        } catch (IOException e) {
-            System.err.println("Error loading packet classes");
-            e.printStackTrace();
-            return;
-        }
-        classes.forEach(this::registerPacket);
+    public void registerPacket(@NotNull Class<? extends Packet> packetClass) {
+        nameToClass.put(packetClass.getSimpleName(), packetClass);
+        classToName.put(packetClass, packetClass.getSimpleName());
     }
 
-    private void registerPacket(ClassPath.ClassInfo classInfo) {
-        registerPacket(classInfo.getSimpleName(), (Class<? extends Packet>) classInfo.load());
+    public @Nullable String getPacketName(@NotNull Class<? extends Packet> packetClass) {
+        return classToName.get(packetClass);
     }
 
-    public void registerPacket(String name, Class<? extends Packet> packetClass) {
-        final int packetId = name.hashCode();
-        if (packetClasses.containsKey(packetId)) {
-            return;
-        }
-
-        packetClasses.put(packetId, packetClass);
-        packetIds.put(packetClass, packetId);
-        System.out.println("Registered packet: " + packetId + " - " + packetClass);
-    }
-
-    public Optional<Class<? extends Packet>> getPacketClassById(int packetId) {
-        return Optional.ofNullable(packetClasses.get(packetId));
-    }
-
-    public int getPacketIdByClass(Class<? extends Packet> packetClass) {
-        return packetIds.getOrDefault(packetClass, -1);
-    }
-
-    public void registerPacketListener(PacketListener listener) {
-        List<Type> list =
-                Arrays.stream(listener.getClass().getGenericInterfaces())
-                        .filter(type -> ParameterizedType.class.isAssignableFrom(type.getClass()))
-                        .map(type -> ((ParameterizedType) type).getActualTypeArguments()[0])
-                        .filter(type -> Packet.class.isAssignableFrom((Class<?>) type))
-                        .collect(Collectors.toList());
-
-        list.forEach(
-                type ->
-                        packetListeners
-                                .computeIfAbsent(
-                                        (Class<? extends Packet>) type,
-                                        (Function<Class<? extends Packet>, List<PacketListener>>)
-                                                aClass -> new ArrayList<>())
-                                .add(listener));
-    }
-
-    public Collection<PacketListener> getPacketListeners(Class<? extends Packet> packetClass) {
-        return packetListeners.getOrDefault(packetClass, new ArrayList<>());
+    public @Nullable Class<? extends Packet> getPacketClass(@NotNull String packetName) {
+        return nameToClass.get(packetName);
     }
 }

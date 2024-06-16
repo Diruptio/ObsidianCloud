@@ -14,11 +14,11 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0")
     implementation("org.jline:jline:3.26.1")
-
     implementation("io.netty:netty-all:4.1.110.Final")
     implementation("com.google.guava:guava:31.1-jre")
-    compileOnly("org.projectlombok:lombok:1.18.32")
-    annotationProcessor("org.projectlombok:lombok:1.18.32")
+
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
 java {
@@ -34,5 +34,9 @@ tasks {
     jar {
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

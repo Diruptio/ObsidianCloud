@@ -7,42 +7,34 @@ import io.netty.buffer.EmptyByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * @author Miles
  * @since 02.06.2024
  */
 public class Decoder extends ByteToMessageDecoder {
-
     @Override
     protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list)
             throws Exception {
-        if (byteBuf instanceof EmptyByteBuf) {
+        if (byteBuf instanceof EmptyByteBuf) return;
+        if (!byteBuf.isReadable()) return;
+
+        byteBuf.readInt();
+
+        String packetName = Packet.readString(byteBuf);
+        if (packetName.isEmpty()) {
             return;
         }
 
-        if (!byteBuf.isReadable()) {
-            return;
-        }
-        // byteBuf.readInt();
-
-        int packetId = Packet.readVarInt(byteBuf);
-        if (packetId == 0 || packetId == -1) {
-            return;
-        }
-        System.out.println("Got packetId: " + packetId);
-
-        Optional<Class<? extends Packet>> packetClass =
-                NetworkHandler.getPacketRegistry().getPacketClassById(packetId);
-        if (packetClass.isEmpty()) {
-            System.out.println("Packet with id " + packetId + " was not registered");
+        Class<? extends Packet> packetClass =
+                NetworkHandler.getPacketRegistry().getPacketClass(packetName);
+        if (packetClass == null) {
+            NetworkHandler.getLogger().severe("Packet with name " + packetName + " was not registered");
             return;
         }
 
-        Packet packet = packetClass.get().getDeclaredConstructor().newInstance();
+        Packet packet = packetClass.getDeclaredConstructor().newInstance();
         packet.read(byteBuf);
         list.add(packet);
-        System.out.println("Decoded packet: " + packet.toString());
     }
 }

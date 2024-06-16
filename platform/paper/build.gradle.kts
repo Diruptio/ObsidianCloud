@@ -9,10 +9,9 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":platform"))
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("net.kyori:adventure-api:4.17.0")
-    implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
 }
 
 tasks {
@@ -30,7 +29,7 @@ tasks {
     jar {
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        archiveBaseName = "OCBukkit"
+        archiveBaseName = "OCPaper"
     }
 
     reobfJar {

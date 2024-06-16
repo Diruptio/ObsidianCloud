@@ -9,6 +9,8 @@ import de.obsidiancloud.common.config.Config;
 import de.obsidiancloud.common.config.ConfigSection;
 import de.obsidiancloud.common.console.Console;
 import de.obsidiancloud.common.console.ConsoleCommandExecutor;
+import de.obsidiancloud.common.network.NetworkHandler;
+import de.obsidiancloud.common.network.NetworkServer;
 import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
 import de.obsidiancloud.node.local.LocalOCNode;
@@ -39,6 +41,7 @@ public class ObsidianCloudNode {
     private static final BaseCommandProvider commandProvider = new BaseCommandProvider();
     private static final List<TemplateProvider> templateProviders = new ArrayList<>();
     private static NodeThread nodeThread;
+    private static NetworkServer networkServer;
 
     public static void main(String[] args) {
         try {
@@ -54,6 +57,14 @@ public class ObsidianCloudNode {
             reload();
             nodeThread = new NodeThread();
             nodeThread.start();
+
+            NetworkHandler.getPacketRegistry().registerPackets();
+            ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
+            String name = localNode.getString("name", "Node-1");
+            String host = localNode.getString("host", "0.0.0.0");
+            int port = localNode.getInt("port", 3005);
+            networkServer = new NetworkServer(name, host, port);
+            networkServer.start();
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);
         }
@@ -65,7 +76,7 @@ public class ObsidianCloudNode {
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         localNode.setDefault("name", "Node-1");
         localNode.setDefault("host", "0.0.0.0");
-        localNode.setDefault("port", 1405);
+        localNode.setDefault("port", 3005);
     }
 
     private static List<LocalOCServer> loadServersConfig() {
@@ -156,6 +167,7 @@ public class ObsidianCloudNode {
     public static void shutdown() {
         nodeThread.interrupt();
         api.getLocalNode().getServers().forEach(OCServer::kill);
+        networkServer.close();
         if (console != null) console.stop();
     }
 
@@ -180,5 +192,14 @@ public class ObsidianCloudNode {
             if (template != null) return template;
         }
         return null;
+    }
+
+    /**
+     * Gets the network server.
+     *
+     * @return The network server.
+     */
+    public static NetworkServer getNetworkServer() {
+        return networkServer;
     }
 }

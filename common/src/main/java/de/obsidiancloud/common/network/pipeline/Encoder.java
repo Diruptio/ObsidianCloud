@@ -14,16 +14,14 @@ public class Encoder extends MessageToByteEncoder<Packet> {
 
     @Override
     protected void encode(ChannelHandlerContext ctx, Packet packet, ByteBuf byteBuf) {
-        System.out.println("Encoding packet: " + packet.getClass().getSimpleName());
-        final int packetId =
-                NetworkHandler.getPacketRegistry().getPacketIdByClass(packet.getClass());
-        if (packetId == -1) {
-            System.out.println("Packet " + packet.getClass() + " was not registered");
+        final String packetName =
+                NetworkHandler.getPacketRegistry().getPacketName(packet.getClass());
+        if (packetName == null) {
+            NetworkHandler.getLogger().severe("Packet " + packet.getClass() + " was not registered");
             return;
         }
 
-        Packet.writeVarInt(packetId, byteBuf);
+        Packet.writeString(byteBuf, packetName);
         packet.write(byteBuf);
-        System.out.println("Encoded packet: " + byteBuf.toString());
     }
 }

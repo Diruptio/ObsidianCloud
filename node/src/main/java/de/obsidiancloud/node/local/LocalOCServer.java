@@ -81,6 +81,13 @@ public class LocalOCServer extends OCServer {
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getEnvironmentVariables());
+            builder.environment().put("OC_NODE_HOST", "127.0.0.1");
+            builder.environment()
+                    .put(
+                            "OC_NODE_PORT",
+                            String.valueOf(ObsidianCloudNode.getNetworkServer().getPort()));
+            builder.environment().put("OC_CLUSTERKEY", "testClusterKey");
+            builder.environment().put("OC_SERVER_NAME", getName());
             process = builder.start();
             process.onExit().thenRun(this::run);
             new ScreenThread().start();
@@ -140,6 +147,11 @@ public class LocalOCServer extends OCServer {
     }
 
     private class ScreenThread extends Thread {
+        public ScreenThread() {
+            setName("ScreenThread");
+            setDaemon(true);
+        }
+
         @Override
         public void run() {
             try (BufferedReader reader = process.inputReader()) {
