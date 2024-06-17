@@ -7,9 +7,18 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * The {@link ClientChannelHandler} is a {@link SimpleChannelInboundHandler} implementation for the
+ * client side.
+ */
 public class ClientChannelHandler extends SimpleChannelInboundHandler<Packet> {
     private final @NotNull Connection connection;
 
+    /**
+     * Create a new {@link ClientChannelHandler} with the given {@link Connection}.
+     *
+     * @param connection The connection
+     */
     public ClientChannelHandler(@NotNull Connection connection) {
         this.connection = connection;
     }

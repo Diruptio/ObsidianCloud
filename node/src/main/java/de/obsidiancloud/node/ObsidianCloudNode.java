@@ -71,7 +71,7 @@ public class ObsidianCloudNode {
             String name = localNode.getString("name", "Node-1");
             String host = localNode.getString("host", "0.0.0.0");
             int port = localNode.getInt("port", 3005);
-            networkServer = new NetworkServer(name, host, port, ObsidianCloudNode::clientConnected);
+            networkServer = new NetworkServer(host, port, ObsidianCloudNode::clientConnected);
             networkServer.start();
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);

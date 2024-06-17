@@ -35,7 +35,14 @@ public class NetworkHandler {
             (Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class);
     private static final @NotNull PacketRegistry packetRegistry = new PacketRegistry();
 
-    public static @NotNull Connection initializeClientConnection(String host, int port) {
+    /**
+     * Initialize a new client connection.
+     *
+     * @param host The host
+     * @param port The port
+     * @return The connection
+     */
+    public static @NotNull Connection initializeClientConnection(@NotNull String host, int port) {
         Connection connection = new Connection();
         Bootstrap bootstrap = buildClientBootstrap(connection);
         try {
@@ -46,6 +53,12 @@ public class NetworkHandler {
         return connection;
     }
 
+    /**
+     * Build a new server bootstrap.
+     *
+     * @param clientConnectedCallback The callback which is called when a client connects
+     * @return The server bootstrap
+     */
     public static @NotNull ServerBootstrap buildServerBootstrap(
             @NotNull Consumer<Connection> clientConnectedCallback) {
         return new ServerBootstrap()
@@ -68,6 +81,12 @@ public class NetworkHandler {
                         });
     }
 
+    /**
+     * Build a new client bootstrap.
+     *
+     * @param connection The connection
+     * @return The client bootstrap
+     */
     public static @NotNull Bootstrap buildClientBootstrap(@NotNull Connection connection) {
         return new Bootstrap()
                 .group(WORKER_GROUP)
@@ -82,10 +101,20 @@ public class NetworkHandler {
                         });
     }
 
+    /**
+     * Get the packet registry.
+     *
+     * @return The packet registry
+     */
     public static @NotNull PacketRegistry getPacketRegistry() {
         return packetRegistry;
     }
 
+    /**
+     * Get the logger of the network handler.
+     *
+     * @return The logger of the network handler
+     */
     public static @NotNull Logger getLogger() {
         return logger;
     }

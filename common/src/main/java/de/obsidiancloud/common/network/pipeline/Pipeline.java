@@ -12,13 +12,18 @@ import io.netty.handler.codec.LengthFieldPrepender;
  * @since 02.06.2024
  */
 public class Pipeline {
-
     private static final String FRAME_DECODER = "frameDecoder";
     private static final String DECODER = "decoder";
     private static final String FRAME_PREPENDER = "framePrepender";
     private static final String ENCODER = "encoder";
     private static final String HANDLER = "handler";
 
+    /**
+     * Prepare the pipeline for the given channel.
+     *
+     * @param channel The channel
+     * @param handler The handler
+     */
     public static void prepare(Channel channel, ChannelHandler handler) {
         channel.pipeline()
                 .addLast(FRAME_DECODER, new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
