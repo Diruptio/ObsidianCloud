@@ -43,9 +43,7 @@ public class Connection {
         }
     }
 
-    /**
-     * Close the connection.
-     */
+    /** Close the connection. */
     public void close() {
         if (channel != null) {
             channel.close();
