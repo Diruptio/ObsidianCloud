@@ -13,7 +13,6 @@ public abstract class OCServer {
     private LifecycleState lifecycleState;
     private Status status;
     private final boolean autoStart;
-    private final boolean autoDelete;
     private final String executable;
     private final int memory;
     private final List<String> jvmArgs;
@@ -23,7 +22,7 @@ public abstract class OCServer {
     private final List<OCPlayer> players;
 
     /**
-     * Constructs a new OCServer with the specified parameters.
+     * Create a new OCServer with the specified parameters.
      *
      * @param task The task which created the server
      * @param name The name of the server
@@ -31,7 +30,6 @@ public abstract class OCServer {
      * @param lifecycleState The lifecycle state of the server
      * @param status The status of the server
      * @param autoStart Whether the server should automatically start
-     * @param autoDelete Whether the server should be deleted when it is stopped
      * @param executable The java executable of the server
      * @param memory The amount of memory allocated to the server
      * @param jvmArgs The JVM arguments of the server
@@ -47,7 +45,6 @@ public abstract class OCServer {
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             boolean autoStart,
-            boolean autoDelete,
             @NotNull String executable,
             int memory,
             @NotNull List<String> jvmArgs,
@@ -61,7 +58,6 @@ public abstract class OCServer {
         this.lifecycleState = lifecycleState;
         this.status = status;
         this.autoStart = autoStart;
-        this.autoDelete = autoDelete;
         this.executable = executable;
         this.memory = memory;
         this.jvmArgs = jvmArgs;
@@ -157,15 +153,6 @@ public abstract class OCServer {
      */
     public boolean isAutoStart() {
         return autoStart;
-    }
-
-    /**
-     * Checks whether the server should be deleted when it is stopped.
-     *
-     * @return Returns whether the server should be deleted when it is stopped.
-     */
-    public boolean isAutoDelete() {
-        return autoDelete;
     }
 
     /**

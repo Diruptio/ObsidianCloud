@@ -3,6 +3,7 @@ package de.obsidiancloud.node.local;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -17,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LocalOCServer extends OCServer {
+    private final boolean autoDelete;
+    private Connection connection;
     private boolean screen = false;
     private Process process;
 
@@ -41,7 +44,6 @@ public class LocalOCServer extends OCServer {
                 lifecycleState,
                 status,
                 autoStart,
-                autoDelete,
                 executable,
                 memory,
                 jvmArgs,
@@ -49,6 +51,7 @@ public class LocalOCServer extends OCServer {
                 environmentVariables,
                 port,
                 new ArrayList<>());
+        this.autoDelete = autoDelete;
     }
 
     @Override
@@ -82,12 +85,12 @@ public class LocalOCServer extends OCServer {
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getEnvironmentVariables());
             builder.environment().put("OC_NODE_HOST", "127.0.0.1");
-            builder.environment()
-                    .put(
-                            "OC_NODE_PORT",
-                            String.valueOf(ObsidianCloudNode.getNetworkServer().getPort()));
-            builder.environment().put("OC_CLUSTERKEY", "testClusterKey");
+            int nodePort = ObsidianCloudNode.getNetworkServer().getPort();
+            builder.environment().put("OC_NODE_PORT", String.valueOf(nodePort));
+            builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
+            builder.environment().put("OC_SERVER_TASK", getTask());
             builder.environment().put("OC_SERVER_NAME", getName());
+            builder.environment().put("OC_SERVER_AUTOSTART", String.valueOf(isAutoStart()));
             process = builder.start();
             process.onExit().thenRun(this::run);
             new ScreenThread().start();
@@ -128,8 +131,25 @@ public class LocalOCServer extends OCServer {
         return ObsidianCloudAPI.get().getLocalNode();
     }
 
+    /**
+     * Check whether the server should be deleted automatically when it is stopped.
+     *
+     * @return true if the server should be deleted automatically, otherwise false
+     */
+    public boolean isAutoDelete() {
+        return autoDelete;
+    }
+
     public @NotNull Path getDirectory() {
         return Path.of("servers").resolve(getName());
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(@NotNull Connection connection) {
+        this.connection = connection;
     }
 
     private void run() {

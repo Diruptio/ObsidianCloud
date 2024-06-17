@@ -1,15 +1,13 @@
 package de.obsidiancloud.platform.remote;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.HashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
-    private final RemoteOCNode node;
+    private final @NotNull RemoteOCNode node;
 
     public RemoteOCServer(
             @Nullable String task,
@@ -18,13 +16,6 @@ public class RemoteOCServer extends OCServer {
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             boolean autoStart,
-            boolean autoDelete,
-            @NotNull String executable,
-            int memory,
-            @NotNull List<String> jvmArgs,
-            @NotNull List<String> args,
-            @NotNull Map<String, String> environmentVariables,
-            int port,
             @NotNull RemoteOCNode node) {
         super(
                 task,
@@ -33,13 +24,12 @@ public class RemoteOCServer extends OCServer {
                 lifecycleState,
                 status,
                 autoStart,
-                autoDelete,
-                executable,
-                memory,
-                jvmArgs,
-                args,
-                environmentVariables,
-                port,
+                "",
+                (int) Runtime.getRuntime().maxMemory(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new HashMap<>(),
+                -1,
                 new ArrayList<>());
         this.node = node;
     }
@@ -60,7 +50,7 @@ public class RemoteOCServer extends OCServer {
     }
 
     @Override
-    public @NotNull OCNode getNode() {
+    public @NotNull RemoteOCNode getNode() {
         return node;
     }
 }

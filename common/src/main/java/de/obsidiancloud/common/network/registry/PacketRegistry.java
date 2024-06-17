@@ -1,8 +1,6 @@
 package de.obsidiancloud.common.network.registry;
 
 import de.obsidiancloud.common.network.Packet;
-import de.obsidiancloud.common.network.packets.C2SHandshakePacket;
-import de.obsidiancloud.common.network.packets.S2CHandshakePacket;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -17,11 +15,6 @@ public class PacketRegistry {
             new ConcurrentHashMap<>();
     private final @NotNull Map<Class<? extends Packet>, String> classToName =
             new ConcurrentHashMap<>();
-
-    public void registerPackets() {
-        registerPacket(C2SHandshakePacket.class);
-        registerPacket(S2CHandshakePacket.class);
-    }
 
     public void registerPacket(@NotNull Class<? extends Packet> packetClass) {
         nameToClass.put(packetClass.getSimpleName(), packetClass);

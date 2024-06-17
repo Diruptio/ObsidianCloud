@@ -15,6 +15,7 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,7 +46,8 @@ public class NetworkHandler {
         return connection;
     }
 
-    public static @NotNull ServerBootstrap buildServerBootstrap() {
+    public static @NotNull ServerBootstrap buildServerBootstrap(
+            @NotNull Consumer<Connection> clientConnectedCallback) {
         return new ServerBootstrap()
                 .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
@@ -60,7 +62,8 @@ public class NetworkHandler {
                         new ChannelInitializer<>() {
                             @Override
                             protected void initChannel(Channel channel) {
-                                Pipeline.prepare(channel, new ServerChannelHandler());
+                                Pipeline.prepare(
+                                        channel, new ServerChannelHandler(clientConnectedCallback));
                             }
                         });
     }

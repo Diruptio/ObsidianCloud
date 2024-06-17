@@ -1,5 +1,7 @@
 package de.obsidiancloud.common.network;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * A packet listener
  *
@@ -13,5 +15,5 @@ public interface PacketListener<P extends Packet> {
      * @param packet The packet
      * @param connection The connection
      */
-    void handle(P packet, Connection connection);
+    void handle(@NotNull P packet, @NotNull Connection connection);
 }

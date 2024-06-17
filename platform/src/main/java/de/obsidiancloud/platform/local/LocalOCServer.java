@@ -1,11 +1,10 @@
 package de.obsidiancloud.platform.local;
 
-import de.obsidiancloud.common.OCNode;
-import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import java.util.List;
-import java.util.Map;
+import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
+import java.util.ArrayList;
+import java.util.HashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,15 +15,7 @@ public abstract class LocalOCServer extends OCServer {
             @NotNull Type type,
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
-            boolean autoStart,
-            boolean autoDelete,
-            @NotNull String executable,
-            int memory,
-            @NotNull List<String> jvmArgs,
-            @NotNull List<String> args,
-            @NotNull Map<String, String> environmentVariables,
-            int port,
-            @NotNull List<OCPlayer> players) {
+            boolean autoStart) {
         super(
                 task,
                 name,
@@ -32,14 +23,13 @@ public abstract class LocalOCServer extends OCServer {
                 lifecycleState,
                 status,
                 autoStart,
-                autoDelete,
-                executable,
-                memory,
-                jvmArgs,
-                args,
-                environmentVariables,
-                port,
-                players);
+                "",
+                (int) Runtime.getRuntime().maxMemory(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new HashMap<>(),
+                -1,
+                new ArrayList<>());
     }
 
     @Override
@@ -51,7 +41,7 @@ public abstract class LocalOCServer extends OCServer {
     }
 
     @Override
-    public @NotNull OCNode getNode() {
-        return ObsidianCloudAPI.get().getLocalNode();
+    public @NotNull RemoteLocalOCNode getNode() {
+        return (RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode();
     }
 }

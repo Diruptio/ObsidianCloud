@@ -5,6 +5,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ServerChannel;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +17,7 @@ public class NetworkServer extends Thread {
     private final @NotNull String name;
     private final @NotNull String host;
     private final int port;
+    private final @NotNull Consumer<Connection> clientConnectedCallback;
     private final @NotNull List<Connection> connections = new CopyOnWriteArrayList<>();
     private ServerChannel channel;
 
@@ -25,17 +27,23 @@ public class NetworkServer extends Thread {
      * @param host The host
      * @param port The port
      */
-    public NetworkServer(@NotNull String name, @NotNull String host, int port) {
+    public NetworkServer(
+            @NotNull String name,
+            @NotNull String host,
+            int port,
+            @NotNull Consumer<Connection> clientConnectedCallback) {
         this.name = name;
         this.host = host;
         this.port = port;
+        this.clientConnectedCallback = clientConnectedCallback;
         setName("NetworkServer");
     }
 
     @Override
     public void run() {
         try {
-            ServerBootstrap serverBootstrap = NetworkHandler.buildServerBootstrap();
+            ServerBootstrap serverBootstrap =
+                    NetworkHandler.buildServerBootstrap(clientConnectedCallback);
 
             ChannelFuture f = serverBootstrap.bind(host, port).sync();
             logger.log(Level.INFO, "ObsidianCloud Server started on %s:%d".formatted(host, port));

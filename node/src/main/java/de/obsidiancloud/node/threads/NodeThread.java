@@ -1,15 +1,15 @@
 package de.obsidiancloud.node.threads;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import org.jetbrains.annotations.NotNull;
 
 public class NodeThread extends Thread {
     private final ObsidianCloudAPI api = ObsidianCloudAPI.get();
-    private final OCNode localNode = api.getLocalNode();
+    private final LocalOCNode localNode = (LocalOCNode) api.getLocalNode();
 
     @Override
     public void run() {
@@ -90,9 +90,10 @@ public class NodeThread extends Thread {
 
     private void deleteServers() {
         for (OCServer server : localNode.getServers()) {
+            LocalOCServer localServer = (LocalOCServer) server;
             if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
-                    && server.isAutoDelete()) {
-                new ServerDeleteThread((LocalOCServer) server).run();
+                    && localServer.isAutoDelete()) {
+                new ServerDeleteThread(localServer).run();
             }
         }
     }

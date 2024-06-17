@@ -6,20 +6,14 @@ import org.jetbrains.annotations.NotNull;
 /** Represents a node in the cluster. */
 public abstract class OCNode {
     private final @NotNull String name;
-    private final @NotNull String host;
-    private final int port;
 
     /**
      * Create a new node.
      *
      * @param name The name of the node.
-     * @param host The host of the node.
-     * @param port The port of the node.
      */
-    public OCNode(@NotNull String name, @NotNull String host, int port) {
+    public OCNode(@NotNull String name) {
         this.name = name;
-        this.host = host;
-        this.port = port;
     }
 
     /**
@@ -44,23 +38,5 @@ public abstract class OCNode {
      */
     public @NotNull String getName() {
         return name;
-    }
-
-    /**
-     * Gets the host of the node.
-     *
-     * @return Returns the host of the node.
-     */
-    public @NotNull String getHost() {
-        return host;
-    }
-
-    /**
-     * Gets the port of the node.
-     *
-     * @return Returns the port of the node.
-     */
-    public int getPort() {
-        return port;
     }
 }

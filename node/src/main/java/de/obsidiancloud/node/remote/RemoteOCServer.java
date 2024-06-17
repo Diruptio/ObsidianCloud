@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
-    private final RemoteOCNode node;
+    private final @NotNull RemoteOCNode node;
 
     public RemoteOCServer(
             @Nullable String task,
@@ -18,7 +18,6 @@ public class RemoteOCServer extends OCServer {
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             boolean autoStart,
-            boolean autoDelete,
             @NotNull String executable,
             int memory,
             @NotNull List<String> jvmArgs,
@@ -33,7 +32,6 @@ public class RemoteOCServer extends OCServer {
                 lifecycleState,
                 status,
                 autoStart,
-                autoDelete,
                 executable,
                 memory,
                 jvmArgs,
