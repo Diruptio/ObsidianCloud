@@ -3,11 +3,17 @@ package de.obsidiancloud.platform.paper.local;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.platform.paper.ObsidianCloudPaper;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A player on the local server.
+ */
 public class LocalPaperOCPlayer extends OCPlayer {
     private final @NotNull Player player;
 
@@ -37,11 +43,12 @@ public class LocalPaperOCPlayer extends OCPlayer {
     }
 
     @Override
-    public void disconnect(@Nullable Component message) {
+    public void kick(@Nullable Component message) {
+        Plugin plugin = ObsidianCloudPaper.getInstance();
         if (message == null) {
-            player.kick();
+            Bukkit.getScheduler().runTask(plugin, () -> player.kick());
         } else {
-            player.kick(message);
+            Bukkit.getScheduler().runTask(plugin, () -> player.kick(message));
         }
     }
 
