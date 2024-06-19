@@ -1,5 +1,6 @@
 package de.obsidiancloud.platform.remote;
 
+import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import java.util.UUID;
@@ -8,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCPlayer extends OCPlayer {
-    private final @NotNull RemoteOCNode node;
+    private final @NotNull OCNode node;
 
-    public RemoteOCPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull RemoteOCNode node) {
+    public RemoteOCPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull OCNode node) {
         super(uuid, name);
         this.node = node;
     }
