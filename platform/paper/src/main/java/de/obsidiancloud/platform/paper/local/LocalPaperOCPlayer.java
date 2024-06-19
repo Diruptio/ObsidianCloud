@@ -11,9 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A player on the local server.
- */
+/** A player on the local server. */
 public class LocalPaperOCPlayer extends OCPlayer {
     private final @NotNull Player player;
 

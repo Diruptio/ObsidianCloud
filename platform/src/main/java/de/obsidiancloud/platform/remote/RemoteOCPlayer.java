@@ -3,19 +3,16 @@ package de.obsidiancloud.platform.remote;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
-import java.util.UUID;
-
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import de.obsidiancloud.platform.PlatformObsidianCloudAPI;
+import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/**
- * A player on a remote server.
- */
+/** A player on a remote server. */
 public class RemoteOCPlayer extends OCPlayer {
     private final @NotNull OCNode node;
 
