@@ -41,7 +41,7 @@ public class RemoteLocalOCNode extends OCNode {
 
     @Override
     @SuppressWarnings("unchecked")
-    public @NotNull List<OCServer> getServers() {
+    public List<OCServer> getServers() {
         List<OCServer> servers = new ArrayList<>();
         servers.add(localServer);
         servers.addAll(remoteServers);
