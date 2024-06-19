@@ -13,7 +13,6 @@ public abstract class OCServer {
     private LifecycleState lifecycleState;
     private Status status;
     private final boolean autoStart;
-    private final boolean autoDelete;
     private final String executable;
     private final int memory;
     private final List<String> jvmArgs;
@@ -23,7 +22,7 @@ public abstract class OCServer {
     private final List<OCPlayer> players;
 
     /**
-     * Constructs a new OCServer with the specified parameters.
+     * Create a new OCServer with the specified parameters.
      *
      * @param task The task which created the server
      * @param name The name of the server
@@ -31,7 +30,6 @@ public abstract class OCServer {
      * @param lifecycleState The lifecycle state of the server
      * @param status The status of the server
      * @param autoStart Whether the server should automatically start
-     * @param autoDelete Whether the server should be deleted when it is stopped
      * @param executable The java executable of the server
      * @param memory The amount of memory allocated to the server
      * @param jvmArgs The JVM arguments of the server
@@ -47,7 +45,6 @@ public abstract class OCServer {
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             boolean autoStart,
-            boolean autoDelete,
             @NotNull String executable,
             int memory,
             @NotNull List<String> jvmArgs,
@@ -61,7 +58,6 @@ public abstract class OCServer {
         this.lifecycleState = lifecycleState;
         this.status = status;
         this.autoStart = autoStart;
-        this.autoDelete = autoDelete;
         this.executable = executable;
         this.memory = memory;
         this.jvmArgs = jvmArgs;
@@ -160,15 +156,6 @@ public abstract class OCServer {
     }
 
     /**
-     * Checks whether the server should be deleted when it is stopped.
-     *
-     * @return Returns whether the server should be deleted when it is stopped.
-     */
-    public boolean isAutoDelete() {
-        return autoDelete;
-    }
-
-    /**
      * Gets the java executable of the server.
      *
      * @return Returns the java executable of the server.
@@ -234,23 +221,25 @@ public abstract class OCServer {
     /** Represents the type of a server. */
     public enum Type {
         /** Represents a paper server. */
-        PAPER(false, "stop"),
+        PAPER(false, "stop", "platform/paper"),
 
         /** Represents a fabric server. */
-        FABRIC(false, "stop"),
+        FABRIC(false, "stop", "platform/fabric"),
 
         /** Represents a forge server. */
-        FORGE(false, "stop"),
+        FORGE(false, "stop", "platform/forge"),
 
         /** Represents a velocity server. */
-        VELOCITY(true, "shutdown");
+        VELOCITY(true, "shutdown", "platform/velocity");
 
         private final boolean proxy;
         private final String stopCommand;
+        private final String template;
 
-        Type(boolean proxy, @NotNull String stopCommand) {
+        Type(boolean proxy, @NotNull String stopCommand, @NotNull String template) {
             this.proxy = proxy;
             this.stopCommand = stopCommand;
+            this.template = template;
         }
 
         /**
@@ -269,6 +258,15 @@ public abstract class OCServer {
          */
         public @NotNull String getStopCommand() {
             return stopCommand;
+        }
+
+        /**
+         * Gets the template of the server.
+         *
+         * @return Returns the template of the server.
+         */
+        public @NotNull String getTemplate() {
+            return template;
         }
     }
 

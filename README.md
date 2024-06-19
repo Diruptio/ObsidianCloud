@@ -6,9 +6,10 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 - Java 17
 - Windows/Linux
 ## Goals
-- [x] Single Node support
-- [ ] Multi Node support
-- [x] Paper, Purpur support
-- [ ] Fabric support
-- [ ] Forge support
-- [ ] Velocity support
+- [x] Single Node
+- [ ] Multi Node
+- [x] Paper
+- [ ] Fabric
+- [ ] Forge
+- [ ] Velocity
+- [ ] Minestorm

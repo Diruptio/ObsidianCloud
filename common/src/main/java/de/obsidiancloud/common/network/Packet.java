@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** A packet that can be sent over the network */
 public abstract class Packet {
     /**
      * Write the packet to the byte buffer

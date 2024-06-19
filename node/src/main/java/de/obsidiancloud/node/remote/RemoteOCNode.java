@@ -2,30 +2,43 @@ package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.network.Connection;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 public class RemoteOCNode extends OCNode {
+    private Connection connection = null;
     private final List<RemoteOCServer> servers;
 
-    public RemoteOCNode(
-            @NotNull String name,
-            @NotNull String host,
-            int port,
-            @NotNull List<RemoteOCServer> servers) {
-        super(name, host, port);
+    public RemoteOCNode(@NotNull String name, @NotNull List<RemoteOCServer> servers) {
+        super(name);
         this.servers = servers;
     }
 
     @Override
     public boolean isConnected() {
-        // TODO: Check connection
-        return false;
+        return connection != null && connection.isConnected();
+    }
+
+    public @NotNull Connection getConnection() {
+        if (connection == null) {
+            throw new IllegalStateException("The connection is not established yet.");
+        } else {
+            return connection;
+        }
+    }
+
+    public void setConnection(@NotNull Connection connection) {
+        this.connection = connection;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public @NotNull List<OCServer> getServers() {
-        return isConnected() ? (List<OCServer>) (List<?>) servers : null;
+        if (isConnected()) {
+            return (List<OCServer>) (List<?>) servers;
+        } else {
+            throw new IllegalStateException("The connection is not established yet.");
+        }
     }
 }

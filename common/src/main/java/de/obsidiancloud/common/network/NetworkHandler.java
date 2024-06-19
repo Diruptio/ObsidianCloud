@@ -15,6 +15,7 @@ import io.netty.channel.epoll.EpollSocketChannel;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import java.util.function.Consumer;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,7 +35,14 @@ public class NetworkHandler {
             (Epoll.isAvailable() ? EpollSocketChannel.class : NioSocketChannel.class);
     private static final @NotNull PacketRegistry packetRegistry = new PacketRegistry();
 
-    public static @NotNull Connection initializeClientConnection(String host, int port) {
+    /**
+     * Initialize a new client connection.
+     *
+     * @param host The host
+     * @param port The port
+     * @return The connection
+     */
+    public static @NotNull Connection initializeClientConnection(@NotNull String host, int port) {
         Connection connection = new Connection();
         Bootstrap bootstrap = buildClientBootstrap(connection);
         try {
@@ -45,7 +53,14 @@ public class NetworkHandler {
         return connection;
     }
 
-    public static @NotNull ServerBootstrap buildServerBootstrap() {
+    /**
+     * Build a new server bootstrap.
+     *
+     * @param clientConnectedCallback The callback which is called when a client connects
+     * @return The server bootstrap
+     */
+    public static @NotNull ServerBootstrap buildServerBootstrap(
+            @NotNull Consumer<Connection> clientConnectedCallback) {
         return new ServerBootstrap()
                 .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
@@ -60,11 +75,18 @@ public class NetworkHandler {
                         new ChannelInitializer<>() {
                             @Override
                             protected void initChannel(Channel channel) {
-                                Pipeline.prepare(channel, new ServerChannelHandler());
+                                Pipeline.prepare(
+                                        channel, new ServerChannelHandler(clientConnectedCallback));
                             }
                         });
     }
 
+    /**
+     * Build a new client bootstrap.
+     *
+     * @param connection The connection
+     * @return The client bootstrap
+     */
     public static @NotNull Bootstrap buildClientBootstrap(@NotNull Connection connection) {
         return new Bootstrap()
                 .group(WORKER_GROUP)
@@ -79,10 +101,20 @@ public class NetworkHandler {
                         });
     }
 
+    /**
+     * Get the packet registry.
+     *
+     * @return The packet registry
+     */
     public static @NotNull PacketRegistry getPacketRegistry() {
         return packetRegistry;
     }
 
+    /**
+     * Get the logger of the network handler.
+     *
+     * @return The logger of the network handler
+     */
     public static @NotNull Logger getLogger() {
         return logger;
     }

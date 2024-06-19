@@ -10,7 +10,7 @@ public interface CommandExecutor {
      *
      * @param line The command line
      */
-    public default void execute(@NotNull String line) {
+    default void execute(@NotNull String line) {
         String[] parts = line.split(" ");
         Command command = Command.getCommand(parts[0]);
         if (command == null) {
@@ -27,21 +27,21 @@ public interface CommandExecutor {
      *
      * @param message The message to send
      */
-    public void sendMessage(@NotNull Component message);
+    void sendMessage(@NotNull Component message);
 
     /**
      * Gets the command prefix {@code ConsoleCommand}
      *
      * @return The command prefix
      */
-    public String getCommandPrefix();
+    String getCommandPrefix();
 
     /**
      * Sends a message to the command executor
      *
      * @param message The message to send
      */
-    public default void sendMessage(@NotNull String message) {
+    default void sendMessage(@NotNull String message) {
         sendMessage(LegacyComponentSerializer.legacySection().deserialize(message));
     }
 }

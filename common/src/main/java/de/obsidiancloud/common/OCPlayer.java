@@ -34,21 +34,21 @@ public abstract class OCPlayer implements CommandExecutor {
      *
      * @return Returns the server of this player.
      */
-    public abstract @Nullable OCServer getSerer();
+    public abstract @Nullable OCServer getServer();
 
     /**
      * Connects the player to the given server.
      *
      * @param server The server to connect to
      */
-    public abstract void connect(OCServer server);
+    public abstract void connect(@NotNull OCServer server);
 
     /**
      * Kicks the player from the network.
      *
      * @param message The kick reason
      */
-    public abstract void disconnect(Component message);
+    public abstract void disconnect(@Nullable Component message);
 
     /**
      * Gets the uuid of this player.

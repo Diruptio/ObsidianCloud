@@ -1,6 +1,6 @@
-package de.obsidiancloud.common.network.packets;
+package de.obsidiancloud.platform.network.packets;
 
-import de.obsidiancloud.common.network.Packet;
+import de.obsidiancloud.common.network.WritablePacket;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Miles
  * @since 08.06.2024
  */
-public class C2SHandshakePacket extends Packet {
+public class S2NHandshakePacket extends WritablePacket {
     private String clusterKey;
     private String name;
 
@@ -20,21 +20,6 @@ public class C2SHandshakePacket extends Packet {
         writeString(byteBuf, name);
     }
 
-    @Override
-    public void read(@NotNull ByteBuf byteBuf) {
-        clusterKey = readString(byteBuf);
-        name = readString(byteBuf);
-    }
-
-    /**
-     * Gets the cluster key
-     *
-     * @return The cluster key
-     */
-    public String getClusterKey() {
-        return clusterKey;
-    }
-
     /**
      * Sets the cluster key
      *
@@ -42,15 +27,6 @@ public class C2SHandshakePacket extends Packet {
      */
     public void setClusterKey(String clusterKey) {
         this.clusterKey = clusterKey;
-    }
-
-    /**
-     * Gets the name
-     *
-     * @return The name
-     */
-    public String getName() {
-        return name;
     }
 
     /**

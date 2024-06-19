@@ -3,6 +3,7 @@ package de.obsidiancloud.common.network;
 import de.obsidiancloud.common.network.packets.C2STestPacket;
 import de.obsidiancloud.common.network.packets.S2CTestPacket;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -28,11 +29,11 @@ public class ConnectionTest {
 
     private static class C2STestListener implements PacketListener<C2STestPacket> {
         @Override
-        public void handle(C2STestPacket packet, Connection connection) {}
+        public void handle(@NotNull C2STestPacket packet, @NotNull Connection connection) {}
     }
 
     private static class S2CTestListener implements PacketListener<S2CTestPacket> {
         @Override
-        public void handle(S2CTestPacket packet, Connection connection) {}
+        public void handle(@NotNull S2CTestPacket packet, @NotNull Connection connection) {}
     }
 }

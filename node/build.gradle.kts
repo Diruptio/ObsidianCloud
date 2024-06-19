@@ -13,8 +13,31 @@ dependencies {
     implementation("org.springframework:spring-core:6.1.7")
 }
 
+val addPlatformJars =
+    tasks.register<Copy>("addPlatformJars") {
+        val paperTask = project(":platform:paper").tasks.named("reobfJar").get()
+        dependsOn(paperTask)
+        doFirst { delete(layout.buildDirectory.dir("generated/sources/resources").get()) }
+        from(paperTask.outputs)
+        into(layout.buildDirectory.dir("generated/sources/resources"))
+    }
+sourceSets.main.get().resources.srcDir(addPlatformJars.map { it.outputs })
+
+val generateSources =
+    tasks.register<Copy>("generateSources") {
+        val paperTask = project(":platform:paper").tasks.named("reobfJar").get()
+        dependsOn(paperTask)
+        doFirst { delete(layout.buildDirectory.dir("generated/sources/java").get()) }
+        from(file("src/main/templates"))
+        into(layout.buildDirectory.dir("generated/sources/java"))
+        expand(mapOf("paper_platform_file" to paperTask.outputs.files.first().name))
+    }
+sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
+
 tasks {
     compileJava {
+        dependsOn(addPlatformJars)
+        dependsOn(generateSources)
         options.encoding = "UTF-8"
         options.release = 17
     }
