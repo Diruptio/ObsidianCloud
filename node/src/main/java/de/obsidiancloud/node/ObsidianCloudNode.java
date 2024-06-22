@@ -13,6 +13,7 @@ import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
+import de.obsidiancloud.common.network.packets.CustomMessagePacket;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import de.obsidiancloud.node.command.KickCommand;
@@ -183,6 +184,7 @@ public class ObsidianCloudNode {
     }
 
     private static void registerPackets() {
+        NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);

@@ -5,6 +5,7 @@ import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.listener.PlayerKickListener;
 import de.obsidiancloud.common.network.listener.PlayerMessageListener;
+import de.obsidiancloud.common.network.packets.CustomMessagePacket;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
@@ -26,6 +27,7 @@ public class ObsidianCloudPlatform {
     }
 
     private static void registerPackets() {
+        NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
