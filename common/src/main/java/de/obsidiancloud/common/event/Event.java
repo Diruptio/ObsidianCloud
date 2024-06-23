@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.Event;
+package de.obsidiancloud.common.event;
 
 import java.util.*;
 

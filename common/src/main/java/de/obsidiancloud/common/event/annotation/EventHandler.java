@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.Event.annotation;
+package de.obsidiancloud.common.event.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

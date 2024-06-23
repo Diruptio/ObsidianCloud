@@ -1,6 +1,6 @@
-package de.obsidiancloud.common.Event;
+package de.obsidiancloud.common.event;
 
-import de.obsidiancloud.common.Event.annotation.EventHandler;
+import de.obsidiancloud.common.event.annotation.EventHandler;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
