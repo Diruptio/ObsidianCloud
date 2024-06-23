@@ -84,7 +84,7 @@ public class PurpurTemplate extends OCTemplate {
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
-            if (reader.readLine().matches(".*Done.*For help, type \"help\"")) {
+            if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
                 process.getOutputStream().write("stop\n".getBytes());
                 process.getOutputStream().flush();
                 break;
