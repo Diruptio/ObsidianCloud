@@ -39,15 +39,18 @@ public class HelpCommand extends Command {
             else {
                 executor.sendMessage("§f§nHelp for " + command.getName() + ":");
                 executor.sendMessage("  §7Name: §b" + command.getName());
-                if (command.getAliases().length > 0)
+                if (command.getAliases().length > 0) {
                     executor.sendMessage(
                             "  §7Aliases: [§b"
                                     + String.join("§7, §b", command.getAliases())
                                     + "§7]");
-                if (command.getUsage() != null)
-                    executor.sendMessage("  §7Usage: §b" + command.getUsage());
-                if (command.getDescription() != null)
+                }
+                if (command.getUsage(executor) != null) {
+                    executor.sendMessage("  §7Usage: §b" + command.getUsage(executor));
+                }
+                if (command.getDescription() != null) {
                     executor.sendMessage("  §7Description: §b" + command.getDescription());
+                }
             }
         }
     }
