@@ -13,7 +13,7 @@ dependencies {
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0")
-    implementation("org.jline:jline:3.26.1")
+    implementation("org.jline:jline:3.26.2")
     implementation("io.netty:netty-all:4.1.110.Final")
     implementation("com.google.guava:guava:31.1-jre")
 
