@@ -20,6 +20,7 @@ public abstract class OCServer {
     private final Map<String, String> environmentVariables;
     private final int port;
     private final List<OCPlayer> players;
+    private boolean shouldBeRegisteredInProxy; // still need to implement that
 
     /**
      * Create a new OCServer with the specified parameters.
@@ -100,7 +101,6 @@ public abstract class OCServer {
     public @NotNull String getName() {
         return name;
     }
-
     /**
      * Gets the type of the server.
      *
@@ -155,6 +155,12 @@ public abstract class OCServer {
         return autoStart;
     }
 
+    /**
+     * @return whether the Server should automatically be registered in the Proxy or not.
+     */
+    public boolean shouldBeRegisteredInProxy() {
+        return shouldBeRegisteredInProxy;
+    }
     /**
      * Gets the java executable of the server.
      *

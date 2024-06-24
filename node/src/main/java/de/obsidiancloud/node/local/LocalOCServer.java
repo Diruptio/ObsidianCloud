@@ -186,4 +186,8 @@ public class LocalOCServer extends OCServer {
             }
         }
     }
+
+    public Process getProcess() {
+        return process;
+    }
 }
