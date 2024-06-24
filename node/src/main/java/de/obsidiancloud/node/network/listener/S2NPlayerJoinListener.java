@@ -15,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 public class S2NPlayerJoinListener implements PacketListener<S2NPlayerJoinPacket> {
     @Override
     public void handle(@NotNull S2NPlayerJoinPacket packet, @NotNull Connection connection) {
-        System.out.println(packet.getName() + " joined the network.");
         NodeObsidianCloudAPI api = (NodeObsidianCloudAPI) ObsidianCloudAPI.get();
         Optional<OCServer> server = api.getServer(connection);
         if (server.isPresent()) {

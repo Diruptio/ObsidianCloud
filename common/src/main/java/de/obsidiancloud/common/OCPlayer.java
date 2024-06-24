@@ -48,7 +48,7 @@ public abstract class OCPlayer implements CommandExecutor {
      *
      * @param message The kick reason
      */
-    public abstract void disconnect(@Nullable Component message);
+    public abstract void kick(@Nullable Component message);
 
     /**
      * Gets the uuid of this player.
