@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("org.springframework:spring-core:6.1.7")
+    implementation("org.springframework:spring-core:6.1.10")
 }
 
 val addPlatformJars =
