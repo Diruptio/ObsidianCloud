@@ -2,7 +2,7 @@ package de.obsidiancloud.node.local.template.velocity;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.AikarsFlags;
+import de.obsidiancloud.node.util.Flags;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.FileSystemUtils;
 
@@ -74,7 +74,7 @@ public class VelocityTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(AikarsFlags.DEFAULT));
+        command.addAll(List.of(Flags.VELOCITY));
         command.add("-jar");
         command.add("server.jar");
 

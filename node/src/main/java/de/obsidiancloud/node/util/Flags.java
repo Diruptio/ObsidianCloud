@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.util;
 
-public class AikarsFlags {
+public class Flags {
     /** The default flags for the JVM. */
     public static final String[] DEFAULT =
             new String[] {
@@ -24,5 +24,13 @@ public class AikarsFlags {
                 "-XX:MaxTenuringThreshold=1",
                 "-Dusing.aikars.flags=https://mcflags.emc.gs",
                 "-Daikars.new.flags=true"
+            };
+    public static final String[] VELOCITY =
+            new String[] {
+                    "-XX:+UseG1GC",
+                    "-XX:G1HeapRegionSize=4M",
+                    "-XX:+UnlockExperimentalVMOptions",
+                    "-XX:+ParallelRefProcEnabled",
+                    "-XX:+AlwaysPreTouch"
             };
 }

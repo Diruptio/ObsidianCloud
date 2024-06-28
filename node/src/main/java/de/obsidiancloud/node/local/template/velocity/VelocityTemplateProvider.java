@@ -23,7 +23,7 @@ public class VelocityTemplateProvider implements TemplateProvider {
 
     public VelocityTemplateProvider() {
         try {
-            String url = "https://papermc.io/api/v2/projects/paper";
+            String url = "https://papermc.io/api/v2/projects/velocity";
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
             con.setConnectTimeout(5000);
             con.setReadTimeout(5000);

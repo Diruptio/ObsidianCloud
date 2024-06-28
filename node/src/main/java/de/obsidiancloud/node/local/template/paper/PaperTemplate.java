@@ -2,7 +2,7 @@ package de.obsidiancloud.node.local.template.paper;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.AikarsFlags;
+import de.obsidiancloud.node.util.Flags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -72,7 +72,7 @@ public class PaperTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(AikarsFlags.DEFAULT));
+        command.addAll(List.of(Flags.DEFAULT));
         command.add("-jar");
         command.add("server.jar");
 
