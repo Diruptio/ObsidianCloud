@@ -5,9 +5,8 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.BaseCommandProvider;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.impl.HelpCommand;
-import de.obsidiancloud.common.config.Config;
-import de.obsidiancloud.common.config.ConfigProperty;
-import de.obsidiancloud.common.config.ConfigSection;
+import de.obsidiancloud.node.config.Config;
+import de.obsidiancloud.node.config.ConfigSection;
 import de.obsidiancloud.common.console.Console;
 import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
@@ -44,7 +43,7 @@ public class ObsidianCloudNode {
     private static final ConsoleCommandExecutor executor = new ConsoleCommandExecutor(logger);
     private static Console console;
     private static Config config;
-    private static ConfigProperty<String> clusterKey;
+    private static String clusterKey;
     private static NodeObsidianCloudAPI api;
     private static final BaseCommandProvider commandProvider = new BaseCommandProvider();
     private static final List<TemplateProvider> templateProviders = new ArrayList<>();
@@ -59,6 +58,7 @@ public class ObsidianCloudNode {
             console = new Console(logger, executor);
             console.start();
             loadConfig();
+            clusterKey = config.getString("clusterkey");
             List<LocalOCServer> servers = loadServersConfig();
             api = new NodeObsidianCloudAPI(loadLocalNode(servers));
             ObsidianCloudAPI.setInstance(api);
@@ -86,8 +86,7 @@ public class ObsidianCloudNode {
         config = new Config(Path.of("config.yml"), Config.Type.YAML);
         StringBuilder clusterKey = new StringBuilder();
         for (int i = 0; i < 32; i++) clusterKey.append((char) ('a' + new Random().nextInt(26)));
-        ObsidianCloudNode.clusterKey =
-                new ConfigProperty<>(config, "clusterkey", clusterKey.toString());
+        config.setDefault("clusterkey", clusterKey.toString());
         config.setDefault("local_node", new HashMap<>());
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         localNode.setDefault("name", "Node-1");
@@ -206,7 +205,7 @@ public class ObsidianCloudNode {
      *
      * @return The cluster key config property.
      */
-    public static @NotNull ConfigProperty<String> getClusterKey() {
+    public static @NotNull String getClusterKey() {
         return clusterKey;
     }
 

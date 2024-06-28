@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.config.serializer;
+package de.obsidiancloud.node.config.serializer;
 
 import com.google.gson.GsonBuilder;
 import java.util.Map;

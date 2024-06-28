@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.config.serializer;
+package de.obsidiancloud.node.config.serializer;
 
 import java.util.Map;
 

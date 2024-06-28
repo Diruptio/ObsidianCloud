@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.config;
+package de.obsidiancloud.node.config;
 
 import java.util.List;
 import java.util.Map;
