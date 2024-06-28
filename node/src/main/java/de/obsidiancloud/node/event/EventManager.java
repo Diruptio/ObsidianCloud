@@ -1,9 +1,10 @@
-package de.obsidiancloud.common.event;
+package de.obsidiancloud.node.event;
 
-import de.obsidiancloud.common.event.annotation.EventHandler;
+import de.obsidiancloud.node.event.annotation.EventHandler;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.jetbrains.annotations.NotNull;
 
 public class EventManager {
