@@ -1,28 +1,55 @@
 package de.obsidiancloud.node.module;
 
+import com.google.common.collect.ImmutableList;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.yaml.snakeyaml.Yaml;
 
-/**
- * The module loader loads and unloads modules
- */
+/** The module loader loads and unloads modules */
 public class ModuleLoader {
     private static final List<ModuleManifest> manifests = new ArrayList<>();
 
+    /**
+     * Gets all loaded manifests
+     *
+     * @return All loaded manifests
+     */
+    public static @NotNull List<ModuleManifest> getManifests() {
+        return manifests;
+    }
+
+    /**
+     * Gets all loaded modules
+     *
+     * @return All loaded modules
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull List<Module> getModules() {
+        ImmutableList.Builder<Module> modules = ImmutableList.builder();
+        for (ModuleManifest manifest : manifests) {
+            modules.add(manifest.getInstance());
+        }
+        return modules.build();
+    }
+
+    /**
+     * Gets a module by its name
+     *
+     * @param name The name of the module
+     * @return The module or null if the module is not loaded
+     */
     public static @Nullable Module getModule(@NotNull String name) {
         for (ModuleManifest manifest : manifests) {
             if (manifest.getName().equals(name)) {
@@ -33,10 +60,10 @@ public class ModuleLoader {
     }
 
     /**
-     * Loads all addons from a directory
+     * Loads all modules from a directory
      *
      * @param directory The directory to load
-     * @throws IOException If an error occurs while loading the addons
+     * @throws IOException If an error occurs while loading the modules
      */
     public static void loadModules(@NotNull Path directory, @NotNull Logger logger)
             throws IOException {
@@ -51,8 +78,8 @@ public class ModuleLoader {
             }
             try {
                 manifests.add(ModuleManifest.loadManifest(file));
-            } catch (Exception exception) {
-                logger.throwing(ModuleLoader.class.getName(), "enableAddons", exception);
+            } catch (Throwable exception) {
+                logger.log(Level.SEVERE, "An error occurred while loading " + file, exception);
             }
         }
         ModuleLoader.manifests.addAll(manifests);
@@ -61,16 +88,16 @@ public class ModuleLoader {
                 manifest -> {
                     if (manifest.getDependencies().contains(manifest.getName())) {
                         logger.warning(
-                                "Addon \"" + manifest.getName() + "\" has a dependency to itself");
+                                "Module \"" + manifest.getName() + "\" has a dependency to itself");
                         return true;
                     }
                     for (ModuleManifest manifest2 : manifests) {
                         if (manifest.getDependencies().contains(manifest2.getName())
                                 && manifest2.getDependencies().contains(manifest.getName())) {
                             logger.warning(
-                                    "Addon \""
+                                    "Module \""
                                             + manifest.getName()
-                                            + "\" and addon \""
+                                            + "\" and module \""
                                             + manifest2.getName()
                                             + "\" have a dependency to each other");
                             return true;
@@ -79,21 +106,22 @@ public class ModuleLoader {
                     return false;
                 });
 
-        for (ModuleManifest manifest : sortAddons(manifests)) {
-            ModuleLoader.enableAddon(manifest, logger);
+        for (ModuleManifest manifest : sortModules(manifests)) {
+            ModuleLoader.enableModule(manifest, logger);
         }
     }
 
-    /** Disables all addons */
-    public static void disableAddons(@NotNull Logger logger) {
+    /** Disables all modules */
+    public static void disableModules(@NotNull Logger logger) {
         List<ModuleManifest> sorted = new ArrayList<>(manifests);
         Collections.reverse(sorted);
         for (ModuleManifest manifest : sorted) {
-            if (manifest.isEnabled()) disableAddon(manifest, logger);
+            if (manifest.isEnabled()) disableModule(manifest, logger);
         }
     }
 
-    private static @NotNull List<ModuleManifest> sortAddons(@NotNull List<ModuleManifest> manifests) {
+    private static @NotNull List<ModuleManifest> sortModules(
+            @NotNull List<ModuleManifest> manifests) {
         List<ModuleManifest> sorted = new ArrayList<>();
         for (ModuleManifest manifest : manifests) {
             int priority = 0;
@@ -111,130 +139,133 @@ public class ModuleLoader {
     }
 
     /**
-     * Enables an addon
+     * Enables a module
      *
-     * @param manifest The manifest of the addon to enable
+     * @param manifest The manifest of the module to enable
      */
-    public static boolean enableAddon(@NotNull ModuleManifest manifest, Logger logger) {
+    public static void enableModule(@NotNull ModuleManifest manifest, Logger logger) {
         try {
-            logger.info("Enabling addon \"" + manifest.getName() + "\"");
             for (String dependency : manifest.getDependencies()) {
                 if (getModule(dependency) == null) {
-                    return false;
+                    logger.warning(
+                            "Module \""
+                                    + manifest.getName()
+                                    + "\" has a dependency to \""
+                                    + dependency
+                                    + "\" which is not loaded");
+                    return;
                 }
             }
+            logger.info("Enabling module \"" + manifest.getName() + "\"");
             if (!manifest.isEnabled()) {
                 loadClasses(manifest);
             }
             manifest.getInstance().onEnable();
-            return true;
         } catch (Exception exception) {
-            logger.throwing(
-                    ModuleLoader.class.getName(),
-                    "enableAddon",
-                    new Exception(
-                            "An error ocurred while enabling " + manifest.getName(), exception));
-            disableAddon(manifest, logger);
-            return false;
+            logger.log(
+                    Level.SEVERE,
+                    "An error occurred while enabling " + manifest.getName(),
+                    exception);
+            disableModule(manifest, logger);
         }
     }
 
     /**
-     * Disables an addon
+     * Disables a module
      *
-     * @param manifest The manifest of the addon to disable
+     * @param manifest The manifest of the module to disable
      */
-    public static void disableAddon(@NotNull ModuleManifest manifest, @NotNull Logger logger) {
+    public static void disableModule(@NotNull ModuleManifest manifest, @NotNull Logger logger) {
         try {
-            logger.info("Disabling addon \"" + manifest.getName() + "\"");
+            logger.info("Disabling module \"" + manifest.getName() + "\"");
             for (ModuleManifest manifest2 : manifests) {
                 if (manifest2.getDependencies().contains(manifest.getName())
                         && manifest2.isEnabled()) {
-                    disableAddon(manifest2, logger);
+                    disableModule(manifest2, logger);
                 }
             }
             if (manifest.isEnabled()) {
                 manifest.getInstance().onDisable();
-                unloadClasses(manifest);
             }
         } catch (Exception exception) {
-            logger.throwing(
-                    ModuleLoader.class.getName(),
-                    "disableAddon",
-                    new Exception(
-                            "An error ocurred while disabling " + manifest.getName(), exception));
+            logger.log(
+                    Level.SEVERE,
+                    "An error ocurred while disabling " + manifest.getName(),
+                    exception);
+        }
+        if (manifest.isEnabled()) {
+            unloadClasses(manifest, logger);
         }
     }
 
     /**
      * Loads all classes from a jar file and initializes the main class
      *
-     * @param manifest The manifest of the addon
+     * @param manifest The manifest of the module
      * @throws IOException If an error occurs while loading the classes
      */
     @SuppressWarnings("unchecked")
     public static void loadClasses(@NotNull ModuleManifest manifest)
             throws IOException,
-                    NoSuchFieldException,
                     ClassNotFoundException,
-                    IllegalAccessException,
                     InvocationTargetException,
-                    InstantiationException {
+                    InstantiationException,
+                    IllegalAccessException,
+                    NoSuchFieldException {
+        URL[] urls = {new URL("jar:file:" + manifest.getFile() + "!/")};
         try (JarFile jarFile = new JarFile(manifest.getFile().toFile())) {
-            URL[] urls = {new URL("jar:file:" + manifest.getFile() + "!/")};
-            AddonClassLoader classLoader =
-                    new AddonClassLoader(urls, ModuleLoader.class.getClassLoader());
+            ModuleManifest.ModuleClassLoader classLoader =
+                    new ModuleManifest.ModuleClassLoader(urls, ModuleLoader.class.getClassLoader());
             Enumeration<JarEntry> entries = jarFile.entries();
+
+            // Load Classes
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.isDirectory() || !entry.getName().endsWith(".class")) {
-                    continue;
-                }
-                String className = entry.getName().substring(0, entry.getName().length() - 6);
-                className = className.replace("/", ".");
+                if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
+                String classFileName = entry.getName().substring(0, entry.getName().length() - 6);
+                String className = classFileName.replace("/", ".");
                 try {
-                    Class.forName(className);
-                } catch (ClassNotFoundException ignored) {
-                    classLoader.loadClass(className);
-                }
-                jarFile.close();
-                Class<?> mainClass = Class.forName(manifest.getMainClass());
-                if (mainClass.isAssignableFrom(Module.class)) {
-                    Class<? extends Module> addonClass = (Class<? extends Module>) mainClass;
-                    Constructor<? extends Module> constructor;
+                    System.out.println(Class.forName(className));
+                } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
                     try {
-                        constructor = addonClass.getDeclaredConstructor();
-                    } catch (NoSuchMethodException ignored) {
-                        throw new NoSuchMethodError(
-                                "Main class of \""
-                                        + manifest.getName()
-                                        + "\" does not have a default constructor");
+                        System.out.println(classLoader.loadClass(className));
+                    } catch (NoClassDefFoundError ignored2) {
                     }
-                    Module module = constructor.newInstance();
-                    Field instanceField = ModuleManifest.class.getDeclaredField("instance");
-                    instanceField.setAccessible(true);
-                    instanceField.set(manifest, module);
-                    Field classLoaderField = ModuleManifest.class.getDeclaredField("classLoader");
-                    classLoaderField.setAccessible(true);
-                    classLoaderField.set(manifest, classLoader);
-                    Field manifestField = Module.class.getDeclaredField("manifest");
-                    manifestField.setAccessible(true);
-                    manifestField.set(module, manifest);
-                } else {
-                    throw new ClassCastException(
-                            "Main class of \"" + manifest.getName() + "\" does not extend Addon");
                 }
             }
+
+            // Initialize Main Class
+            Class<?> mainClass = classLoader.loadClass(manifest.getMainClass());
+            if (!Module.class.isAssignableFrom(mainClass)) {
+                throw new ClassCastException(mainClass.getName() + " does not extend Module");
+            }
+            Class<? extends Module> moduleClass = (Class<? extends Module>) mainClass;
+            Constructor<? extends Module> constructor;
+            try {
+                constructor = moduleClass.getDeclaredConstructor();
+            } catch (NoSuchMethodException ignored) {
+                throw new NoSuchMethodError(
+                        mainClass.getName() + " does not have a default constructor");
+            }
+            Module module = constructor.newInstance();
+            Field instanceField = ModuleManifest.class.getDeclaredField("instance");
+            instanceField.setAccessible(true);
+            instanceField.set(manifest, module);
+            Field classLoaderField = ModuleManifest.class.getDeclaredField("classLoader");
+            classLoaderField.setAccessible(true);
+            classLoaderField.set(manifest, classLoader);
+            Field manifestField = Module.class.getDeclaredField("manifest");
+            manifestField.setAccessible(true);
+            manifestField.set(module, manifest);
         }
     }
 
     /**
-     * Unloads an addon
+     * Unloads a module
      *
-     * @param manifest The manifest of the addon to unload
-     * @throws Exception If an error occurs while unloading the addon
+     * @param manifest The manifest of the module to unload
      */
-    public static void unloadClasses(@NotNull ModuleManifest manifest) throws Exception {
+    public static void unloadClasses(@NotNull ModuleManifest manifest, @NotNull Logger logger) {
         try {
             manifest.getClassLoader().close();
             Field instanceField = ModuleManifest.class.getDeclaredField("instance");
@@ -243,40 +274,11 @@ public class ModuleLoader {
             Field classLoaderField = ModuleManifest.class.getDeclaredField("classLoader");
             classLoaderField.setAccessible(true);
             classLoaderField.set(manifest, null);
-        } catch (Exception exception) {
-            throw new Exception(
-                    "Could not unload classes of \"" + manifest.getName() + "\"", exception);
-        }
-    }
-
-    public static class AddonClassLoader extends URLClassLoader {
-        public AddonClassLoader(URL[] urls, ClassLoader parent) {
-            super(urls, parent);
-        }
-
-        @Override
-        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            return internalLoadClass(name, resolve, true);
-        }
-
-        private Class<?> internalLoadClass(String name, boolean resolve, boolean checkOther)
-                throws ClassNotFoundException {
-            try {
-                return super.loadClass(name, resolve);
-            } catch (ClassNotFoundException exception) {
-                if (checkOther) {
-                    for (ModuleManifest manifest : manifests) {
-                        try {
-                            if (manifest.getClassLoader() != this) {
-                                return manifest.getClassLoader()
-                                        .internalLoadClass(name, resolve, false);
-                            }
-                        } catch (Throwable ignored) {
-                        }
-                    }
-                }
-                throw exception;
-            }
+        } catch (Throwable exception) {
+            logger.log(
+                    Level.SEVERE,
+                    "An error occurred while unloading classes of " + manifest.getName(),
+                    exception);
         }
     }
 }

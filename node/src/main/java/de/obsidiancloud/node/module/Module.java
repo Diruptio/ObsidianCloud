@@ -4,17 +4,13 @@ import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandProvider;
 import de.obsidiancloud.node.config.Config;
 import de.obsidiancloud.node.config.ConfigProvider;
-
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * A module for the node
- */
+/** A module for the node */
 public class Module implements CommandProvider, ConfigProvider {
     private final List<Command> commands = new ArrayList<>();
     private ModuleManifest manifest;
@@ -59,11 +55,16 @@ public class Module implements CommandProvider, ConfigProvider {
         return null;
     }
 
+    public @NotNull Logger getLogger() {
+        return Logger.getLogger(manifest.getName());
+    }
+
     /**
      * Gets the manifest of the addon
      *
      * @return The manifest of the addon
      */
+    @SuppressWarnings("unused")
     public ModuleManifest getManifest() {
         return manifest;
     }
@@ -94,35 +95,5 @@ public class Module implements CommandProvider, ConfigProvider {
     @Override
     public void saveConfig() {
         config.save();
-    }
-
-    public static class ModuleClassLoader extends URLClassLoader {
-        public ModuleClassLoader(URL[] urls, ClassLoader parent) {
-            super(urls, parent);
-        }
-
-        @Override
-        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            return internalLoadClass(name, resolve, true);
-        }
-
-        private Class<?> internalLoadClass(String name, boolean resolve, boolean checkOther)
-                throws ClassNotFoundException {
-            try {
-                return super.loadClass(name, resolve);
-            } catch (ClassNotFoundException exception) {
-                if (checkOther) {
-                    for (Module module : ModuleLoader.getModules()) {
-                        try {
-                            if (module.classLoader() != this) {
-                                return module.classLoader().internalLoadClass(name, resolve, false);
-                            }
-                        } catch (Throwable ignored) {
-                        }
-                    }
-                }
-                throw exception;
-            }
-        }
     }
 }

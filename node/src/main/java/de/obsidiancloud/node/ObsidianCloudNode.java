@@ -5,8 +5,6 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.BaseCommandProvider;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.impl.HelpCommand;
-import de.obsidiancloud.node.config.Config;
-import de.obsidiancloud.node.config.ConfigSection;
 import de.obsidiancloud.common.console.Console;
 import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
@@ -14,6 +12,8 @@ import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
 import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
+import de.obsidiancloud.node.config.Config;
+import de.obsidiancloud.node.config.ConfigSection;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -22,6 +22,7 @@ import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
+import de.obsidiancloud.node.module.ModuleLoader;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.N2SSyncPacket;
 import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
@@ -29,6 +30,7 @@ import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
 import de.obsidiancloud.node.threads.NodeThread;
 import de.obsidiancloud.node.util.TaskParser;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -142,9 +144,15 @@ public class ObsidianCloudNode {
     }
 
     public static void reload() {
+        ModuleLoader.disableModules(logger);
         loadTemplateProviders();
         registerCommands();
         loadTasks();
+        try {
+            ModuleLoader.loadModules(Path.of("modules"), logger);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to load modules", e);
+        }
     }
 
     private static void registerCommands() {

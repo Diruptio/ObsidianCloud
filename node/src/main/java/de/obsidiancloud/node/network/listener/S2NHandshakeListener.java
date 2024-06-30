@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class S2NHandshakeListener implements PacketListener<S2NHandshakePacket> {
     @Override
     public void handle(@NotNull S2NHandshakePacket packet, @NotNull Connection connection) {
-        if (packet.getClusterKey().equals(ObsidianCloudNode.getClusterKey().get())) {
+        if (packet.getClusterKey().equals(ObsidianCloudNode.getClusterKey())) {
             connection.removePacketListener(this);
             for (OCServer server : ObsidianCloudAPI.get().getLocalNode().getServers()) {
                 if (packet.getName().equals(server.getName())) {
