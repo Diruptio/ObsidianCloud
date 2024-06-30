@@ -1,7 +1,4 @@
 package de.obsidiancloud.common.event;
 
-/**
- * Represents an event.
- */
-public interface Event {
-}
+/** Represents an event. */
+public interface Event {}
