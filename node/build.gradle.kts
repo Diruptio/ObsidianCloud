@@ -34,6 +34,11 @@ val generateSources =
     }
 sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks {
     compileJava {
         dependsOn(addPlatformJars)
