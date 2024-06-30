@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.command;
+package de.obsidiancloud.node.command;
 
 import java.util.ArrayList;
 import java.util.List;

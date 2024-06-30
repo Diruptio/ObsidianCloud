@@ -1,7 +1,7 @@
 package de.obsidiancloud.node.module;
 
-import de.obsidiancloud.common.command.Command;
-import de.obsidiancloud.common.command.CommandProvider;
+import de.obsidiancloud.node.command.Command;
+import de.obsidiancloud.node.command.CommandProvider;
 import de.obsidiancloud.node.config.Config;
 import de.obsidiancloud.node.config.ConfigProvider;
 import java.nio.file.Path;

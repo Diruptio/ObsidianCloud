@@ -2,18 +2,18 @@ package de.obsidiancloud.node;
 
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.common.command.BaseCommandProvider;
-import de.obsidiancloud.common.command.Command;
-import de.obsidiancloud.common.command.impl.HelpCommand;
-import de.obsidiancloud.common.console.Console;
-import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
+import de.obsidiancloud.node.command.BaseCommandProvider;
+import de.obsidiancloud.node.command.Command;
 import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
+import de.obsidiancloud.node.command.impl.HelpCommand;
 import de.obsidiancloud.node.config.Config;
 import de.obsidiancloud.node.config.ConfigSection;
+import de.obsidiancloud.node.console.Console;
+import de.obsidiancloud.node.console.ConsoleCommandExecutor;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -156,6 +156,7 @@ public class ObsidianCloudNode {
     }
 
     private static void registerCommands() {
+        Command.getProviders().clear();
         Command.registerProvider(commandProvider);
         commandProvider.registerCommand(new HelpCommand());
         commandProvider.registerCommand(new ScreenCommand());
@@ -215,6 +216,16 @@ public class ObsidianCloudNode {
      */
     public static @NotNull String getClusterKey() {
         return clusterKey;
+    }
+
+    /**
+     * Gets the template providers.
+     *
+     * @return The template providers.
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull List<TemplateProvider> getTemplateProviders() {
+        return templateProviders;
     }
 
     /**

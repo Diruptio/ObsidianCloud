@@ -1,20 +1,20 @@
-package de.obsidiancloud.common.console;
+package de.obsidiancloud.node.console;
 
-import de.obsidiancloud.common.command.CommandExecutor;
+import de.obsidiancloud.node.command.CommandExecutor;
 import java.util.logging.Logger;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
 public class ConsoleCommandExecutor implements CommandExecutor {
-    private Logger logger;
+    private final @NotNull Logger logger;
 
     /**
      * Creates a new console command executor.
      *
      * @param logger The main logger.
      */
-    public ConsoleCommandExecutor(Logger logger) {
+    public ConsoleCommandExecutor(@NotNull Logger logger) {
         this.logger = logger;
     }
 

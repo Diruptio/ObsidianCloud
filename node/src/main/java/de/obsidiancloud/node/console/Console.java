@@ -1,6 +1,6 @@
-package de.obsidiancloud.common.console;
+package de.obsidiancloud.node.console;
 
-import de.obsidiancloud.common.command.Command;
+import de.obsidiancloud.node.command.Command;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.charset.StandardCharsets;

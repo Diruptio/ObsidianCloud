@@ -1,7 +1,5 @@
 package de.obsidiancloud.node.command;
 
-import de.obsidiancloud.common.command.Command;
-import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import java.util.HashMap;
 import java.util.Map;

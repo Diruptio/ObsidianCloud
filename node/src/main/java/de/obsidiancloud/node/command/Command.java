@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.command;
+package de.obsidiancloud.node.command;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,36 +26,30 @@ public abstract class Command {
      * Adds an alias to the command
      *
      * @param description The description of the command
-     * @return Returns the command
      */
-    public Command setDescription(@NotNull String description) {
+    public void setDescription(@NotNull String description) {
         this.description = description;
-        return this;
     }
 
     /**
      * Sets the usage of the command
      *
      * @param usage The usage of the command
-     * @return Returns the command
      */
-    public Command setUsage(@NotNull String usage) {
+    public void setUsage(@NotNull String usage) {
         this.usage = usage;
-        return this;
     }
 
     /**
      * Adds an alias to the command
      *
      * @param alias The alias to add
-     * @return Returns the command
      */
-    public Command addAlias(@NotNull String alias) {
+    public void addAlias(@NotNull String alias) {
         String[] aliases = new String[this.aliases.length + 1];
         System.arraycopy(this.aliases, 0, aliases, 0, this.aliases.length);
         aliases[this.aliases.length] = alias;
         this.aliases = aliases;
-        return this;
     }
 
     /**
@@ -119,6 +113,7 @@ public abstract class Command {
      *
      * @return Returns a {@code List<CommandProvider>} with all registered command providers
      */
+    @SuppressWarnings("unused")
     public static @NotNull List<CommandProvider> getProviders() {
         return providers;
     }
@@ -133,7 +128,7 @@ public abstract class Command {
         if (providers.contains(provider)) {
             throw new IllegalArgumentException("Provider already registered!");
         } else {
-            providers.add(provider);
+            providers.add(0, provider);
         }
     }
 
@@ -143,6 +138,7 @@ public abstract class Command {
      * @param provider The provider to unregister
      * @throws IllegalArgumentException If the provider is not registered
      */
+    @SuppressWarnings("unused")
     public static void unregisterProvider(@NotNull CommandProvider provider) {
         if (providers.contains(provider)) {
             providers.remove(provider);
