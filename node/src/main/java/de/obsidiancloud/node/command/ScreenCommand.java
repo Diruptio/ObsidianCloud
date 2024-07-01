@@ -17,7 +17,7 @@ public class ScreenCommand extends Command {
     @Override
     public void execute(@NotNull CommandExecutor executor, @NotNull String[] args) {
         if (args.length == 0) {
-            executor.sendMessage("§cUsage: " + getUsage());
+            executor.sendMessage("§cUsage: " + getUsage(executor));
             return;
         }
 

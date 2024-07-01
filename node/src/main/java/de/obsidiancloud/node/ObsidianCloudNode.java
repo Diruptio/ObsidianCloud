@@ -10,6 +10,13 @@ import de.obsidiancloud.node.config.Config;
 import de.obsidiancloud.node.config.ConfigSection;
 import de.obsidiancloud.node.console.Console;
 import de.obsidiancloud.node.console.ConsoleCommandExecutor;
+import de.obsidiancloud.common.network.packets.CustomMessagePacket;
+import de.obsidiancloud.common.network.packets.PlayerKickPacket;
+import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
+import de.obsidiancloud.node.command.KickCommand;
+import de.obsidiancloud.node.command.ListCommand;
+import de.obsidiancloud.node.command.ScreenCommand;
+import de.obsidiancloud.node.command.ShutdownCommand;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -66,7 +73,6 @@ public class ObsidianCloudNode {
 
             registerPackets();
             ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
-            String name = localNode.getString("name", "Node-1");
             String host = localNode.getString("host", "0.0.0.0");
             int port = localNode.getInt("port", 3005);
             networkServer = new NetworkServer(host, port, ObsidianCloudNode::clientConnected);
@@ -156,6 +162,8 @@ public class ObsidianCloudNode {
         Command.registerProvider(commandProvider);
         commandProvider.registerCommand(new HelpCommand());
         commandProvider.registerCommand(new ReloadCommand());
+        commandProvider.registerCommand(new KickCommand());
+        commandProvider.registerCommand(new ListCommand());
         commandProvider.registerCommand(new ScreenCommand());
         commandProvider.registerCommand(new ShutdownCommand());
     }
@@ -183,6 +191,9 @@ public class ObsidianCloudNode {
     }
 
     private static void registerPackets() {
+        NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);

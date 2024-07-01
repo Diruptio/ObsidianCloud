@@ -79,7 +79,7 @@ public abstract class Command {
      * @return Returns the name of the command
      */
     public @NotNull String getName() {
-        return this.name;
+        return name;
     }
 
     /**
@@ -88,7 +88,7 @@ public abstract class Command {
      * @return Returns the description of the command
      */
     public @Nullable String getDescription() {
-        return this.description;
+        return description;
     }
 
     /**
@@ -96,8 +96,8 @@ public abstract class Command {
      *
      * @return Returns the usage of the command
      */
-    public @Nullable String getUsage() {
-        return this.usage;
+    public @Nullable String getUsage(@NotNull CommandExecutor executor) {
+        return executor.getCommandPrefix() + usage;
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class Command {
      * @return Returns the aliases of the command
      */
     public @NotNull String[] getAliases() {
-        return this.aliases;
+        return aliases;
     }
 
     /**
