@@ -5,7 +5,9 @@ import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
+import de.obsidiancloud.node.command.Command;
 import de.obsidiancloud.node.local.LocalOCServer;
+import java.util.Arrays;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -61,6 +63,17 @@ public class RemoteOCPlayer extends OCPlayer {
             } else if (server instanceof RemoteOCServer remoteServer) {
                 remoteServer.getNode().getConnection().send(packet);
             }
+        }
+    }
+
+    @Override
+    public void execute(@NotNull String line) {
+        String[] parts = line.split(" ");
+        Command command = Command.getCommand(parts[0]);
+        if (command == null) {
+            sendMessage("§cCommand \"" + command + "\" was not found");
+        } else {
+            command.execute(this, Arrays.copyOfRange(parts, 1, parts.length));
         }
     }
 

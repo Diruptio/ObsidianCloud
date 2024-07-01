@@ -2,24 +2,21 @@ package de.obsidiancloud.node;
 
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.common.command.BaseCommandProvider;
-import de.obsidiancloud.common.command.Command;
-import de.obsidiancloud.common.command.impl.HelpCommand;
-import de.obsidiancloud.common.config.Config;
-import de.obsidiancloud.common.config.ConfigProperty;
-import de.obsidiancloud.common.config.ConfigSection;
-import de.obsidiancloud.common.console.Console;
-import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
 import de.obsidiancloud.common.network.packets.CustomMessagePacket;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
+import de.obsidiancloud.node.command.*;
 import de.obsidiancloud.node.command.KickCommand;
 import de.obsidiancloud.node.command.ListCommand;
 import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
+import de.obsidiancloud.node.config.Config;
+import de.obsidiancloud.node.config.ConfigSection;
+import de.obsidiancloud.node.console.Console;
+import de.obsidiancloud.node.console.ConsoleCommandExecutor;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -28,6 +25,7 @@ import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
+import de.obsidiancloud.node.module.ModuleLoader;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.N2SSyncPacket;
 import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
@@ -35,6 +33,7 @@ import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
 import de.obsidiancloud.node.threads.NodeThread;
 import de.obsidiancloud.node.util.TaskParser;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -49,7 +48,7 @@ public class ObsidianCloudNode {
     private static final ConsoleCommandExecutor executor = new ConsoleCommandExecutor(logger);
     private static Console console;
     private static Config config;
-    private static ConfigProperty<String> clusterKey;
+    private static String clusterKey;
     private static NodeObsidianCloudAPI api;
     private static final BaseCommandProvider commandProvider = new BaseCommandProvider();
     private static final List<TemplateProvider> templateProviders = new ArrayList<>();
@@ -64,6 +63,7 @@ public class ObsidianCloudNode {
             console = new Console(logger, executor);
             console.start();
             loadConfig();
+            clusterKey = config.getString("clusterkey");
             List<LocalOCServer> servers = loadServersConfig();
             api = new NodeObsidianCloudAPI(loadLocalNode(servers));
             ObsidianCloudAPI.setInstance(api);
@@ -90,8 +90,7 @@ public class ObsidianCloudNode {
         config = new Config(Path.of("config.yml"), Config.Type.YAML);
         StringBuilder clusterKey = new StringBuilder();
         for (int i = 0; i < 32; i++) clusterKey.append((char) ('a' + new Random().nextInt(26)));
-        ObsidianCloudNode.clusterKey =
-                new ConfigProperty<>(config, "clusterkey", clusterKey.toString());
+        config.setDefault("clusterkey", clusterKey.toString());
         config.setDefault("local_node", new HashMap<>());
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         localNode.setDefault("name", "Node-1");
@@ -147,14 +146,22 @@ public class ObsidianCloudNode {
     }
 
     public static void reload() {
+        ModuleLoader.disableModules(logger);
         loadTemplateProviders();
         registerCommands();
-        loadTasks();
+        reloadTasks();
+        try {
+            ModuleLoader.loadModules(Path.of("modules"), logger);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Failed to load modules", e);
+        }
     }
 
     private static void registerCommands() {
+        Command.getProviders().clear();
         Command.registerProvider(commandProvider);
         commandProvider.registerCommand(new HelpCommand());
+        commandProvider.registerCommand(new ReloadCommand());
         commandProvider.registerCommand(new KickCommand());
         commandProvider.registerCommand(new ListCommand());
         commandProvider.registerCommand(new ScreenCommand());
@@ -169,7 +176,7 @@ public class ObsidianCloudNode {
         templateProviders.add(new PurpurTemplateProvider());
     }
 
-    private static void loadTasks() {
+    public static void reloadTasks() {
         api.getTasks().clear();
         try (Stream<Path> files = Files.list(Path.of("tasks"))) {
             for (Path file : (Iterable<Path>) files::iterator) {
@@ -215,8 +222,18 @@ public class ObsidianCloudNode {
      *
      * @return The cluster key config property.
      */
-    public static @NotNull ConfigProperty<String> getClusterKey() {
+    public static @NotNull String getClusterKey() {
         return clusterKey;
+    }
+
+    /**
+     * Gets the template providers.
+     *
+     * @return The template providers.
+     */
+    @SuppressWarnings("unused")
+    public static @NotNull List<TemplateProvider> getTemplateProviders() {
+        return templateProviders;
     }
 
     /**

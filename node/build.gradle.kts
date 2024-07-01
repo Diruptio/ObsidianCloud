@@ -52,6 +52,14 @@ tasks {
     }
 
     named<JavaExec>("run") {
+        val exampleModuleJarTask = project(":modules:example-module").tasks.named("jar").get()
+        dependsOn(exampleModuleJarTask)
+        doFirst {
+            val module = exampleModuleJarTask.outputs.files.first()
+            val moduleDir = file("run/modules")
+            moduleDir.mkdirs()
+            module.copyTo(moduleDir.resolve(module.name), true)
+        }
         workingDir = file("run")
         workingDir.mkdirs()
         standardOutput = System.out

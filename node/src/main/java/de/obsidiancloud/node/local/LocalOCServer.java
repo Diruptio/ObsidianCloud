@@ -87,7 +87,7 @@ public class LocalOCServer extends OCServer {
             builder.environment().put("OC_NODE_HOST", "127.0.0.1");
             int nodePort = ObsidianCloudNode.getNetworkServer().getPort();
             builder.environment().put("OC_NODE_PORT", String.valueOf(nodePort));
-            builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
+            builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey());
             builder.environment().put("OC_SERVER_TASK", getTask());
             builder.environment().put("OC_SERVER_NAME", getName());
             builder.environment().put("OC_SERVER_AUTOSTART", String.valueOf(isAutoStart()));

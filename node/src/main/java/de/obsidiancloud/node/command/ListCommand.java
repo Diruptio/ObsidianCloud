@@ -3,7 +3,6 @@ package de.obsidiancloud.node.command;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import org.jetbrains.annotations.NotNull;
 

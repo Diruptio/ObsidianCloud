@@ -1,6 +1,5 @@
-package de.obsidiancloud.common.command.impl;
+package de.obsidiancloud.node.command;
 
-import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.ArrayList;
 import java.util.Arrays;

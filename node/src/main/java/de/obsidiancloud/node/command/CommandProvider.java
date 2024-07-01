@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.command;
+package de.obsidiancloud.node.command;
 
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +17,7 @@ public interface CommandProvider {
      *
      * @param command The name of the command
      */
+    @SuppressWarnings("unused")
     void unregisterCommand(@NotNull String command);
 
     /**
