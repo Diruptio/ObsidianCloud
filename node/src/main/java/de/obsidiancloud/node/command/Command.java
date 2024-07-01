@@ -1,5 +1,6 @@
 package de.obsidiancloud.node.command;
 
+import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;

@@ -1,13 +1,12 @@
-package de.obsidiancloud.node.command.impl;
+package de.obsidiancloud.node.command;
 
-import de.obsidiancloud.node.command.Command;
-import de.obsidiancloud.node.command.CommandExecutor;
+import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
-public class HelpCommand extends de.obsidiancloud.node.command.Command {
+public class HelpCommand extends Command {
     public HelpCommand() {
         super("help");
         setDescription("Shows help");
@@ -19,8 +18,7 @@ public class HelpCommand extends de.obsidiancloud.node.command.Command {
     public void execute(@NotNull CommandExecutor executor, @NotNull String[] args) {
         if (args.length == 0) {
             executor.sendMessage("Help:");
-            for (de.obsidiancloud.node.command.Command command :
-                    de.obsidiancloud.node.command.Command.getAllCommands()) {
+            for (Command command : Command.getAllCommands()) {
                 List<String> names = new ArrayList<>();
                 names.add(command.getName());
                 names.addAll(Arrays.asList(command.getAliases()));
@@ -28,8 +26,8 @@ public class HelpCommand extends de.obsidiancloud.node.command.Command {
                         "  §b" + String.join("§7, §b", names) + " §7- " + command.getDescription());
             }
         } else {
-            de.obsidiancloud.node.command.Command command = null;
-            for (de.obsidiancloud.node.command.Command cmd : Command.getAllCommands()) {
+            Command command = null;
+            for (Command cmd : Command.getAllCommands()) {
                 if (cmd.getName().equalsIgnoreCase(args[0])
                         || Arrays.asList(cmd.getAliases()).contains(args[0])) {
                     command = cmd;

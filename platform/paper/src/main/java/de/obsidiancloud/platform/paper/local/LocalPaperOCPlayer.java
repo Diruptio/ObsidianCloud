@@ -37,6 +37,11 @@ public class LocalPaperOCPlayer extends OCPlayer {
     }
 
     @Override
+    public void execute(@NotNull String line) {
+        // TODO: Send packet to getNode() to execute command
+    }
+
+    @Override
     public void disconnect(@Nullable Component message) {
         if (message == null) {
             player.kick();

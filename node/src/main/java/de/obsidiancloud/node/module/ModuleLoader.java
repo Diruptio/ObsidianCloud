@@ -225,10 +225,10 @@ public class ModuleLoader {
                 String classFileName = entry.getName().substring(0, entry.getName().length() - 6);
                 String className = classFileName.replace("/", ".");
                 try {
-                    System.out.println(Class.forName(className));
+                    Class.forName(className);
                 } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
                     try {
-                        System.out.println(classLoader.loadClass(className));
+                        classLoader.loadClass(className);
                     } catch (NoClassDefFoundError ignored2) {
                     }
                 }

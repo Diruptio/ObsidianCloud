@@ -50,6 +50,11 @@ public class RemoteOCPlayer extends OCPlayer {
     }
 
     @Override
+    public void execute(@NotNull String line) {
+        // TODO: Send packet to getProxy().getNode() to execute command
+    }
+
+    @Override
     public void sendMessage(@NotNull Component message) {
         // TODO: Send packet to getProxy().getNode() to send message to player
     }

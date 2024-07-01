@@ -1,10 +1,8 @@
-package de.obsidiancloud.node.command;
+package de.obsidiancloud.common.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 public interface CommandExecutor {
     /**
@@ -12,15 +10,7 @@ public interface CommandExecutor {
      *
      * @param line The command line
      */
-    default void execute(@NotNull String line) {
-        String[] parts = line.split(" ");
-        Command command = Command.getCommand(parts[0]);
-        if (command == null) {
-            sendMessage("§cCommand \"" + command + "\" was not found");
-        } else {
-            command.execute(this, Arrays.copyOfRange(parts, 1, parts.length));
-        }
-    }
+    void execute(@NotNull String line);
 
     /**
      * Sends a message to the command executor

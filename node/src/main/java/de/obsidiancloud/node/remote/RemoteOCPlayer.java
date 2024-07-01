@@ -3,6 +3,8 @@ package de.obsidiancloud.node.remote;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.node.command.Command;
+import java.util.Arrays;
 import java.util.UUID;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +50,17 @@ public class RemoteOCPlayer extends OCPlayer {
     @Override
     public void disconnect(@Nullable Component message) {
         // TODO: Send packet to getProxy().getNode() to disconnect player
+    }
+
+    @Override
+    public void execute(@NotNull String line) {
+        String[] parts = line.split(" ");
+        Command command = Command.getCommand(parts[0]);
+        if (command == null) {
+            sendMessage("§cCommand \"" + command + "\" was not found");
+        } else {
+            command.execute(this, Arrays.copyOfRange(parts, 1, parts.length));
+        }
     }
 
     @Override

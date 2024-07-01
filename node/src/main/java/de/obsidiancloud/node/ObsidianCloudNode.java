@@ -5,11 +5,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
-import de.obsidiancloud.node.command.BaseCommandProvider;
-import de.obsidiancloud.node.command.Command;
-import de.obsidiancloud.node.command.ScreenCommand;
-import de.obsidiancloud.node.command.ShutdownCommand;
-import de.obsidiancloud.node.command.impl.HelpCommand;
+import de.obsidiancloud.node.command.*;
 import de.obsidiancloud.node.config.Config;
 import de.obsidiancloud.node.config.ConfigSection;
 import de.obsidiancloud.node.console.Console;
@@ -147,7 +143,7 @@ public class ObsidianCloudNode {
         ModuleLoader.disableModules(logger);
         loadTemplateProviders();
         registerCommands();
-        loadTasks();
+        reloadTasks();
         try {
             ModuleLoader.loadModules(Path.of("modules"), logger);
         } catch (IOException e) {
@@ -159,6 +155,7 @@ public class ObsidianCloudNode {
         Command.getProviders().clear();
         Command.registerProvider(commandProvider);
         commandProvider.registerCommand(new HelpCommand());
+        commandProvider.registerCommand(new ReloadCommand());
         commandProvider.registerCommand(new ScreenCommand());
         commandProvider.registerCommand(new ShutdownCommand());
     }
@@ -171,7 +168,7 @@ public class ObsidianCloudNode {
         templateProviders.add(new PurpurTemplateProvider());
     }
 
-    private static void loadTasks() {
+    public static void reloadTasks() {
         api.getTasks().clear();
         try (Stream<Path> files = Files.list(Path.of("tasks"))) {
             for (Path file : (Iterable<Path>) files::iterator) {
