@@ -2,7 +2,6 @@ package de.obsidiancloud.node.command;
 
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.Arrays;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
