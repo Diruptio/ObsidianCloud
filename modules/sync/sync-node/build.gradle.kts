@@ -8,6 +8,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":node"))
+    compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
 val addPlatformJars =
