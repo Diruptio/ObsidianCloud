@@ -1,0 +1,6 @@
+name: OCSync
+main: de.obsidiancloud.module.sync.node.ObsidianCloudSyncNode
+version: ${version}
+description: Synchronization between the servers
+authors:
+  - Fabi.exe

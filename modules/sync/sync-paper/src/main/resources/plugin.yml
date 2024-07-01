@@ -1,0 +1,7 @@
+name: OCSync
+main: de.obsidiancloud.module.sync.paper.ObsidianCloudSyncPaper
+version: ${version}
+description: Synchronization between the servers
+api-version: 1.20
+authors:
+  - Fabi.exe

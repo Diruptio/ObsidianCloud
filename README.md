@@ -8,6 +8,7 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 ## Goals
 - [x] Single Node
 - [ ] Multi Node
+- [x] Modules
 - [x] Paper
 - [ ] Fabric
 - [ ] Forge

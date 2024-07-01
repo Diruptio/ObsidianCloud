@@ -53,12 +53,16 @@ tasks {
 
     named<JavaExec>("run") {
         val exampleModuleJarTask = project(":modules:example-module").tasks.named("jar").get()
+        val syncModuleJarTask = project(":modules:sync:node").tasks.named("jar").get()
         dependsOn(exampleModuleJarTask)
+        dependsOn(syncModuleJarTask)
         doFirst {
-            val module = exampleModuleJarTask.outputs.files.first()
+            val exampleModule = syncModuleJarTask.outputs.files.first()
+            val syncModule = exampleModuleJarTask.outputs.files.first()
             val moduleDir = file("run/modules")
             moduleDir.mkdirs()
-            module.copyTo(moduleDir.resolve(module.name), true)
+            exampleModule.copyTo(moduleDir.resolve(exampleModule.name), true)
+            syncModule.copyTo(moduleDir.resolve(syncModule.name), true)
         }
         workingDir = file("run")
         workingDir.mkdirs()
