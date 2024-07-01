@@ -13,4 +13,4 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 - [ ] Fabric
 - [ ] Forge
 - [ ] Velocity
-- [ ] Minestorm
+- [ ] Minestom
