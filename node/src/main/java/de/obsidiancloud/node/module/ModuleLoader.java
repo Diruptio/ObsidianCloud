@@ -1,14 +1,17 @@
 package de.obsidiancloud.node.module;
 
 import com.google.common.collect.ImmutableList;
+import de.obsidiancloud.node.ObsidianCloudNode;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -19,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
 /** The module loader loads and unloads modules */
 public class ModuleLoader {
-    private static final List<ModuleManifest> manifests = new ArrayList<>();
+    private static final List<ModuleManifest> manifests = new CopyOnWriteArrayList<>();
 
     /**
      * Gets all loaded manifests
@@ -202,17 +205,20 @@ public class ModuleLoader {
      * Loads all classes from a jar file and initializes the main class
      *
      * @param manifest The manifest of the module
-     * @throws IOException If an error occurs while loading the classes
      */
     @SuppressWarnings("unchecked")
-    public static void loadClasses(@NotNull ModuleManifest manifest)
-            throws IOException,
-                    ClassNotFoundException,
-                    InvocationTargetException,
-                    InstantiationException,
-                    IllegalAccessException,
-                    NoSuchFieldException {
-        URL[] urls = {new URL("jar:file:" + manifest.getFile() + "!/")};
+    public static void loadClasses(@NotNull ModuleManifest manifest) {
+        URL[] urls;
+        try {
+            urls = new URL[] {new URL("jar:file:" + manifest.getFile() + "!/")};
+        } catch (MalformedURLException exception) {
+            ObsidianCloudNode.getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "An error occurred while loading classes of " + manifest.getName(),
+                            exception);
+            return;
+        }
         try (JarFile jarFile = new JarFile(manifest.getFile().toFile())) {
             ModuleManifest.ModuleClassLoader classLoader =
                     new ModuleManifest.ModuleClassLoader(urls, ModuleLoader.class.getClassLoader());
@@ -222,14 +228,15 @@ public class ModuleLoader {
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
                 if (entry.isDirectory() || !entry.getName().endsWith(".class")) continue;
-                String classFileName = entry.getName().substring(0, entry.getName().length() - 6);
+                String classFileName =
+                        entry.getName().substring(0, entry.getName().lastIndexOf("."));
                 String className = classFileName.replace("/", ".");
                 try {
                     Class.forName(className);
                 } catch (ClassNotFoundException | NoClassDefFoundError ignored) {
                     try {
                         classLoader.loadClass(className);
-                    } catch (NoClassDefFoundError ignored2) {
+                    } catch (ClassNotFoundException ignored2) {
                     }
                 }
             }
@@ -257,6 +264,17 @@ public class ModuleLoader {
             Field manifestField = Module.class.getDeclaredField("manifest");
             manifestField.setAccessible(true);
             manifestField.set(module, manifest);
+        } catch (IOException
+                | ClassNotFoundException
+                | NoSuchFieldException
+                | InstantiationException
+                | IllegalAccessException
+                | InvocationTargetException exception) {
+            ObsidianCloudNode.getLogger()
+                    .log(
+                            Level.SEVERE,
+                            "An error occurred while loading classes of " + manifest.getName(),
+                            exception);
         }
     }
 
