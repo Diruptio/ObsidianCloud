@@ -201,11 +201,15 @@ public class ModuleManifest {
         }
         List<String> dependencies = new ArrayList<>();
         if (yml.containsKey("depend") && yml.get("depend") instanceof String[] array) {
-            dependencies.addAll(Arrays.asList(array));
+            for (String dependency : array) {
+                dependencies.add(dependency.toLowerCase());
+            }
         }
         List<String> softDependencies = new ArrayList<>();
         if (yml.containsKey("softdepend") && yml.get("softdepend") instanceof String[] array) {
-            dependencies.addAll(Arrays.asList(array));
+            for (String softDependency : array) {
+                softDependencies.add(softDependency.toLowerCase());
+            }
         }
         jarFile.close();
         return new ModuleManifest(
