@@ -16,6 +16,8 @@ public class RemoteOCServer extends OCServer {
             @NotNull LifecycleState lifecycleState,
             @NotNull Status status,
             boolean autoStart,
+            int memory,
+            int port,
             @NotNull RemoteOCNode node) {
         super(
                 task,
@@ -25,11 +27,11 @@ public class RemoteOCServer extends OCServer {
                 status,
                 autoStart,
                 "",
-                (int) Runtime.getRuntime().maxMemory(),
+                memory,
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new HashMap<>(),
-                -1,
+                port,
                 new ArrayList<>());
         this.node = node;
     }

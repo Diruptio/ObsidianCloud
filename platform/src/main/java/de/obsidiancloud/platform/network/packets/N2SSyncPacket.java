@@ -30,9 +30,19 @@ public class N2SSyncPacket extends ReadablePacket {
                         OCServer.LifecycleState.valueOf(readString(byteBuf));
                 OCServer.Status status = OCServer.Status.valueOf(readString(byteBuf));
                 boolean autoStart = byteBuf.readBoolean();
+                int memory = byteBuf.readInt();
+                int port = byteBuf.readInt();
                 RemoteOCServer server =
                         new RemoteOCServer(
-                                serverName, task, type, lifecycleState, status, autoStart, node);
+                                serverName,
+                                task,
+                                type,
+                                lifecycleState,
+                                status,
+                                autoStart,
+                                memory,
+                                port,
+                                node);
                 for (int k = 0; k < byteBuf.readInt(); k++) {
                     server.getPlayers()
                             .add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf), node));
