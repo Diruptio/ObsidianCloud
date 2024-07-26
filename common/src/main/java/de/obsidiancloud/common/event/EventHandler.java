@@ -10,16 +10,34 @@ import org.jetbrains.annotations.Nullable;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EventHandler {
-    /** The priority of the event handler. */
+    /**
+     * The priority of the event handler.
+     *
+     * @return The priority of the event handler.
+     */
     Priority priority() default Priority.NORMAL;
 
-    /** The priority of the event handler. */
+    /**
+     * The priority of the event handler. Call order: LOWEST -> LOW -> NORMAL -> HIGH -> HIGHEST ->
+     * MONITOR
+     */
     enum Priority {
+        /** Called first. */
         LOWEST,
+
+        /** Called at second place. */
         LOW,
+
+        /** Called at third place. */
         NORMAL,
+
+        /** Called at fourth place. */
         HIGH,
+
+        /** Called at fifth place. */
         HIGHEST,
+
+        /** Called last. */
         MONITOR;
 
         private @Nullable Storage marker = null;

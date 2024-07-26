@@ -50,6 +50,7 @@ public class EventManager {
     /**
      * Register a listener.
      *
+     * @param <T> The event type.
      * @param eventClass The event class.
      * @param listener The listener to register.
      */
@@ -60,6 +61,7 @@ public class EventManager {
     /**
      * Register a listener.
      *
+     * @param <T> The event type.
      * @param eventClass The event class.
      * @param listener The listener to register.
      * @param priority The priority of the listener.
