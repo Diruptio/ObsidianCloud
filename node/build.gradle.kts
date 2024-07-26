@@ -30,7 +30,7 @@ val generateSources =
         doFirst { delete(layout.buildDirectory.dir("generated/sources/java").get()) }
         from(file("src/main/templates"))
         into(layout.buildDirectory.dir("generated/sources/java"))
-        expand(mapOf("paper_platform_file" to paperTask.outputs.files.first().name))
+        expand(mapOf("version" to version, "paper_platform_file" to paperTask.outputs.files.first().name))
     }
 sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
 
