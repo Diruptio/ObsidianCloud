@@ -1,7 +1,10 @@
 package de.obsidiancloud.platform.network.packets;
 
+import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.ReadablePacket;
+import de.obsidiancloud.platform.PlatformObsidianCloudAPI;
 import de.obsidiancloud.platform.remote.RemoteOCNode;
 import de.obsidiancloud.platform.remote.RemoteOCPlayer;
 import de.obsidiancloud.platform.remote.RemoteOCServer;
@@ -16,12 +19,19 @@ public class N2SSyncPacket extends ReadablePacket {
 
     @Override
     public void read(@NotNull ByteBuf byteBuf) {
+        PlatformObsidianCloudAPI api = (PlatformObsidianCloudAPI) ObsidianCloudAPI.get();
         nodes = new ArrayList<>();
         int nodeCount = byteBuf.readInt();
         for (int i = 0; i < nodeCount; i++) {
             String nodeName = readString(byteBuf);
             List<RemoteOCServer> servers = new ArrayList<>();
-            RemoteOCNode node = new RemoteOCNode(nodeName, servers);
+            OCNode node;
+            if (nodeName.equals(api.getLocalNode().getName())) {
+                node = new RemoteOCNode(nodeName, servers);
+                nodes.add((RemoteOCNode) node);
+            } else {
+                node = api.getLocalNode();
+            }
             for (int j = 0; j < byteBuf.readInt(); j++) {
                 String task = readString(byteBuf);
                 String serverName = readString(byteBuf);
@@ -49,7 +59,6 @@ public class N2SSyncPacket extends ReadablePacket {
                 }
                 node.getServers().add(server);
             }
-            nodes.add(node);
         }
     }
 

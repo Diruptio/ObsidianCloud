@@ -1,6 +1,5 @@
 package de.obsidiancloud.node.remote;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +52,7 @@ public class RemoteOCServer extends OCServer {
     }
 
     @Override
-    public @NotNull OCNode getNode() {
+    public @NotNull RemoteOCNode getNode() {
         return node;
     }
 }

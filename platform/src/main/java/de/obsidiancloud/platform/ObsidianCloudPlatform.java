@@ -3,6 +3,11 @@ package de.obsidiancloud.platform;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
+import de.obsidiancloud.common.network.listener.PlayerKickListener;
+import de.obsidiancloud.common.network.listener.PlayerMessageListener;
+import de.obsidiancloud.common.network.packets.CustomMessagePacket;
+import de.obsidiancloud.common.network.packets.PlayerKickPacket;
+import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
 import de.obsidiancloud.platform.network.listener.ServerAddListener;
 import de.obsidiancloud.platform.network.listener.SyncListener;
@@ -23,6 +28,9 @@ public class ObsidianCloudPlatform {
     }
 
     private static void registerPackets() {
+        NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);
@@ -48,6 +56,8 @@ public class ObsidianCloudPlatform {
         api.getLocalNode().setConnection(connection);
         connection.addPacketListener(new SyncListener());
         connection.addPacketListener(new ServerAddListener());
+        connection.addPacketListener(new PlayerKickListener());
+        connection.addPacketListener(new PlayerMessageListener());
 
         String clusterKey = System.getenv("OC_CLUSTERKEY");
         S2NHandshakePacket handshakePacket = new S2NHandshakePacket();
