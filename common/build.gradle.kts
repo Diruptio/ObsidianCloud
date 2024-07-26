@@ -23,6 +23,7 @@ dependencies {
 
 java {
     withJavadocJar()
+    withSourcesJar()
 }
 
 tasks {
