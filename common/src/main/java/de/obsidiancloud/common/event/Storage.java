@@ -31,7 +31,11 @@ public class Storage {
      */
     public void call(@NotNull Object event) {
         if (eventClass == event.getClass()) {
-            listener.call(event);
+            try {
+                listener.call(event);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace(System.err);
+            }
         }
         if (next != null) next.call(event);
     }

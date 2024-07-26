@@ -4,6 +4,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.platform.local.LocalOCServer;
+import de.obsidiancloud.platform.network.listener.ServerAddListener;
 import de.obsidiancloud.platform.network.listener.SyncListener;
 import de.obsidiancloud.platform.network.packets.N2SSyncPacket;
 import de.obsidiancloud.platform.network.packets.S2NHandshakePacket;
@@ -46,6 +47,7 @@ public class ObsidianCloudPlatform {
         Connection connection = NetworkHandler.initializeClientConnection(nodeHost, nodePort);
         api.getLocalNode().setConnection(connection);
         connection.addPacketListener(new SyncListener());
+        connection.addPacketListener(new ServerAddListener());
 
         String clusterKey = System.getenv("OC_CLUSTERKEY");
         S2NHandshakePacket handshakePacket = new S2NHandshakePacket();
