@@ -1,5 +1,6 @@
 package de.obsidiancloud.node.util;
 
+/** Aikar's flags for Paper servers. */
 public class AikarsFlags {
     /** JVM flags for Paper servers */
     public static final String[] DEFAULT =
