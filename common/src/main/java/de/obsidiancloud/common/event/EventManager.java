@@ -27,7 +27,8 @@ public class EventManager {
         head = unregister(head, listener);
     }
 
-    private static @Nullable Storage unregister(@Nullable Storage marker, @NotNull Listener<?> listener) {
+    private static @Nullable Storage unregister(
+            @Nullable Storage marker, @NotNull Listener<?> listener) {
         if (marker == null) {
             return null;
         } else if (marker.getListener() == listener) {
