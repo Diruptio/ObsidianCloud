@@ -41,6 +41,15 @@ public class Storage {
     }
 
     /**
+     * Get the listener.
+     *
+     * @return The listener.
+     */
+    public @NotNull Listener<Object> getListener() {
+        return listener;
+    }
+
+    /**
      * Get the next storage.
      *
      * @return The next storage.

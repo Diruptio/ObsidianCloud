@@ -18,7 +18,25 @@ public class EventManager {
         if (head != null) head.call(event);
     }
 
-    public static <T> void unregister(@NotNull Class<T> eventClass) {}
+    /**
+     * Unregister a listener.
+     *
+     * @param listener The listener to unregister.
+     */
+    public static void unregister(@NotNull Listener<?> listener) {
+        head = unregister(head, listener);
+    }
+
+    private static @Nullable Storage unregister(@Nullable Storage marker, @NotNull Listener<?> listener) {
+        if (marker == null) {
+            return null;
+        } else if (marker.getListener() == listener) {
+            return marker.getNext();
+        } else {
+            marker.setNext(unregister(marker.getNext(), listener));
+            return marker;
+        }
+    }
 
     /**
      * Register a listener.
