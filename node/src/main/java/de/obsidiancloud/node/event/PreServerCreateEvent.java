@@ -1,27 +1,27 @@
 package de.obsidiancloud.node.event;
 
 import de.obsidiancloud.common.event.Cancellable;
-import de.obsidiancloud.common.event.Event;
 import de.obsidiancloud.node.local.LocalOCServer;
 import org.jetbrains.annotations.NotNull;
 
-public class ServerCreateEvent implements Event, Cancellable {
-    private final @NotNull LocalOCServer server;
+/** This event is called before a server is created. */
+public class PreServerCreateEvent implements Cancellable {
     private boolean cancelled = false;
+    private final @NotNull LocalOCServer server;
 
     /**
-     * Create a new {@link ServerCreateEvent}.
+     * Create a new {@link PreServerCreateEvent}.
      *
-     * @param server The server that was created.
+     * @param server The server that will be created.
      */
-    public ServerCreateEvent(@NotNull LocalOCServer server) {
+    public PreServerCreateEvent(@NotNull LocalOCServer server) {
         this.server = server;
     }
 
     /**
-     * Get the server that was created.
+     * Get the server that will be created.
      *
-     * @return The server that was created.
+     * @return The server that will be created.
      */
     public @NotNull LocalOCServer getServer() {
         return server;

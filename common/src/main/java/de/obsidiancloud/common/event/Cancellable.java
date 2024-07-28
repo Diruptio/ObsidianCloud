@@ -1,19 +1,18 @@
 package de.obsidiancloud.common.event;
 
+/** Represents a cancelable event. */
 public interface Cancellable {
     /**
-     * Gets the cancellation state of this event. A cancelled event will not be executed in the
-     * server, but will still pass to other listeners.
+     * Check if the event is cancelled.
      *
-     * @return true if this event is cancelled, otherwise false
+     * @return {@code true} if the event is cancelled, otherwise {@code false}.
      */
     boolean isCancelled();
 
     /**
-     * Sets the cancellation state of this event. A cancelled event will not be executed in the
-     * server, but will still pass to other listeners.
+     * Set the event to be cancelled.
      *
-     * @param cancelled true if you wish to cancel this event, otherwise false
+     * @param cancelled {@code true} if the event should be cancelled, otherwise {@code false}.
      */
     void setCancelled(boolean cancelled);
 }

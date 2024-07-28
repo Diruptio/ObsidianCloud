@@ -9,6 +9,7 @@ import de.obsidiancloud.common.network.packets.CustomMessagePacket;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
+import de.obsidiancloud.platform.network.listener.ServerAddListener;
 import de.obsidiancloud.platform.network.listener.SyncListener;
 import de.obsidiancloud.platform.network.packets.N2SSyncPacket;
 import de.obsidiancloud.platform.network.packets.S2NHandshakePacket;
@@ -54,6 +55,7 @@ public class ObsidianCloudPlatform {
         Connection connection = NetworkHandler.initializeClientConnection(nodeHost, nodePort);
         api.getLocalNode().setConnection(connection);
         connection.addPacketListener(new SyncListener());
+        connection.addPacketListener(new ServerAddListener());
         connection.addPacketListener(new PlayerKickListener());
         connection.addPacketListener(new PlayerMessageListener());
 
