@@ -9,8 +9,7 @@ public class ConfigProperty<T> {
     private final @NotNull String key;
     private final @Nullable T defaultValue;
 
-    public ConfigProperty(
-            @NotNull ConfigSection section, @NotNull String key, @Nullable T defaultValue) {
+    public ConfigProperty(@NotNull ConfigSection section, @NotNull String key, @Nullable T defaultValue) {
         this.section = section;
         this.key = key;
         this.defaultValue = defaultValue;

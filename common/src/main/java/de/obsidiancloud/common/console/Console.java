@@ -27,21 +27,19 @@ public class Console implements Runnable {
     public Console(Logger logger, ConsoleCommandExecutor executor) throws IOException {
         this.logger = logger;
         this.executor = executor;
-        try (Terminal terminal =
-                TerminalBuilder.builder()
-                        .color(true)
-                        .system(true)
-                        .encoding(StandardCharsets.UTF_8)
-                        .build()) {
+        try (Terminal terminal = TerminalBuilder.builder()
+                .color(true)
+                .system(true)
+                .encoding(StandardCharsets.UTF_8)
+                .build()) {
             this.terminal = terminal;
         }
-        reader =
-                LineReaderBuilder.builder()
-                        .terminal(terminal)
-                        .completer(new CommandCompleter())
-                        .parser(new DefaultParser())
-                        .history(new DefaultHistory())
-                        .build();
+        reader = LineReaderBuilder.builder()
+                .terminal(terminal)
+                .completer(new CommandCompleter())
+                .parser(new DefaultParser())
+                .history(new DefaultHistory())
+                .build();
         reader.setAutosuggestion(LineReader.SuggestionType.COMPLETER);
         thread = new Thread(this);
     }

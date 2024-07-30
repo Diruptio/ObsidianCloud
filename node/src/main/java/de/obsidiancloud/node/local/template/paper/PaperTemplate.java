@@ -42,10 +42,7 @@ public class PaperTemplate extends OCTemplate {
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
                 for (Path file : files.toList()) {
-                    Files.copy(
-                            file,
-                            targetDirectory.resolve(file.getFileName()),
-                            StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file, targetDirectory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (Throwable exception) {
@@ -54,9 +51,8 @@ public class PaperTemplate extends OCTemplate {
     }
 
     private void download(@NotNull Path directory) throws IOException {
-        String url =
-                "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
-                        .formatted(version, build, version, build);
+        String url = "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
+                .formatted(version, build, version, build);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
@@ -83,7 +79,8 @@ public class PaperTemplate extends OCTemplate {
         Files.write(directory.resolve("eula.txt"), "eula=true".getBytes());
 
         // Second run
-        Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
+        Process process =
+                new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
             if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {

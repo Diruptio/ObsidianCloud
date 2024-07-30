@@ -59,21 +59,20 @@ public class NodeThread extends Thread {
         String name = task.name() + "-" + n;
 
         // Create server instance
-        LocalOCServer server =
-                new LocalOCServer(
-                        task.name(),
-                        name,
-                        task.type(),
-                        OCServer.LifecycleState.CREATING,
-                        OCServer.Status.OFFLINE,
-                        task.autoStart(),
-                        task.autoDelete(),
-                        task.executable(),
-                        task.memory(),
-                        task.jvmArgs(),
-                        task.args(),
-                        task.environmentVariables(),
-                        task.port());
+        LocalOCServer server = new LocalOCServer(
+                task.name(),
+                name,
+                task.type(),
+                OCServer.LifecycleState.CREATING,
+                OCServer.Status.OFFLINE,
+                task.autoStart(),
+                task.autoDelete(),
+                task.executable(),
+                task.memory(),
+                task.jvmArgs(),
+                task.args(),
+                task.environmentVariables(),
+                task.port());
 
         localNode.getServers().add(server);
         new ServerCreateThread(server, task.templates()).start();
@@ -81,8 +80,7 @@ public class NodeThread extends Thread {
 
     private void startServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
-                    && server.isAutoStart()) {
+            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE && server.isAutoStart()) {
                 server.start();
             }
         }
@@ -91,8 +89,7 @@ public class NodeThread extends Thread {
     private void deleteServers() {
         for (OCServer server : localNode.getServers()) {
             LocalOCServer localServer = (LocalOCServer) server;
-            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
-                    && localServer.isAutoDelete()) {
+            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE && localServer.isAutoDelete()) {
                 new ServerDeleteThread(localServer).run();
             }
         }

@@ -73,8 +73,7 @@ public abstract class Command {
      * @param args The arguments of the command
      * @return Returns a {@code List<String>} with the tab completions
      */
-    public @NotNull List<String> tabComplete(
-            @NotNull CommandExecutor executor, @NotNull String[] args) {
+    public @NotNull List<String> tabComplete(@NotNull CommandExecutor executor, @NotNull String[] args) {
         return new ArrayList<>();
     }
 

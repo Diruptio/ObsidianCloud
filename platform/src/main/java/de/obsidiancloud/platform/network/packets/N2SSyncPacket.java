@@ -36,16 +36,13 @@ public class N2SSyncPacket extends ReadablePacket {
                 String task = readString(byteBuf);
                 String serverName = readString(byteBuf);
                 OCServer.Type type = OCServer.Type.valueOf(readString(byteBuf));
-                OCServer.LifecycleState lifecycleState =
-                        OCServer.LifecycleState.valueOf(readString(byteBuf));
+                OCServer.LifecycleState lifecycleState = OCServer.LifecycleState.valueOf(readString(byteBuf));
                 OCServer.Status status = OCServer.Status.valueOf(readString(byteBuf));
                 boolean autoStart = byteBuf.readBoolean();
                 RemoteOCServer server =
-                        new RemoteOCServer(
-                                serverName, task, type, lifecycleState, status, autoStart, node);
+                        new RemoteOCServer(serverName, task, type, lifecycleState, status, autoStart, node);
                 for (int k = 0; k < byteBuf.readInt(); k++) {
-                    server.getPlayers()
-                            .add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf), node));
+                    server.getPlayers().add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf), node));
                 }
                 node.getServers().add(server);
             }

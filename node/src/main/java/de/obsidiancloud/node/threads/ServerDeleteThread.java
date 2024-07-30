@@ -19,10 +19,7 @@ public class ServerDeleteThread implements Runnable {
             FileSystemUtils.deleteRecursively(server.getDirectory());
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "An error occurred while deleting server " + server.getName(),
-                            exception);
+                    .log(Level.SEVERE, "An error occurred while deleting server " + server.getName(), exception);
         }
     }
 }

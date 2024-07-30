@@ -25,8 +25,7 @@ public class Pipeline {
      * @param handler The handler
      */
     public static void prepare(Channel channel, ChannelHandler handler) {
-        channel.pipeline()
-                .addLast(FRAME_DECODER, new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
+        channel.pipeline().addLast(FRAME_DECODER, new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 4));
         channel.pipeline().addLast(DECODER, new Decoder());
         channel.pipeline().addLast(FRAME_PREPENDER, new LengthFieldPrepender(4));
         channel.pipeline().addLast(ENCODER, new Encoder());

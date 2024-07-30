@@ -14,8 +14,7 @@ import java.util.List;
  */
 public class Decoder extends ByteToMessageDecoder {
     @Override
-    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list)
-            throws Exception {
+    protected void decode(ChannelHandlerContext ctx, ByteBuf byteBuf, List<Object> list) throws Exception {
         if (byteBuf instanceof EmptyByteBuf) return;
         if (!byteBuf.isReadable()) return;
 
@@ -26,11 +25,9 @@ public class Decoder extends ByteToMessageDecoder {
             return;
         }
 
-        Class<? extends Packet> packetClass =
-                NetworkHandler.getPacketRegistry().getPacketClass(packetName);
+        Class<? extends Packet> packetClass = NetworkHandler.getPacketRegistry().getPacketClass(packetName);
         if (packetClass == null) {
-            NetworkHandler.getLogger()
-                    .severe("Packet with name " + packetName + " was not registered");
+            NetworkHandler.getLogger().severe("Packet with name " + packetName + " was not registered");
             return;
         }
 

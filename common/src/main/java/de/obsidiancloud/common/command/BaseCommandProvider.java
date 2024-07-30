@@ -10,8 +10,7 @@ public class BaseCommandProvider implements CommandProvider {
     @Override
     public void registerCommand(@NotNull Command command) {
         if (commands.contains(command)) {
-            throw new IllegalArgumentException(
-                    "Command \"" + command.getName() + "\" is already registered");
+            throw new IllegalArgumentException("Command \"" + command.getName() + "\" is already registered");
         } else {
             commands.add(command);
         }

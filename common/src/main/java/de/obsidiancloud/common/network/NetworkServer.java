@@ -26,8 +26,7 @@ public class NetworkServer extends Thread {
      * @param port The port
      * @param clientConnectedCallback The callback which is called when a client connects
      */
-    public NetworkServer(
-            @NotNull String host, int port, @NotNull Consumer<Connection> clientConnectedCallback) {
+    public NetworkServer(@NotNull String host, int port, @NotNull Consumer<Connection> clientConnectedCallback) {
         this.host = host;
         this.port = port;
         this.clientConnectedCallback = clientConnectedCallback;
@@ -37,8 +36,7 @@ public class NetworkServer extends Thread {
     @Override
     public void run() {
         try {
-            ServerBootstrap serverBootstrap =
-                    NetworkHandler.buildServerBootstrap(clientConnectedCallback);
+            ServerBootstrap serverBootstrap = NetworkHandler.buildServerBootstrap(clientConnectedCallback);
 
             ChannelFuture f = serverBootstrap.bind(host, port).sync();
             logger.log(Level.INFO, "ObsidianCloud Server started on %s:%d".formatted(host, port));
@@ -47,8 +45,7 @@ public class NetworkServer extends Thread {
             channel.closeFuture().sync();
             logger.log(Level.INFO, "ObsidianCloud Server stopped");
         } catch (Exception exception) {
-            logger.log(
-                    Level.SEVERE, "An error occurred while starting the network server", exception);
+            logger.log(Level.SEVERE, "An error occurred while starting the network server", exception);
         }
     }
 
