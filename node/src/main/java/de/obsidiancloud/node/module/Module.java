@@ -1,17 +1,19 @@
-package de.obsidiancloud.common.addon;
+package de.obsidiancloud.node.module;
 
-import de.obsidiancloud.common.command.Command;
-import de.obsidiancloud.common.command.CommandProvider;
-import de.obsidiancloud.common.config.Config;
-import de.obsidiancloud.common.config.ConfigProvider;
+import de.obsidiancloud.node.command.Command;
+import de.obsidiancloud.node.command.CommandProvider;
+import de.obsidiancloud.node.config.Config;
+import de.obsidiancloud.node.config.ConfigProvider;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-public class Addon implements CommandProvider, ConfigProvider {
+/** A module for the node */
+public class Module implements CommandProvider, ConfigProvider {
     private final List<Command> commands = new ArrayList<>();
-    private AddonManifest manifest;
+    private ModuleManifest manifest;
     private Config config = null;
 
     public void onEnable() {}
@@ -53,12 +55,17 @@ public class Addon implements CommandProvider, ConfigProvider {
         return null;
     }
 
+    public @NotNull Logger getLogger() {
+        return Logger.getLogger(manifest.getName());
+    }
+
     /**
      * Gets the manifest of the addon
      *
      * @return The manifest of the addon
      */
-    public AddonManifest getManifest() {
+    @SuppressWarnings("unused")
+    public ModuleManifest getManifest() {
         return manifest;
     }
 

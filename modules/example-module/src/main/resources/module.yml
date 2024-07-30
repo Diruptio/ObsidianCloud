@@ -1,0 +1,6 @@
+name: Example
+main: de.obsidiancloud.module.example.ExampleModule
+version: ${version}
+description: Example module
+authors:
+  - Fabi.exe

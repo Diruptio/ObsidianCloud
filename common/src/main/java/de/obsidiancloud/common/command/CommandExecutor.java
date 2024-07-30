@@ -10,17 +10,7 @@ public interface CommandExecutor {
      *
      * @param line The command line
      */
-    default void execute(@NotNull String line) {
-        String[] parts = line.split(" ");
-        Command command = Command.getCommand(parts[0]);
-        if (command == null) {
-            sendMessage("§cCommand \"" + command + "\" was not found");
-        } else {
-            String[] args = new String[parts.length - 1];
-            System.arraycopy(parts, 1, args, 0, args.length);
-            command.execute(this, parts);
-        }
-    }
+    void execute(@NotNull String line);
 
     /**
      * Sends a message to the command executor

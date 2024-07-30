@@ -1,8 +1,8 @@
-package de.obsidiancloud.common.config;
+package de.obsidiancloud.node.config;
 
-import de.obsidiancloud.common.config.serializer.ConfigSerializer;
-import de.obsidiancloud.common.config.serializer.JsonConfigSerializer;
-import de.obsidiancloud.common.config.serializer.YamlConfigSerializer;
+import de.obsidiancloud.node.config.serializer.ConfigSerializer;
+import de.obsidiancloud.node.config.serializer.JsonConfigSerializer;
+import de.obsidiancloud.node.config.serializer.YamlConfigSerializer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;

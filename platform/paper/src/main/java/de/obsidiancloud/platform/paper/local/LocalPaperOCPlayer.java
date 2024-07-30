@@ -41,6 +41,11 @@ public class LocalPaperOCPlayer extends OCPlayer {
     }
 
     @Override
+    public void execute(@NotNull String line) {
+        // TODO: Send packet to getNode() to execute command
+    }
+
+    @Override
     public void kick(@Nullable Component message) {
         Plugin plugin = ObsidianCloudPaper.getInstance();
         if (message == null) {

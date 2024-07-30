@@ -1,6 +1,6 @@
-package de.obsidiancloud.common.console;
+package de.obsidiancloud.node.console;
 
-import de.obsidiancloud.common.command.Command;
+import de.obsidiancloud.node.command.Command;
 import java.util.List;
 import org.jline.reader.Candidate;
 import org.jline.reader.Completer;
