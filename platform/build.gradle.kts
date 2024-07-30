@@ -11,6 +11,11 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
 }
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks {
     compileJava {
         options.encoding = "UTF-8"

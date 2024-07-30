@@ -8,7 +8,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
+    compileOnly(project(":common"))
     compileOnly(project(":platform"))
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.1.0")
