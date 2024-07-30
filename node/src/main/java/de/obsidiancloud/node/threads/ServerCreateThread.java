@@ -40,10 +40,7 @@ public class ServerCreateThread extends Thread {
             server.setStatus(LocalOCServer.Status.OFFLINE);
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "An error occurred while creating server " + server.getName(),
-                            exception);
+                    .log(Level.SEVERE, "An error occurred while creating server " + server.getName(), exception);
         }
     }
 }

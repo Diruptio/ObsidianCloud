@@ -20,8 +20,7 @@ public class ObsidianCloudPaper extends JavaPlugin {
         String serverTask = System.getenv("OC_SERVER_TASK");
         String serverName = System.getenv("OC_SERVER_NAME");
         boolean serverAutoStart = Boolean.parseBoolean(System.getenv("OC_SERVER_AUTOSTART"));
-        ObsidianCloudPlatform.onEnable(
-                new LocalPaperOCServer(serverTask, serverName, serverAutoStart));
+        ObsidianCloudPlatform.onEnable(new LocalPaperOCServer(serverTask, serverName, serverAutoStart));
 
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
     }

@@ -26,8 +26,7 @@ public class ShutdownCommand extends Command {
             ObsidianCloudNode.shutdown();
         } else {
             lastUsed.put(executor, System.currentTimeMillis());
-            executor.sendMessage(
-                    "§cAre you sure? Type the command again in the next §e10 seconds §cto confirm.");
+            executor.sendMessage("§cAre you sure? Type the command again in the next §e10 seconds §cto confirm.");
         }
     }
 }

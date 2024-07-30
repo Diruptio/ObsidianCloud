@@ -87,7 +87,8 @@ public class LocalOCServer extends OCServer {
             builder.environment().put("OC_NODE_HOST", "127.0.0.1");
             int nodePort = ObsidianCloudNode.getNetworkServer().getPort();
             builder.environment().put("OC_NODE_PORT", String.valueOf(nodePort));
-            builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
+            builder.environment()
+                    .put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
             builder.environment().put("OC_SERVER_TASK", getTask());
             builder.environment().put("OC_SERVER_NAME", getName());
             builder.environment().put("OC_SERVER_AUTOSTART", String.valueOf(isAutoStart()));
@@ -178,8 +179,7 @@ public class LocalOCServer extends OCServer {
                 while (process.isAlive()) {
                     String line = reader.readLine();
                     if (screen && line != null) {
-                        ObsidianCloudNode.getLogger()
-                                .info("[%s] %s".formatted(LocalOCServer.this.getName(), line));
+                        ObsidianCloudNode.getLogger().info("[%s] %s".formatted(LocalOCServer.this.getName(), line));
                     }
                 }
             } catch (Throwable ignored) {

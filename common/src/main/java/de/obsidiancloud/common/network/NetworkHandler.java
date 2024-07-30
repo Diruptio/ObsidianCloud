@@ -59,8 +59,7 @@ public class NetworkHandler {
      * @param clientConnectedCallback The callback which is called when a client connects
      * @return The server bootstrap
      */
-    public static @NotNull ServerBootstrap buildServerBootstrap(
-            @NotNull Consumer<Connection> clientConnectedCallback) {
+    public static @NotNull ServerBootstrap buildServerBootstrap(@NotNull Consumer<Connection> clientConnectedCallback) {
         return new ServerBootstrap()
                 .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
@@ -68,17 +67,13 @@ public class NetworkHandler {
                 .childOption(ChannelOption.SO_LINGER, 0)
                 .childOption(ChannelOption.SO_KEEPALIVE, true)
                 .childOption(ChannelOption.ALLOCATOR, new PooledByteBufAllocator(true))
-                .childOption(
-                        ChannelOption.WRITE_BUFFER_WATER_MARK,
-                        new WriteBufferWaterMark(8 * 1024, 32 * 1024))
-                .childHandler(
-                        new ChannelInitializer<>() {
-                            @Override
-                            protected void initChannel(Channel channel) {
-                                Pipeline.prepare(
-                                        channel, new ServerChannelHandler(clientConnectedCallback));
-                            }
-                        });
+                .childOption(ChannelOption.WRITE_BUFFER_WATER_MARK, new WriteBufferWaterMark(8 * 1024, 32 * 1024))
+                .childHandler(new ChannelInitializer<>() {
+                    @Override
+                    protected void initChannel(Channel channel) {
+                        Pipeline.prepare(channel, new ServerChannelHandler(clientConnectedCallback));
+                    }
+                });
     }
 
     /**
@@ -88,17 +83,13 @@ public class NetworkHandler {
      * @return The client bootstrap
      */
     public static @NotNull Bootstrap buildClientBootstrap(@NotNull Connection connection) {
-        return new Bootstrap()
-                .group(WORKER_GROUP)
-                .channel(CLIENT_CHANNEL)
-                .handler(
-                        new ChannelInitializer<>() {
-                            @Override
-                            protected void initChannel(Channel channel) {
-                                channel.config().setOption(ChannelOption.IP_TOS, 0x18);
-                                Pipeline.prepare(channel, new ClientChannelHandler(connection));
-                            }
-                        });
+        return new Bootstrap().group(WORKER_GROUP).channel(CLIENT_CHANNEL).handler(new ChannelInitializer<>() {
+            @Override
+            protected void initChannel(Channel channel) {
+                channel.config().setOption(ChannelOption.IP_TOS, 0x18);
+                Pipeline.prepare(channel, new ClientChannelHandler(connection));
+            }
+        });
     }
 
     /**

@@ -31,8 +31,7 @@ public class ScreenCommand extends Command {
         if (server instanceof LocalOCServer localServer) {
             if (localServer.isScreen()) {
                 localServer.setScreen(false);
-                executor.sendMessage(
-                        "§aScreen mirroring of §e" + args[0] + " §ahas been disabled.");
+                executor.sendMessage("§aScreen mirroring of §e" + args[0] + " §ahas been disabled.");
             } else {
                 localServer.setScreen(true);
                 executor.sendMessage("§aScreen mirroring of §e" + args[0] + " §ahas been enabled.");
