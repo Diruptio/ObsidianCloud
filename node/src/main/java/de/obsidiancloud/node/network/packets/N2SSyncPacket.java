@@ -29,6 +29,8 @@ public class N2SSyncPacket extends WritablePacket {
                 writeString(byteBuf, server.getLifecycleState().toString());
                 writeString(byteBuf, server.getStatus().toString());
                 byteBuf.writeBoolean(server.isAutoStart());
+                byteBuf.writeInt(server.getMemory());
+                byteBuf.writeInt(server.getPort());
                 byteBuf.writeInt(server.getPlayers().size());
                 for (OCPlayer player : server.getPlayers()) {
                     writeUUID(byteBuf, player.getUUID());

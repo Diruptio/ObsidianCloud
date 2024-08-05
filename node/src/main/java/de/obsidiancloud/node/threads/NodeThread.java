@@ -3,6 +3,8 @@ package de.obsidiancloud.node.threads;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.event.EventManager;
+import de.obsidiancloud.node.event.PreServerCreateEvent;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import org.jetbrains.annotations.NotNull;
@@ -74,6 +76,10 @@ public class NodeThread extends Thread {
                         task.args(),
                         task.environmentVariables(),
                         task.port());
+
+        PreServerCreateEvent event = new PreServerCreateEvent(server);
+        EventManager.call(event);
+        if (event.isCancelled()) return;
 
         localNode.getServers().add(server);
         new ServerCreateThread(server, task.templates()).start();
