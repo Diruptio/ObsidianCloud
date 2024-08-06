@@ -27,10 +27,17 @@ val generateSources =
     tasks.register<Copy>("generateSources") {
         val paperTask = project(":platform:paper").tasks.named("reobfJar").get()
         dependsOn(paperTask)
+        val velocityTask = project(":platform:velocity").tasks.named("jar").get()
+        dependsOn(velocityTask)
         doFirst { delete(layout.buildDirectory.dir("generated/sources/java").get()) }
         from(file("src/main/templates"))
         into(layout.buildDirectory.dir("generated/sources/java"))
-        expand(mapOf("paper_platform_file" to paperTask.outputs.files.first().name))
+        expand(
+            mapOf(
+                "paper_platform_file" to paperTask.outputs.files.first().name,
+                "velocity_platform_file" to velocityTask.outputs.files.first().name,
+            ),
+        )
     }
 sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
 

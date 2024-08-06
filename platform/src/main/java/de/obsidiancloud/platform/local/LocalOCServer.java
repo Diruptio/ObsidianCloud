@@ -5,6 +5,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ public abstract class LocalOCServer extends OCServer {
                 new ArrayList<>(),
                 new HashMap<>(),
                 -1,
-                new ArrayList<>());
+                new HashSet<>());
     }
 
     @Override

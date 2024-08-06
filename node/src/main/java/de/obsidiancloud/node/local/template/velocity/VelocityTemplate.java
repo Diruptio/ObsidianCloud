@@ -1,4 +1,4 @@
-package de.obsidiancloud.node.local.template.paper;
+package de.obsidiancloud.node.local.template.velocity;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -19,14 +19,14 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.FileSystemUtils;
 
-public class PaperTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
+public class VelocityTemplate extends OCTemplate {
+    private final Path templatesDirectory = Path.of("generated-templates").resolve("velocity");
     private final Logger logger = ObsidianCloudNode.getLogger();
     private final String version;
     private final String build;
 
-    public PaperTemplate(@NotNull String version, @NotNull String build) {
-        super("paper/%s/%s".formatted(version, build));
+    public VelocityTemplate(@NotNull String version, @NotNull String build) {
+        super("velocity/%s/%s".formatted(version, build));
         this.version = version;
         this.build = build;
     }
@@ -55,7 +55,7 @@ public class PaperTemplate extends OCTemplate {
 
     private void download(@NotNull Path directory) throws IOException {
         String url =
-                "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
+                "https://api.papermc.io/v2/projects/velocity/versions/%s/builds/%s/downloads/velocity-%s-%s.jar"
                         .formatted(version, build, version, build);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
@@ -72,21 +72,18 @@ public class PaperTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(Flags.DEFAULT));
+        command.addAll(List.of(Flags.VELOCITY));
         command.add("-jar");
         command.add("server.jar");
 
         // First run
         new ProcessBuilder(command).directory(directory.toFile()).start().waitFor();
 
-        // Accept EULA
-        Files.write(directory.resolve("eula.txt"), "eula=true".getBytes());
-
         // Second run
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
-            if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
+            if (reader.readLine().matches(".*Done \\(.*\\)!.*")) {
                 process.getOutputStream().write("stop\n".getBytes());
                 process.getOutputStream().flush();
                 break;
@@ -97,8 +94,5 @@ public class PaperTemplate extends OCTemplate {
 
         // Clean up
         FileSystemUtils.deleteRecursively(directory.resolve("logs"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_nether"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_the_end"));
     }
 }

@@ -2,6 +2,7 @@ package de.obsidiancloud.common;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +20,8 @@ public abstract class OCServer {
     private final List<String> args;
     private final Map<String, String> environmentVariables;
     private final int port;
-    private final List<OCPlayer> players;
+    private final Set<OCPlayer> players;
+    private boolean shouldBeRegisteredInProxy; // still need to implement that
 
     /**
      * Create a new OCServer with the specified parameters.
@@ -51,7 +53,7 @@ public abstract class OCServer {
             @NotNull List<String> args,
             @NotNull Map<String, String> environmentVariables,
             int port,
-            @NotNull List<OCPlayer> players) {
+            @NotNull Set<OCPlayer> players) {
         this.task = task;
         this.name = name;
         this.type = type;
@@ -156,6 +158,13 @@ public abstract class OCServer {
     }
 
     /**
+     * @return whether the Server should automatically be registered in the Proxy or not.
+     */
+    public boolean shouldBeRegisteredInProxy() {
+        return shouldBeRegisteredInProxy;
+    }
+
+    /**
      * Gets the java executable of the server.
      *
      * @return Returns the java executable of the server.
@@ -214,7 +223,7 @@ public abstract class OCServer {
      *
      * @return Returns the list of players currently connected to the server.
      */
-    public @NotNull List<OCPlayer> getPlayers() {
+    public @NotNull Set<OCPlayer> getPlayers() {
         return players;
     }
 

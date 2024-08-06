@@ -8,11 +8,12 @@ public interface ConfigProvider {
      *
      * @return Returns the config if it has been loaded, otherwise {@code null}.
      */
-    public @Nullable Config getConfig();
+    @Nullable
+    Config getConfig();
 
     /** Reloads the config. */
-    public void reloadConfig();
+    void reloadConfig();
 
     /** Saves the config. */
-    public void saveConfig();
+    void saveConfig();
 }
