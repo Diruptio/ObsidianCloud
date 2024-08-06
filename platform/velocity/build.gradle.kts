@@ -14,6 +14,8 @@ dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
+    implementation(project(":common"))
+    implementation(project(":platform"))
 }
 
 val generateSources =

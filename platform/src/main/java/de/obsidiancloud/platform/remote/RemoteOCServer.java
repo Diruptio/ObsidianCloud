@@ -4,6 +4,8 @@ import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,7 +33,7 @@ public class RemoteOCServer extends OCServer {
                 new ArrayList<>(),
                 new HashMap<>(),
                 -1,
-                new ArrayList<>());
+                new HashSet<>());
         this.node = node;
     }
 

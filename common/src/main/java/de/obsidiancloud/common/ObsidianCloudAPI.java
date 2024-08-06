@@ -1,6 +1,7 @@
 package de.obsidiancloud.common;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -108,7 +109,7 @@ public abstract class ObsidianCloudAPI {
      * @return A list of all players.
      */
     public @NotNull List<OCPlayer> getPlayers() {
-        return getServers().stream().map(OCServer::getPlayers).flatMap(List::stream).toList();
+        return getServers().stream().map(OCServer::getPlayers).flatMap(Set::stream).toList();
     }
 
     /**

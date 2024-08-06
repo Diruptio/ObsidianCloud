@@ -12,6 +12,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,7 @@ public class LocalOCServer extends OCServer {
                 args,
                 environmentVariables,
                 port,
-                new ArrayList<>());
+                new HashSet<>());
         this.autoDelete = autoDelete;
     }
 
