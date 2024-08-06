@@ -12,17 +12,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-public class PaperPlatformTemplate extends OCTemplate {
+public class VelocityPlatformTemplate extends OCTemplate {
     private final Logger logger = ObsidianCloudNode.getLogger();
 
-    public PaperPlatformTemplate(@NotNull String path) {
+    public VelocityPlatformTemplate(@NotNull String path) {
         super(path);
     }
 
     @Override
     public void apply(@NotNull Path targetDirectory) {
         try {
-            String name = NodeBuildConstants.PAPER_PLATFORM_FILE;
+            String name = NodeBuildConstants.VELOCITY_PLATFORM_FILE;
             Path pluginsDirectory = targetDirectory.resolve("plugins");
             if (!Files.exists(pluginsDirectory)) Files.createDirectories(pluginsDirectory);
             Path target = pluginsDirectory.resolve(name);

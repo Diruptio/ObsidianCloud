@@ -1,5 +1,5 @@
 package de.obsidiancloud.platform.velocity;
 
-public class BuildConstants {
+public class VelocityBuildConstants {
     public static final String VERSION = "${version}";
 }

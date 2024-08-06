@@ -9,13 +9,10 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
+    implementation(project(":platform"))
     compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("net.kyori:adventure-api:4.17.0")
-    implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
-    implementation(project(":common"))
-    implementation(project(":platform"))
 }
 
 val generateSources =

@@ -55,8 +55,6 @@ public class VelocityTemplate extends OCTemplate {
 
     private void download(@NotNull Path directory) throws IOException {
         String url =
-                // optional:
-                // "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-%s-%s.jar"
                 "https://api.papermc.io/v2/projects/velocity/versions/%s/builds/%s/downloads/velocity-%s-%s.jar"
                         .formatted(version, build, version, build);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -81,14 +79,11 @@ public class VelocityTemplate extends OCTemplate {
         // First run
         new ProcessBuilder(command).directory(directory.toFile()).start().waitFor();
 
-        // Accept EULA
-        Files.write(directory.resolve("eula.txt"), "eula=true".getBytes());
-
         // Second run
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
-            if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
+            if (reader.readLine().matches(".*Done \\(.*\\)!.*")) {
                 process.getOutputStream().write("stop\n".getBytes());
                 process.getOutputStream().flush();
                 break;

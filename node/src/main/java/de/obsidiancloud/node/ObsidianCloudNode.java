@@ -28,6 +28,7 @@ import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
+import de.obsidiancloud.node.local.template.velocity.VelocityTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.N2SSyncPacket;
 import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
@@ -168,6 +169,8 @@ public class ObsidianCloudNode {
         templateProviders.add(new PlatformTemplateProvider());
         templateProviders.add(new PaperTemplateProvider());
         templateProviders.add(new PurpurTemplateProvider());
+        // TODO: FabricTemplateProvider
+        templateProviders.add(new VelocityTemplateProvider());
     }
 
     private static void loadTasks() {

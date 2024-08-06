@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
-import de.obsidiancloud.node.local.template.paper.PaperTemplate;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -63,7 +62,7 @@ public class VelocityTemplateProvider implements TemplateProvider {
             build = builds.get(version).get(builds.get(version).size() - 1);
         } else if (!builds.get(version).contains(build)) return null;
 
-        return new PaperTemplate(version, build);
+        return new VelocityTemplate(version, build);
     }
 
     private void loadBuilds(@NotNull String version) {
