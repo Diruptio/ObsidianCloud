@@ -5,7 +5,6 @@ import de.obsidiancloud.common.OCServer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

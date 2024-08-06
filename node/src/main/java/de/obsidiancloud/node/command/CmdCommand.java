@@ -6,13 +6,10 @@ import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 public class CmdCommand extends Command {
     public CmdCommand() {
@@ -44,7 +41,8 @@ public class CmdCommand extends Command {
                     writer.flush();
                 }
             } else {
-                ObsidianCloudNode.getLogger().warning("Cannot send command, the server is not running.");
+                ObsidianCloudNode.getLogger()
+                        .warning("Cannot send command, the server is not running.");
             }
         } catch (IOException exception) {
             exception.printStackTrace(System.err);

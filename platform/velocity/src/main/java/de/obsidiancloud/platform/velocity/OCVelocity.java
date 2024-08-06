@@ -10,9 +10,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import de.obsidiancloud.platform.ObsidianCloudPlatform;
 import de.obsidiancloud.platform.velocity.listener.PlayerListener;
 import de.obsidiancloud.platform.velocity.proxy.ProxyOCServer;
-import org.slf4j.Logger;
-
 import java.nio.file.Path;
+import org.slf4j.Logger;
 
 @Plugin(id = "ocvelocity", name = "OCVelocity", version = BuildConstants.VERSION)
 public class OCVelocity {
@@ -33,8 +32,7 @@ public class OCVelocity {
         String proxyTask = System.getenv("OC_PROXY_TASK");
         String proxyName = System.getenv("OC_PROXY_NAME");
         boolean serverAutoStart = Boolean.parseBoolean(System.getenv("OC_PROXY_AUTOSTART"));
-        ObsidianCloudPlatform.onEnable(
-                new ProxyOCServer(proxyTask, proxyName, serverAutoStart));
+        ObsidianCloudPlatform.onEnable(new ProxyOCServer(proxyTask, proxyName, serverAutoStart));
     }
 
     @Subscribe

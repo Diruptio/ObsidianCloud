@@ -3,7 +3,6 @@ package de.obsidiancloud.common;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,6 +102,7 @@ public abstract class OCServer {
     public @NotNull String getName() {
         return name;
     }
+
     /**
      * Gets the type of the server.
      *
@@ -163,6 +163,7 @@ public abstract class OCServer {
     public boolean shouldBeRegisteredInProxy() {
         return shouldBeRegisteredInProxy;
     }
+
     /**
      * Gets the java executable of the server.
      *

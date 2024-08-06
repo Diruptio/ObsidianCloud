@@ -2,6 +2,7 @@ package de.obsidiancloud.node.local.template.paper;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
+import de.obsidiancloud.node.util.Flags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,8 +16,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
-
-import de.obsidiancloud.node.util.Flags;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.util.FileSystemUtils;
 

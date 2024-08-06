@@ -7,9 +7,7 @@ import com.velocitypowered.api.proxy.Player;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.platform.PlatformObsidianCloudAPI;
 import de.obsidiancloud.platform.network.packets.S2NPlayerJoinPacket;
-import de.obsidiancloud.platform.network.packets.S2NPlayerJoinProxyPacket;
 import de.obsidiancloud.platform.network.packets.S2NPlayerLeavePacket;
-import de.obsidiancloud.platform.network.packets.S2NPlayerLeaveProxyPacket;
 import de.obsidiancloud.platform.velocity.proxy.ProxiedOCPlayer;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +15,8 @@ public class PlayerListener {
     private final PlatformObsidianCloudAPI api = (PlatformObsidianCloudAPI) ObsidianCloudAPI.get();
 
     @Subscribe
-    public void onJoin(@NotNull LoginEvent e) { //also Post or prelogin event exists joaaaaaaaaaaaaaaaaa
+    public void onJoin(
+            @NotNull LoginEvent e) { // also Post or prelogin event exists joaaaaaaaaaaaaaaaaa
         Player player = e.getPlayer();
         api.getLocalServer().getPlayers().add(new ProxiedOCPlayer(player));
         S2NPlayerJoinPacket packet = new S2NPlayerJoinPacket();
@@ -25,6 +24,7 @@ public class PlayerListener {
         packet.setName(player.getUsername());
         api.getLocalNode().getConnection().send(packet);
     }
+
     @Subscribe
     public void onQuit(@NotNull DisconnectEvent e) {
         Player player = e.getPlayer();

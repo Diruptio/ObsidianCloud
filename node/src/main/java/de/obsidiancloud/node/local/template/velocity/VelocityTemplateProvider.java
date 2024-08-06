@@ -7,8 +7,6 @@ import com.google.gson.JsonStreamParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
 import de.obsidiancloud.node.local.template.paper.PaperTemplate;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 
 public class VelocityTemplateProvider implements TemplateProvider {
     private final List<String> versions = new ArrayList<>();

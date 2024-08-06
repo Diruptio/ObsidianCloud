@@ -3,9 +3,6 @@ package de.obsidiancloud.node.local.template.velocity;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.util.Flags;
-import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,6 +16,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.jetbrains.annotations.NotNull;
+import org.springframework.util.FileSystemUtils;
 
 public class VelocityTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("velocity");
@@ -56,7 +55,8 @@ public class VelocityTemplate extends OCTemplate {
 
     private void download(@NotNull Path directory) throws IOException {
         String url =
-                //optional: "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-%s-%s.jar"
+                // optional:
+                // "https://ci.velocitypowered.com/job/velocity/lastSuccessfulBuild/artifact/proxy/build/libs/velocity-%s-%s.jar"
                 "https://api.papermc.io/v2/projects/velocity/versions/%s/builds/%s/downloads/velocity-%s-%s.jar"
                         .formatted(version, build, version, build);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -99,6 +99,5 @@ public class VelocityTemplate extends OCTemplate {
 
         // Clean up
         FileSystemUtils.deleteRecursively(directory.resolve("logs"));
-
     }
 }

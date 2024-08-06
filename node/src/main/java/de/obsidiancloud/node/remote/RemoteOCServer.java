@@ -1,7 +1,6 @@
 package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCServer;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;

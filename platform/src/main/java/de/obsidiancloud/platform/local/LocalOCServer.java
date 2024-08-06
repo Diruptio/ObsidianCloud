@@ -6,7 +6,6 @@ import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

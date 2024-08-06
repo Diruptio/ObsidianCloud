@@ -6,11 +6,10 @@ import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.platform.velocity.OCVelocity;
+import java.util.Objects;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Objects;
 
 public class ProxiedOCPlayer extends OCPlayer {
     private final @NotNull Player player;
@@ -43,7 +42,12 @@ public class ProxiedOCPlayer extends OCPlayer {
     @Override
     public void kick(@Nullable Component message) {
         ProxyServer plugin = OCVelocity.getServer();
-        plugin.getScheduler().buildTask(plugin, () -> player.disconnect(Objects.requireNonNullElseGet(message, Component::empty)));
+        plugin.getScheduler()
+                .buildTask(
+                        plugin,
+                        () ->
+                                player.disconnect(
+                                        Objects.requireNonNullElseGet(message, Component::empty)));
     }
 
     @Override
