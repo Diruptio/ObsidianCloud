@@ -72,7 +72,7 @@ public class VelocityTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(Flags.VELOCITY));
+        command.addAll(List.of(Flags.VELOCITY_FLAGS));
         command.add("-jar");
         command.add("server.jar");
 

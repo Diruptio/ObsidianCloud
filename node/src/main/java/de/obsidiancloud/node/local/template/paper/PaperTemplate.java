@@ -72,7 +72,7 @@ public class PaperTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(Flags.DEFAULT));
+        command.addAll(List.of(Flags.AIKARS_FLAGS));
         command.add("-jar");
         command.add("server.jar");
 

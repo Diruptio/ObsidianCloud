@@ -158,7 +158,6 @@ public class ObsidianCloudNode {
         commandProvider.registerCommand(new HelpCommand());
         commandProvider.registerCommand(new KickCommand());
         commandProvider.registerCommand(new ListCommand());
-        commandProvider.registerCommand(new HelpCommand());
         commandProvider.registerCommand(new ScreenCommand());
         commandProvider.registerCommand(new ShutdownCommand());
     }

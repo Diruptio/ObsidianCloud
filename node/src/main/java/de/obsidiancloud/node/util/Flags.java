@@ -3,7 +3,7 @@ package de.obsidiancloud.node.util;
 /** The default flags for the JVM. */
 public class Flags {
 
-    public static final String[] DEFAULT =
+    public static final String[] AIKARS_FLAGS =
             new String[] {
                 "-XX:+UseG1GC",
                 "-XX:+ParallelRefProcEnabled",
@@ -26,7 +26,7 @@ public class Flags {
                 "-Dusing.aikars.flags=https://mcflags.emc.gs",
                 "-Daikars.new.flags=true"
             };
-    public static final String[] VELOCITY =
+    public static final String[] VELOCITY_FLAGS =
             new String[] {
                 "-XX:+UseG1GC",
                 "-XX:G1HeapRegionSize=4M",
