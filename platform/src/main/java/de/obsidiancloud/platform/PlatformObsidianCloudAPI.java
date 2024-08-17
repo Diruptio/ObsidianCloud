@@ -9,6 +9,7 @@ import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import de.obsidiancloud.platform.remote.RemoteOCNode;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 
 public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
@@ -53,5 +54,17 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
             servers.addAll(node.getServers());
         }
         return servers;
+    }
+
+    @Override
+    public @NotNull OCServer createServer(@NotNull OCTask task) {
+        // TODO: Send Packet to node
+        throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public @NotNull CompletableFuture<Void> deleteServer(@NotNull OCServer server) {
+        // TODO: Send Packet to node
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 }
