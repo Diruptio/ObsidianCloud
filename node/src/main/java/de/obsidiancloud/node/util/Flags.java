@@ -32,6 +32,7 @@ public class Flags {
                 "-XX:G1HeapRegionSize=4M",
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+ParallelRefProcEnabled",
-                "-XX:+AlwaysPreTouch"
+                "-XX:+AlwaysPreTouch",
+                "-XX:MaxInlineLevel=15" //improves performance
             };
 }
