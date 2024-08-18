@@ -58,9 +58,12 @@ public class TaskParser {
             }
             if (command.equalsIgnoreCase("JVM_ARGS") && parts.length >= 2) {
                 for (int i = 1; i < parts.length; i++) {
-                    if (parts[i].equals("%Flags%")) {
+                    if (parts[i].equals("%AikarsFlags%")) {
                         jvmArgs.addAll(List.of(Flags.AIKARS_FLAGS));
-                    } else {
+                    } else if (parts[i].equals("%VelocityFlags%")) {
+                        jvmArgs.addAll(List.of(Flags.VELOCITY_FLAGS));
+                    }
+                    else {
                         jvmArgs.add(parts[i]);
                     }
                 }
