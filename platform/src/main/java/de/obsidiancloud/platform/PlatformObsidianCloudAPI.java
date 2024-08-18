@@ -4,6 +4,10 @@ import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.network.Connection;
+import de.obsidiancloud.common.network.PacketListener;
+import de.obsidiancloud.common.network.packets.ServerDeletePacket;
+import de.obsidiancloud.common.network.packets.ServerDeletedPacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
 import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import de.obsidiancloud.platform.remote.RemoteOCNode;
@@ -57,14 +61,31 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
     }
 
     @Override
-    public @NotNull OCServer createServer(@NotNull OCTask task) {
+    public @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+
         // TODO: Send Packet to node
         throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
     public @NotNull CompletableFuture<Void> deleteServer(@NotNull OCServer server) {
-        // TODO: Send Packet to node
-        throw new UnsupportedOperationException("Not implemented yet");
+        String name = server.getName();
+        Connection connection = localNode.getConnection();
+
+        ServerDeletePacket packet = new ServerDeletePacket();
+        packet.setName(name);
+        connection.send(packet);
+
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        PacketListener<ServerDeletedPacket> listener =
+                (serverDeletedPacket, con) -> {
+                    if (serverDeletedPacket.getName().equals(name)) {
+                        future.complete(null);
+                    }
+                };
+        future.thenRun(() -> connection.removePacketListener(listener));
+        connection.addPacketListener(listener);
+
+        return future;
     }
 }

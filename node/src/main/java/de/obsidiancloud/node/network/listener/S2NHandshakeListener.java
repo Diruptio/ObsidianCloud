@@ -20,6 +20,7 @@ public class S2NHandshakeListener implements PacketListener<S2NHandshakePacket> 
                     ((LocalOCServer) server).setConnection(connection);
                     connection.addPacketListener(new S2NPlayerJoinListener());
                     connection.addPacketListener(new S2NPlayerLeaveListener());
+                    connection.addPacketListener(new ServerDeleteListener());
                     N2SSyncPacket syncPacket = new N2SSyncPacket();
                     syncPacket.setTarget(server);
                     syncPacket.setNodes(ObsidianCloudAPI.get().getNodes());
