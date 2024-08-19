@@ -4,9 +4,8 @@ import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerCommand extends Command {
 
@@ -20,11 +19,11 @@ public class ServerCommand extends Command {
         final int argCount = args.length;
 
         if (argCount == 0) {
-            executor.sendMessage("Servers: " + ObsidianCloudAPI.get()
-                    .getServers()
-                    .stream()
-                    .map(OCServer::getName)
-                    .collect(Collectors.joining(", ")));
+            executor.sendMessage(
+                    "Servers: "
+                            + ObsidianCloudAPI.get().getServers().stream()
+                                    .map(OCServer::getName)
+                                    .collect(Collectors.joining(", ")));
 
             return;
         }
@@ -88,7 +87,8 @@ public class ServerCommand extends Command {
 
             case "set" -> {
                 if (argCount == 2) {
-                    executor.sendMessage("server " + serverArg + " set <name|autostart|memory|env>");
+                    executor.sendMessage(
+                            "server " + serverArg + " set <name|autostart|memory|env>");
 
                     return;
                 }
@@ -106,7 +106,8 @@ public class ServerCommand extends Command {
 
                     case "autostart" -> {
                         if (argCount == 3) {
-                            executor.sendMessage("server " + serverArg + " set autostart <true|false>");
+                            executor.sendMessage(
+                                    "server " + serverArg + " set autostart <true|false>");
 
                             return;
                         }
@@ -116,7 +117,8 @@ public class ServerCommand extends Command {
 
                     case "memory" -> {
                         if (argCount == 3) {
-                            executor.sendMessage("server " + serverArg + " set memory <memory in mb>");
+                            executor.sendMessage(
+                                    "server " + serverArg + " set memory <memory in mb>");
 
                             return;
                         }
@@ -134,7 +136,8 @@ public class ServerCommand extends Command {
                         switch (args[3]) {
                             case "set" -> {
                                 if (argCount == 4) {
-                                    executor.sendMessage("server " + serverArg + " set env set <key>");
+                                    executor.sendMessage(
+                                            "server " + serverArg + " set env set <key>");
 
                                     return;
                                 }
@@ -142,7 +145,12 @@ public class ServerCommand extends Command {
                                 final String keyArg = args[4];
 
                                 if (argCount == 5) {
-                                    executor.sendMessage("server " + serverArg + " set env set " + keyArg + " <value>");
+                                    executor.sendMessage(
+                                            "server "
+                                                    + serverArg
+                                                    + " set env set "
+                                                    + keyArg
+                                                    + " <value>");
 
                                     return;
                                 }
@@ -152,7 +160,8 @@ public class ServerCommand extends Command {
 
                             case "remove" -> {
                                 if (argCount == 4) {
-                                    executor.sendMessage("server " + serverArg + " set env remove <key>");
+                                    executor.sendMessage(
+                                            "server " + serverArg + " set env remove <key>");
 
                                     return;
                                 }
@@ -160,15 +169,21 @@ public class ServerCommand extends Command {
                                 // TODO Implement remove env args[4]
                             }
 
-                            default -> executor.sendMessage("server " + serverArg + " set env <set|remove>");
+                            default ->
+                                    executor.sendMessage(
+                                            "server " + serverArg + " set env <set|remove>");
                         }
                     }
 
-                    default -> executor.sendMessage("server " + serverArg + " set <name|autostart|memory|env>");
+                    default ->
+                            executor.sendMessage(
+                                    "server " + serverArg + " set <name|autostart|memory|env>");
                 }
             }
 
-            default -> executor.sendMessage("server " + serverArg + " <start|stop|restart|kill|delete|set>");
+            default ->
+                    executor.sendMessage(
+                            "server " + serverArg + " <start|stop|restart|kill|delete|set>");
         }
     }
 }
