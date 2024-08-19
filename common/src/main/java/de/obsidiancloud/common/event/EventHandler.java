@@ -4,6 +4,8 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** An annotation to mark a method as an event handler. */
@@ -22,23 +24,23 @@ public @interface EventHandler {
      * MONITOR
      */
     enum Priority {
-        /** Called first. */
+        /** Called at last place. */
+        MONITOR,
+
+        /** Called at fifth place. */
         LOWEST,
 
-        /** Called at second place. */
+        /** Called at fourth place. */
         LOW,
 
         /** Called at third place. */
         NORMAL,
 
-        /** Called at fourth place. */
+        /** Called at second place. */
         HIGH,
 
-        /** Called at fifth place. */
-        HIGHEST,
-
-        /** Called last. */
-        MONITOR;
+        /** Called first. */
+        HIGHEST;
 
         private @Nullable Storage marker = null;
 
@@ -49,6 +51,29 @@ public @interface EventHandler {
          */
         public void setMarker(@Nullable Storage marker) {
             this.marker = marker;
+        }
+
+        /**
+         * Find priority with marker.
+         *
+         * @param marker The marker.
+         * @return The priority, if one found, otherwise {@code null}.
+         */
+        public static @Nullable Priority findPriority(@NotNull Storage marker) {
+            if (marker.equals(MONITOR.marker)) {
+                return MONITOR;
+            } else if (marker.equals(LOWEST.marker)) {
+                return LOWEST;
+            } else if (marker.equals(LOW.marker)) {
+                return LOW;
+            } else if (marker.equals(NORMAL.marker)) {
+                return NORMAL;
+            } else if (marker.equals(HIGH.marker)) {
+                return HIGH;
+            } else if (marker.equals(HIGHEST.marker)) {
+                return HIGHEST;
+            }
+            return null;
         }
 
         /**
