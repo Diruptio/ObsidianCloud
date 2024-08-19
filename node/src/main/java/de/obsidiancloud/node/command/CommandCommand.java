@@ -11,11 +11,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
-public class CmdCommand extends Command {
-    public CmdCommand() {
-        super("cmd");
+public class CommandCommand extends Command {
+    public CommandCommand() {
+        super("command");
         setDescription("Run a command on the server.");
-        setUsage("cmd <Server> <Command>");
+        setUsage("command <Server> <Command>");
+        addAlias("cmd");
     }
 
     @Override

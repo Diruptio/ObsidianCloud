@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("org.springframework:spring-core:6.1.11")
+    implementation("org.springframework:spring-core:6.1.12")
 }
 
 val addPlatformJars =
@@ -40,6 +40,11 @@ val generateSources =
         )
     }
 sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
+
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
 
 tasks {
     compileJava {

@@ -4,6 +4,7 @@ import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
+import de.obsidiancloud.common.network.packets.ServerUpdatePacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,45 +15,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class LocalOCServer extends OCServer {
-    private final boolean autoDelete;
     private Connection connection;
     private boolean screen = false;
     private Process process;
 
-    public LocalOCServer(
-            @Nullable String task,
-            @NotNull String name,
-            @NotNull Type type,
-            @NotNull LifecycleState lifecycleState,
-            @NotNull Status status,
-            boolean autoStart,
-            boolean autoDelete,
-            @NotNull String executable,
-            int memory,
-            @NotNull List<String> jvmArgs,
-            @NotNull List<String> args,
-            @NotNull Map<String, String> environmentVariables,
-            int port) {
-        super(
-                task,
-                name,
-                type,
-                lifecycleState,
-                status,
-                autoStart,
-                executable,
-                memory,
-                jvmArgs,
-                args,
-                environmentVariables,
-                port,
-                new HashSet<>());
-        this.autoDelete = autoDelete;
+    public LocalOCServer(@NotNull OCServer.TransferableServerData data) {
+        super(data, new HashSet<>());
     }
 
     @Override
@@ -62,7 +33,8 @@ public class LocalOCServer extends OCServer {
             setStatus(Status.STARTING);
             ObsidianCloudNode.getLogger().info("Starting server " + getName() + "...");
 
-            int port = getPort();
+            int port = getData().port();
+
             while (true) {
                 try (ServerSocketChannel channel = ServerSocketChannel.open()) {
                     channel.bind(new InetSocketAddress(port));
@@ -75,23 +47,21 @@ public class LocalOCServer extends OCServer {
             }
 
             List<String> command = new ArrayList<>();
-            command.add(getExecutable());
-            command.add("-Xms" + getMemory() + "M");
-            command.add("-Xmx" + getMemory() + "M");
-            command.addAll(getJvmArgs());
+            command.add(getData().executable());
+            command.add("-Xms" + getData().memory() + "M");
+            command.add("-Xmx" + getData().memory() + "M");
+            command.addAll(getData().jvmArgs());
             command.add("-jar");
             command.add("server.jar");
-            command.addAll(getArgs());
+            command.addAll(getData().jvmArgs());
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
-            builder.environment().putAll(getEnvironmentVariables());
+            builder.environment().putAll(getData().environmentVariables());
             builder.environment().put("OC_NODE_HOST", "127.0.0.1");
             int nodePort = ObsidianCloudNode.getNetworkServer().getPort();
             builder.environment().put("OC_NODE_PORT", String.valueOf(nodePort));
             builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
-            builder.environment().put("OC_SERVER_TASK", getTask());
-            builder.environment().put("OC_SERVER_NAME", getName());
-            builder.environment().put("OC_SERVER_AUTOSTART", String.valueOf(isAutoStart()));
+            builder.environment().put("OC_SERVER_DATA", getData().toString());
             process = builder.start();
             process.onExit().thenRun(this::run);
             new ScreenThread().start();
@@ -106,7 +76,7 @@ public class LocalOCServer extends OCServer {
             if (process != null && process.isAlive()) {
                 ObsidianCloudNode.getLogger().info("Stopping server " + getName() + "...");
                 try (BufferedWriter writer = process.outputWriter()) {
-                    writer.write(getType().getStopCommand() + "\n");
+                    writer.write(getData().type().getStopCommand() + "\n");
                     writer.flush();
                 }
             }
@@ -128,17 +98,60 @@ public class LocalOCServer extends OCServer {
     }
 
     @Override
-    public @NotNull OCNode getNode() {
-        return ObsidianCloudAPI.get().getLocalNode();
+    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        lifecycleState,
+                        data.status(),
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        updateData(data);
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            connection.send(packet);
+        }
     }
 
-    /**
-     * Check whether the server should be deleted automatically when it is stopped.
-     *
-     * @return true if the server should be deleted automatically, otherwise false
-     */
-    public boolean isAutoDelete() {
-        return autoDelete;
+    @Override
+    public void setStatus(@NotNull Status status) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.lifecycleState(),
+                        status,
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        updateData(data);
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            connection.send(packet);
+        }
+    }
+
+    @Override
+    public @NotNull OCNode getNode() {
+        return ObsidianCloudAPI.get().getLocalNode();
     }
 
     public @NotNull Path getDirectory() {
@@ -167,6 +180,10 @@ public class LocalOCServer extends OCServer {
         this.screen = screen;
     }
 
+    public Process getProcess() {
+        return process;
+    }
+
     private class ScreenThread extends Thread {
         public ScreenThread() {
             setName("ScreenThread");
@@ -186,9 +203,5 @@ public class LocalOCServer extends OCServer {
             } catch (Throwable ignored) {
             }
         }
-    }
-
-    public Process getProcess() {
-        return process;
     }
 }

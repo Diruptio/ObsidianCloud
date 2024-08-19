@@ -2,7 +2,7 @@ package de.obsidiancloud.node.util;
 
 /** The default flags for the JVM. */
 public class Flags {
-
+    /** Optimal flags for Paper servers */
     public static final String[] AIKARS_FLAGS =
             new String[] {
                 "-XX:+UseG1GC",
@@ -26,6 +26,8 @@ public class Flags {
                 "-Dusing.aikars.flags=https://mcflags.emc.gs",
                 "-Daikars.new.flags=true"
             };
+
+    /** Optimal flags for Velocity servers */
     public static final String[] VELOCITY_FLAGS =
             new String[] {
                 "-XX:+UseG1GC",
@@ -33,6 +35,6 @@ public class Flags {
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+ParallelRefProcEnabled",
                 "-XX:+AlwaysPreTouch",
-                "-XX:MaxInlineLevel=15" // improves performance
+                "-XX:MaxInlineLevel=15"
             };
 }

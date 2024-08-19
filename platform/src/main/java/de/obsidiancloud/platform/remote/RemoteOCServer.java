@@ -2,37 +2,17 @@ package de.obsidiancloud.platform.remote;
 
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
-import java.util.ArrayList;
-import java.util.HashMap;
+import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.network.packets.ServerUpdatePacket;
+import de.obsidiancloud.platform.PlatformObsidianCloudAPI;
 import java.util.HashSet;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
     private final @NotNull OCNode node;
 
-    public RemoteOCServer(
-            @Nullable String task,
-            @NotNull String name,
-            @NotNull Type type,
-            @NotNull LifecycleState lifecycleState,
-            @NotNull Status status,
-            boolean autoStart,
-            @NotNull OCNode node) {
-        super(
-                task,
-                name,
-                type,
-                lifecycleState,
-                status,
-                autoStart,
-                "",
-                (int) Runtime.getRuntime().maxMemory(),
-                new ArrayList<>(),
-                new ArrayList<>(),
-                new HashMap<>(),
-                -1,
-                new HashSet<>());
+    public RemoteOCServer(@NotNull OCServer.TransferableServerData data, @NotNull OCNode node) {
+        super(data, new HashSet<>());
         this.node = node;
     }
 
@@ -49,6 +29,59 @@ public class RemoteOCServer extends OCServer {
     @Override
     public void kill() {
         // TODO: Send kill server packet to node
+    }
+
+    @Override
+    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        lifecycleState,
+                        data.status(),
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        ((PlatformObsidianCloudAPI) ObsidianCloudAPI.get())
+                .getLocalNode()
+                .getConnection()
+                .send(packet);
+    }
+
+    @Override
+    public void setStatus(@NotNull Status status) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.lifecycleState(),
+                        status,
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        updateData(data);
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        ((PlatformObsidianCloudAPI) ObsidianCloudAPI.get())
+                .getLocalNode()
+                .getConnection()
+                .send(packet);
     }
 
     @Override

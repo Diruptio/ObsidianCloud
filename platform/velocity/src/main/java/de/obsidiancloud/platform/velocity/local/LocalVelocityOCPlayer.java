@@ -1,20 +1,22 @@
-package de.obsidiancloud.platform.velocity.proxy;
+package de.obsidiancloud.platform.velocity.local;
 
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import com.velocitypowered.api.proxy.server.RegisteredServer;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.platform.velocity.OCVelocity;
-import java.util.Objects;
+import de.obsidiancloud.platform.velocity.ObsidianCloudVelocity;
+import java.util.Optional;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ProxiedOCPlayer extends OCPlayer {
+/** A player on the local server. */
+public class LocalVelocityOCPlayer extends OCPlayer {
     private final @NotNull Player player;
 
-    public ProxiedOCPlayer(@NotNull Player player) {
+    public LocalVelocityOCPlayer(@NotNull Player player) {
         super(player.getUniqueId(), player.getUsername());
         this.player = player;
     }
@@ -22,7 +24,7 @@ public class ProxiedOCPlayer extends OCPlayer {
     @Override
     public @Nullable OCServer getProxy() {
         for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getType().isProxy() && server.getPlayers().contains(this)) {
+            if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
                 return server;
             }
         }
@@ -36,18 +38,19 @@ public class ProxiedOCPlayer extends OCPlayer {
 
     @Override
     public void connect(@NotNull OCServer server) {
-        // TODO: Send packet to getNode() to connect player to server
+        ProxyServer velocityServer = ObsidianCloudVelocity.getServer();
+        Optional<Player> player = velocityServer.getPlayer(getUUID());
+        if (player.isPresent()) {
+            Optional<RegisteredServer> registeredServer =
+                    velocityServer.getServer(server.getName());
+            registeredServer.ifPresent(
+                    value -> player.get().createConnectionRequest(value).connect());
+        }
     }
 
     @Override
     public void kick(@Nullable Component message) {
-        ProxyServer plugin = OCVelocity.getServer();
-        plugin.getScheduler()
-                .buildTask(
-                        plugin,
-                        () ->
-                                player.disconnect(
-                                        Objects.requireNonNullElseGet(message, Component::empty)));
+        player.disconnect(message);
     }
 
     @Override

@@ -8,7 +8,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.platform.PlatformObsidianCloudAPI;
 import de.obsidiancloud.platform.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.platform.network.packets.S2NPlayerLeavePacket;
-import de.obsidiancloud.platform.velocity.proxy.ProxiedOCPlayer;
+import de.obsidiancloud.platform.velocity.local.LocalVelocityOCPlayer;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerListener {
@@ -18,7 +18,7 @@ public class PlayerListener {
     public void onJoin(
             @NotNull LoginEvent e) { // also Post or prelogin event exists joaaaaaaaaaaaaaaaaa
         Player player = e.getPlayer();
-        api.getLocalServer().getPlayers().add(new ProxiedOCPlayer(player));
+        api.getLocalServer().getPlayers().add(new LocalVelocityOCPlayer(player));
         S2NPlayerJoinPacket packet = new S2NPlayerJoinPacket();
         packet.setUUID(player.getUniqueId());
         packet.setName(player.getUsername());

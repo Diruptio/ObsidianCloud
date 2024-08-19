@@ -1,82 +1,172 @@
 package de.obsidiancloud.common.event;
 
-import de.obsidiancloud.common.event.annotation.EventHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+/** The event manager. */
 public class EventManager {
-    private static final Map<Integer, Map<Class<? extends Event>, List<EventData>>> events =
-            new ConcurrentHashMap<>();
+    private static Storage head = null;
 
-    public static void register(Class<? extends Event> eventClass, Method method, Object o) {
-        if (isMethodBad(method)) {
-            return;
-        }
-
-        EventData methodData =
-                new EventData(o, method, method.getAnnotation(EventHandler.class).priority());
-        method.setAccessible(true);
-
-        try {
-            Event event = eventClass.getDeclaredConstructor().newInstance();
-            int eventId = event.getId();
-
-            events.computeIfAbsent(eventId, k -> new ConcurrentHashMap<>())
-                    .computeIfAbsent(eventClass, k -> new ArrayList<>())
-                    .add(methodData);
-
-            sortListValue(eventClass);
-
-        } catch (ReflectiveOperationException e) {
-            throw new IllegalArgumentException("Failed to register event method", e);
-        }
+    /**
+     * Call the event.
+     *
+     * @param event The event to call.
+     */
+    public static void call(@NotNull Object event) {
+        call(null, event);
     }
 
-    /** Register the class which is using the @EventHandler */
-    public static void registerEvents(Class<?> @NotNull ... events) {
-        for (Class<?> eventTarget : events) {
-            register(eventTarget);
+    /**
+     * Call the event.
+     *
+     * @param owner The owner of the listener.
+     * @param event The event to call.
+     */
+    public static void call(@Nullable Object owner, @NotNull Object event) {
+        if (head != null) head.call(owner, event);
+    }
+
+    /** Delete every listener. */
+    public static void clear() {
+        head = null;
+
+        for (EventHandler.Priority value : EventHandler.Priority.values()) {
+            value.setMarker(null);
         }
     }
 
-    public static List<EventData> getEventData(int id, Class<? extends Event> clazz) {
-        Map<Class<? extends Event>, List<EventData>> eventMap = events.get(id);
-        return eventMap != null
-                ? eventMap.getOrDefault(clazz, Collections.emptyList())
-                : Collections.emptyList();
+    /**
+     * Unregister a listener.
+     *
+     * @param owner The owner of the listener.
+     */
+    public static void unregister(@NotNull Object owner) {
+        unregister(owner, null);
     }
 
-    /** used for sorting */
-    private static void sortListValue(@NotNull Class<? extends Event> clazz) {
-        try {
-            Map<Class<? extends Event>, List<EventData>> eventMap;
-            eventMap = events.get(clazz.newInstance().getId());
-            if (eventMap != null) {
-                List<EventData> eventDataList = eventMap.get(clazz);
-                if (eventDataList != null) {
-                    eventDataList.sort(Comparator.comparingInt(EventData::priority));
+    /**
+     * Unregister a listener.
+     *
+     * @param eventClass The event class.
+     */
+    public static <T> void unregister(@NotNull Class<T> eventClass) {
+        unregister(null, eventClass);
+    }
+
+    /**
+     * Unregister a listener.
+     *
+     * @param owner The owner of the listener.
+     */
+    public static <T> void unregister(@Nullable Object owner, @Nullable Class<T> eventClass) {
+        if (head != null) {
+            if ((owner == null || owner.equals(head.getOwner()))
+                    && (eventClass == null || eventClass.equals(head.getEventClass()))) {
+                EventHandler.Priority priority = EventHandler.Priority.findPriority(head);
+
+                if (priority != null) {
+                    priority.setMarker(null);
                 }
+
+                head = head.getNext();
             }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+
+            if (head != null) {
+                head.unregister(owner, eventClass);
+            }
         }
     }
 
-    public static Map<Class<? extends Event>, List<EventData>> get(int id) {
-        return events.get(id);
-    }
-
-    private static boolean isMethodBad(@NotNull Method method) {
-        return method.getParameterCount() != 1 || !method.isAnnotationPresent(EventHandler.class);
-    }
-
-    public static void register(@NotNull Object targetObj) {
-        for (Method method : targetObj.getClass().getMethods()) {
-            if (method.getParameterCount() > 0 && method.isAnnotationPresent(EventHandler.class)) {
-                register((Class<? extends Event>) method.getParameterTypes()[0], method, targetObj);
+    /**
+     * Register a listener.
+     *
+     * @param listener The listener to register.
+     */
+    public static void register(@NotNull Object listener) {
+        for (Method method : listener.getClass().getDeclaredMethods()) {
+            EventHandler eventHandler = method.getAnnotation(EventHandler.class);
+            if (eventHandler != null) {
+                int parameterCount = method.getParameterCount();
+                if (parameterCount != 1) {
+                    throw new RuntimeException("Invalid parameter count: " + parameterCount);
+                }
+                register(
+                        listener,
+                        method.getParameterTypes()[0],
+                        event -> {
+                            try {
+                                method.invoke(listener, event);
+                            } catch (IllegalAccessException | InvocationTargetException e) {
+                                throw new RuntimeException(e);
+                            }
+                        },
+                        eventHandler.priority());
             }
+        }
+    }
+
+    /**
+     * Register a listener.
+     *
+     * @param <T> The event type.
+     * @param owner The owner of the listener.
+     * @param eventClass The event class.
+     * @param listener The listener to register.
+     */
+    public static <T> void register(Object owner, Class<T> eventClass, Listener<T> listener) {
+        register(owner, eventClass, listener, EventHandler.Priority.NORMAL);
+    }
+
+    /**
+     * Register a listener.
+     *
+     * @param <T> The event type.
+     * @param eventClass The event class.
+     * @param listener The listener to register.
+     */
+    public static <T> void register(Class<T> eventClass, Listener<T> listener) {
+        register(eventClass, listener, EventHandler.Priority.NORMAL);
+    }
+
+    /**
+     * Register a listener.
+     *
+     * @param <T> The event type.
+     * @param eventClass The event class.
+     * @param listener The listener to register.
+     * @param priority The priority of the listener.
+     */
+    public static <T> void register(
+            Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
+        register(null, eventClass, listener, priority);
+    }
+
+    /**
+     * Register a listener.
+     *
+     * @param <T> The event type.
+     * @param owner The owner of the listener.
+     * @param eventClass The event class.
+     * @param listener The listener to register.
+     * @param priority The priority of the listener.
+     */
+    public static <T> void register(
+            Object owner,
+            Class<T> eventClass,
+            Listener<T> listener,
+            EventHandler.Priority priority) {
+        Storage marker = priority.getExistingMarker();
+        if (head == null) {
+            head = new Storage(owner, eventClass, listener, null);
+            priority.setMarker(head);
+        } else if (marker == null) {
+            head = new Storage(owner, eventClass, listener, head);
+            priority.setMarker(head);
+        } else {
+            marker.setNext(new Storage(owner, eventClass, listener, marker.getNext()));
+            priority.setMarker(marker.getNext());
         }
     }
 }
