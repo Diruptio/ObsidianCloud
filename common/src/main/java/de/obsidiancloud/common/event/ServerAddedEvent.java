@@ -4,15 +4,15 @@ import de.obsidiancloud.common.OCServer;
 import org.jetbrains.annotations.NotNull;
 
 /** Called after a server was created. */
-public class PostServerCreateEvent {
+public class ServerAddedEvent {
     private final @NotNull OCServer server;
 
     /**
-     * Create a new {@link PostServerCreateEvent}.
+     * Create a new {@link ServerAddedEvent}.
      *
      * @param server The server that was created.
      */
-    public PostServerCreateEvent(@NotNull OCServer server) {
+    public ServerAddedEvent(@NotNull OCServer server) {
         this.server = server;
     }
 

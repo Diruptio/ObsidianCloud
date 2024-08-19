@@ -23,7 +23,7 @@ public class LocalPaperOCPlayer extends OCPlayer {
     @Override
     public @Nullable OCServer getProxy() {
         for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getType().isProxy() && server.getPlayers().contains(this)) {
+            if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
                 return server;
             }
         }
