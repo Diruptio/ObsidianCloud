@@ -16,10 +16,7 @@ import de.obsidiancloud.common.network.NetworkServer;
 import de.obsidiancloud.common.network.packets.CustomMessagePacket;
 import de.obsidiancloud.common.network.packets.PlayerKickPacket;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
-import de.obsidiancloud.node.command.KickCommand;
-import de.obsidiancloud.node.command.ListCommand;
-import de.obsidiancloud.node.command.ScreenCommand;
-import de.obsidiancloud.node.command.ShutdownCommand;
+import de.obsidiancloud.node.command.*;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
@@ -159,6 +156,7 @@ public class ObsidianCloudNode {
         commandProvider.registerCommand(new ListCommand());
         commandProvider.registerCommand(new ScreenCommand());
         commandProvider.registerCommand(new ShutdownCommand());
+        commandProvider.registerCommand(new ServerCommand());
     }
 
     private static void loadTemplateProviders() {
