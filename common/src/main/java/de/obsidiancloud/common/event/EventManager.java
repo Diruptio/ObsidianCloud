@@ -28,9 +28,7 @@ public class EventManager {
         if (head != null) head.call(owner, event);
     }
 
-    /**
-     * Delete every listener.
-     */
+    /** Delete every listener. */
     public static void clear() {
         head = null;
 
@@ -140,7 +138,8 @@ public class EventManager {
      * @param listener The listener to register.
      * @param priority The priority of the listener.
      */
-    public static <T> void register(Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
+    public static <T> void register(
+            Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
         register(null, eventClass, listener, priority);
     }
 

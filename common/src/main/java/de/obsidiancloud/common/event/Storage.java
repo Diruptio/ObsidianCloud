@@ -19,7 +19,10 @@ public class Storage {
      */
     @SuppressWarnings("unchecked")
     public Storage(
-            @Nullable Object owner, @NotNull Class<?> eventClass, @NotNull Listener<?> listener, @Nullable Storage next) {
+            @Nullable Object owner,
+            @NotNull Class<?> eventClass,
+            @NotNull Listener<?> listener,
+            @Nullable Storage next) {
         this.owner = owner;
         this.eventClass = eventClass;
         this.listener = (Listener<Object>) listener;
