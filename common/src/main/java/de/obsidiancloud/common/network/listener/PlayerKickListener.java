@@ -10,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 public class PlayerKickListener implements PacketListener<PlayerKickPacket> {
     @Override
     public void handle(@NotNull PlayerKickPacket packet, @NotNull Connection connection) {
-        System.out.println(packet.getUUID());
         OCPlayer player = ObsidianCloudAPI.get().getPlayer(packet.getUUID());
         if (player != null) {
             player.kick(packet.getMessage());

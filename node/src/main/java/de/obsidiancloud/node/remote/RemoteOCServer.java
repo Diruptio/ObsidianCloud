@@ -1,43 +1,16 @@
 package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.network.packets.ServerUpdatePacket;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
     private final @NotNull RemoteOCNode node;
 
     public RemoteOCServer(
-            @Nullable String task,
-            @NotNull String name,
-            @NotNull Type type,
-            @NotNull LifecycleState lifecycleState,
-            @NotNull Status status,
-            boolean autoStart,
-            @NotNull String executable,
-            int memory,
-            @NotNull List<String> jvmArgs,
-            @NotNull List<String> args,
-            @NotNull Map<String, String> environmentVariables,
-            int port,
-            @NotNull RemoteOCNode node) {
-        super(
-                task,
-                name,
-                type,
-                lifecycleState,
-                status,
-                autoStart,
-                executable,
-                memory,
-                jvmArgs,
-                args,
-                environmentVariables,
-                port,
-                new ArrayList<>());
+            @NotNull OCServer.TransferableServerData data, @NotNull RemoteOCNode node) {
+        super(data, new ArrayList<>());
         this.node = node;
     }
 
@@ -54,6 +27,53 @@ public class RemoteOCServer extends OCServer {
     @Override
     public void kill() {
         // TODO: Send kill server packet to node
+    }
+
+    @Override
+    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        lifecycleState,
+                        data.status(),
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        node.getConnection().send(packet);
+    }
+
+    @Override
+    public void setStatus(@NotNull Status status) {
+        OCServer.TransferableServerData data = getData();
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.lifecycleState(),
+                        status,
+                        data.autoStart(),
+                        data.autoDelete(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port());
+        updateData(data);
+        ServerUpdatePacket packet = new ServerUpdatePacket();
+        packet.setServerData(data);
+        node.getConnection().send(packet);
     }
 
     @Override

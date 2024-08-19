@@ -30,8 +30,8 @@ public class NodeThread extends Thread {
             int servers = 0;
             synchronized (localNode.getServers()) {
                 for (OCServer server : localNode.getServers()) {
-                    boolean isFromTask = task.name().equals(server.getTask());
-                    boolean isNotReady = server.getStatus() == OCServer.Status.NOT_READY;
+                    boolean isFromTask = task.name().equals(server.getData().task());
+                    boolean isNotReady = server.getData().status() == OCServer.Status.NOT_READY;
                     if (isFromTask && !isNotReady) servers++;
                 }
             }
@@ -46,8 +46,8 @@ public class NodeThread extends Thread {
 
     private void startServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
-                    && server.isAutoStart()) {
+            if (server.getData().lifecycleState() == OCServer.LifecycleState.OFFLINE
+                    && server.getData().autoStart()) {
                 server.start();
             }
         }
@@ -56,8 +56,8 @@ public class NodeThread extends Thread {
     private void deleteServers() {
         for (OCServer server : localNode.getServers()) {
             LocalOCServer localServer = (LocalOCServer) server;
-            if (server.getLifecycleState() == OCServer.LifecycleState.OFFLINE
-                    && localServer.isAutoDelete()) {
+            if (server.getData().lifecycleState() == OCServer.LifecycleState.OFFLINE
+                    && localServer.getData().autoDelete()) {
                 ObsidianCloudAPI.get().deleteServer(server);
             }
         }

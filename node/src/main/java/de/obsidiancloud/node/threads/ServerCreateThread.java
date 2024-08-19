@@ -31,7 +31,7 @@ public class ServerCreateThread extends Thread {
             }
             Files.createDirectories(directory);
             List<String> templates = new ArrayList<>(this.templates);
-            templates.add(server.getType().getTemplate());
+            templates.add(server.getData().type().getTemplate());
             for (String template : templates) {
                 OCTemplate t = ObsidianCloudNode.getTemplate(template);
                 if (t != null) t.apply(directory);

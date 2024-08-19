@@ -7,13 +7,14 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.common.network.packets.ServerDeletePacket;
-import de.obsidiancloud.common.network.packets.ServerDeletedPacket;
+import de.obsidiancloud.common.network.packets.ServerRemovedPacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
 import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import de.obsidiancloud.platform.remote.RemoteOCNode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
@@ -76,16 +77,20 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
         packet.setName(name);
         connection.send(packet);
 
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        PacketListener<ServerDeletedPacket> listener =
-                (serverDeletedPacket, con) -> {
-                    if (serverDeletedPacket.getName().equals(name)) {
-                        future.complete(null);
+        CompletableFuture<Void> future =
+                new CompletableFuture<Void>().orTimeout(20, TimeUnit.SECONDS);
+        PacketListener<ServerRemovedPacket> listener =
+                new PacketListener<>() {
+                    @Override
+                    public void handle(
+                            @NotNull ServerRemovedPacket response, @NotNull Connection connection) {
+                        if (response.getServerName().equals(name)) {
+                            connection.removePacketListener(this);
+                            future.complete(null);
+                        }
                     }
                 };
-        future.thenRun(() -> connection.removePacketListener(listener));
         connection.addPacketListener(listener);
-
         return future;
     }
 }

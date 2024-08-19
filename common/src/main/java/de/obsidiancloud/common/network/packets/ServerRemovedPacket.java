@@ -5,17 +5,17 @@ import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 
 /** Sent when a server was deleted. */
-public class ServerDeletedPacket extends Packet {
-    private String name;
+public class ServerRemovedPacket extends Packet {
+    private String serverName;
 
     @Override
     public void write(@NotNull ByteBuf byteBuf) {
-        writeString(byteBuf, name);
+        writeString(byteBuf, serverName);
     }
 
     @Override
     public void read(@NotNull ByteBuf byteBuf) {
-        writeString(byteBuf, name);
+        writeString(byteBuf, serverName);
     }
 
     /**
@@ -23,16 +23,16 @@ public class ServerDeletedPacket extends Packet {
      *
      * @return The name of the server
      */
-    public @NotNull String getName() {
-        return name;
+    public @NotNull String getServerName() {
+        return serverName;
     }
 
     /**
      * Sets the name of the server
      *
-     * @param name The name of the server
+     * @param serverName The name of the server
      */
-    public void setName(@NotNull String name) {
-        this.name = name;
+    public void setServerName(@NotNull String serverName) {
+        this.serverName = serverName;
     }
 }

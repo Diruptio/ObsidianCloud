@@ -1,7 +1,5 @@
 package de.obsidiancloud.node.threads;
 
-import de.obsidiancloud.common.network.NetworkServer;
-import de.obsidiancloud.common.network.packets.ServerDeletedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import java.util.logging.Level;
