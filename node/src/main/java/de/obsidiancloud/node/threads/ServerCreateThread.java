@@ -3,12 +3,12 @@ package de.obsidiancloud.node.threads;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.event.EventManager;
-import de.obsidiancloud.common.event.PostServerCreateEvent;
+import de.obsidiancloud.common.event.ServerAddedEvent;
 import de.obsidiancloud.common.network.Connection;
+import de.obsidiancloud.common.network.packets.ServerAddedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.network.packets.ServerAddPacket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -44,13 +44,13 @@ public class ServerCreateThread extends Thread {
             server.setLifecycleState(OCServer.LifecycleState.OFFLINE);
             server.setStatus(LocalOCServer.Status.OFFLINE);
 
-            EventManager.call(new PostServerCreateEvent(server));
             for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
-                ServerAddPacket packet = new ServerAddPacket();
-                packet.setServer(server);
-                packet.setNode(ObsidianCloudAPI.get().getLocalNode());
+                ServerAddedPacket packet = new ServerAddedPacket();
+                packet.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
+                packet.setServerData(server.getData());
                 connection.send(packet);
             }
+            EventManager.call(new ServerAddedEvent(server));
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
                     .log(

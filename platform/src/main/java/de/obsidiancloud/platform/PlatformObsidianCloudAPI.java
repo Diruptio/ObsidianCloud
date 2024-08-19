@@ -6,6 +6,8 @@ import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.PacketListener;
+import de.obsidiancloud.common.network.packets.ServerAddedPacket;
+import de.obsidiancloud.common.network.packets.ServerCreatePacket;
 import de.obsidiancloud.common.network.packets.ServerDeletePacket;
 import de.obsidiancloud.common.network.packets.ServerRemovedPacket;
 import de.obsidiancloud.platform.local.LocalOCServer;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
     private final @NotNull RemoteLocalOCNode localNode;
@@ -62,10 +65,32 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
     }
 
     @Override
-    public @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+    public @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+        String name = task.name();
+        Connection connection = localNode.getConnection();
 
-        // TODO: Send Packet to node
-        throw new UnsupportedOperationException("Not implemented yet");
+        ServerCreatePacket packet = new ServerCreatePacket();
+        packet.setTask(task.name());
+        connection.send(packet);
+
+        CompletableFuture<OCServer> future =
+                new CompletableFuture<OCServer>().orTimeout(20, TimeUnit.SECONDS);
+        PacketListener<ServerAddedPacket> listener =
+                new PacketListener<>() {
+                    @Override
+                    public void handle(
+                            @NotNull ServerAddedPacket response, @NotNull Connection connection) {
+                        if (response.getServerData() == null) {
+                            connection.removePacketListener(this);
+                            future.complete(null);
+                        } else if (response.getServerData().name().equals(name)) {
+                            connection.removePacketListener(this);
+                            future.complete(getServer(response.getServerData().name()));
+                        }
+                    }
+                };
+        connection.addPacketListener(listener);
+        return future;
     }
 
     @Override

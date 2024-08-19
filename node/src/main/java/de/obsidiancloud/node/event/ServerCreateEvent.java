@@ -5,16 +5,16 @@ import de.obsidiancloud.node.local.LocalOCServer;
 import org.jetbrains.annotations.NotNull;
 
 /** This event is called before a server is created. */
-public class PreServerCreateEvent implements Cancellable {
+public class ServerCreateEvent implements Cancellable {
     private boolean cancelled = false;
     private final @NotNull LocalOCServer server;
 
     /**
-     * Create a new {@link PreServerCreateEvent}.
+     * Create a new {@link ServerCreateEvent}.
      *
      * @param server The server that will be created.
      */
-    public PreServerCreateEvent(@NotNull LocalOCServer server) {
+    public ServerCreateEvent(@NotNull LocalOCServer server) {
         this.server = server;
     }
 

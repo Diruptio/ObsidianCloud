@@ -4,10 +4,12 @@ import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.event.EventManager;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.common.network.packets.ServerDeletePacket;
 import de.obsidiancloud.common.network.packets.ServerRemovedPacket;
+import de.obsidiancloud.node.event.ServerCreateEvent;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.remote.RemoteOCNode;
@@ -20,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
     private final @NotNull LocalOCNode localNode;
@@ -64,7 +67,7 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
     }
 
     @Override
-    public @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+    public @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
         // Find name
         int n = 1;
         while (getServer(task.name() + "-" + n) != null) {
@@ -89,6 +92,12 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
                                 task.args(),
                                 task.environmentVariables(),
                                 task.port()));
+
+        ServerCreateEvent event = new ServerCreateEvent(server);
+        EventManager.call(event);
+        if (event.isCancelled()) {
+            return CompletableFuture.completedFuture(null);
+        }
 
         localNode.getServers().add(server);
         new ServerCreateThread(server, task.templates()).start();
