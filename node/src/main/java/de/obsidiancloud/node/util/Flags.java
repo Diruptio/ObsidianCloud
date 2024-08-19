@@ -33,6 +33,6 @@ public class Flags {
                 "-XX:+UnlockExperimentalVMOptions",
                 "-XX:+ParallelRefProcEnabled",
                 "-XX:+AlwaysPreTouch",
-                "-XX:MaxInlineLevel=15" //improves performance
+                "-XX:MaxInlineLevel=15" // improves performance
             };
 }

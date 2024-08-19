@@ -62,8 +62,7 @@ public class TaskParser {
                         jvmArgs.addAll(List.of(Flags.AIKARS_FLAGS));
                     } else if (parts[i].equals("%VelocityFlags%")) {
                         jvmArgs.addAll(List.of(Flags.VELOCITY_FLAGS));
-                    }
-                    else {
+                    } else {
                         jvmArgs.add(parts[i]);
                     }
                 }
