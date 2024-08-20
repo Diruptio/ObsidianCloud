@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
 
 public class PurpurTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
@@ -94,9 +94,9 @@ public class PurpurTemplate extends OCTemplate {
         process.waitFor();
 
         // Clean up
-        FileSystemUtils.deleteRecursively(directory.resolve("logs"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_nether"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_the_end"));
+        FileUtils.deleteDirectory(directory.resolve("logs").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
     }
 }

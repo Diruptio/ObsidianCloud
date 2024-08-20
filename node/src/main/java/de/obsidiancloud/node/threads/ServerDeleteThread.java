@@ -3,8 +3,8 @@ package de.obsidiancloud.node.threads;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
 import java.util.logging.Level;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
 
 public class ServerDeleteThread implements Runnable {
     private final @NotNull LocalOCServer server;
@@ -17,7 +17,7 @@ public class ServerDeleteThread implements Runnable {
     public void run() {
         ObsidianCloudNode.getLogger().info("Deleting server " + server.getName() + "...");
         try {
-            FileSystemUtils.deleteRecursively(server.getDirectory());
+            FileUtils.deleteDirectory(server.getDirectory().toFile());
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
                     .log(

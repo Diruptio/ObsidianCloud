@@ -14,14 +14,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.springframework.util.FileSystemUtils;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerCreateThread extends Thread {
-    private final LocalOCServer server;
-    private final List<String> templates;
+    private final @NotNull LocalOCServer server;
+    private final @NotNull List<String> templates;
 
-    public ServerCreateThread(LocalOCServer server, List<String> templates) {
-        super("ServerLoadThread-" + server.getName());
+    public ServerCreateThread(@NotNull LocalOCServer server, @NotNull List<String> templates) {
+        super("ServerCreateThread-" + server.getName());
         this.server = server;
         this.templates = templates;
     }
@@ -32,7 +33,7 @@ public class ServerCreateThread extends Thread {
         try {
             Path directory = server.getDirectory();
             if (Files.exists(directory)) {
-                FileSystemUtils.deleteRecursively(directory);
+                FileUtils.deleteDirectory(directory.toFile());
             }
             Files.createDirectories(directory);
             List<String> templates = new ArrayList<>(this.templates);
