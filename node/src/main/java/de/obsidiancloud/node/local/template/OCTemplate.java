@@ -4,7 +4,7 @@ import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class OCTemplate {
-    private final String path;
+    private final @NotNull String path;
 
     /**
      * Creates a new template.

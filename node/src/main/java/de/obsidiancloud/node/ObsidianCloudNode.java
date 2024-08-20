@@ -146,13 +146,16 @@ public class ObsidianCloudNode {
 
     private static void loadTasks() {
         api.getTasks().clear();
-        try (Stream<Path> files = Files.list(Path.of("tasks"))) {
+        try {
+            Files.createDirectories(Path.of("tasks"));
+            Stream<Path> files = Files.list(Path.of("tasks"));
             for (Path file : (Iterable<Path>) files::iterator) {
                 try {
                     api.getTasks().add(TaskParser.parse(file));
                 } catch (Throwable ignored) {
                 }
             }
+            files.close();
         } catch (Throwable exception) {
             logger.log(Level.SEVERE, "Failed to load tasks", exception);
         }
