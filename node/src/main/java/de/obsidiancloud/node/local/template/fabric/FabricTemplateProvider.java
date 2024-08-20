@@ -2,10 +2,11 @@ package de.obsidiancloud.node.local.template.fabric;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
-import de.obsidiancloud.node.local.template.paper.PaperTemplate;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -50,24 +51,49 @@ public class FabricTemplateProvider implements TemplateProvider {
         }
         if (!versions.contains(version)) return null;
 
-        String build;
+        String loader;
         if (path.length == 3) {
-            build = path[2];
+            loader = path[2];
         } else {
-            build = "latest";
+            loader = "latest";
         }
         loadLoaders(version);
         if (loaders.get(version).isEmpty()) return null;
-        else if (build.equalsIgnoreCase("latest")) {
-            build = loaders.get(version).get(loaders.get(version).size() - 1);
-        } else if (!loaders.get(version).contains(build)) return null;
+        else if (loader.equalsIgnoreCase("latest")) {
+            loader = loaders.get(version).get(loaders.get(version).size() - 1);
+        } else if (!loaders.get(version).contains(loader)) return null;
 
-        return new PaperTemplate(version, build);
+        return new FabricTemplate(version, loader, installer());
+    }
+
+    private @NotNull String installer() {
+        try {
+            String url = "https://meta.fabricmc.net/v2/versions/installer";
+            HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
+            con.setConnectTimeout(5000);
+            con.setReadTimeout(5000);
+            if (con.getResponseCode() != 200) throw new RuntimeException();
+            InputStreamReader reader = new InputStreamReader(con.getInputStream());
+            JsonArray json = new JsonStreamParser(reader).next().getAsJsonArray();
+            if (json.isEmpty()) throw new RuntimeException();
+
+            for (final JsonElement jsonElement : json) {
+                final JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+                if (jsonObject.get("stable").getAsBoolean()) {
+                    return jsonObject.get("version").getAsString();
+                }
+            }
+
+            throw new RuntimeException();
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 
     private void loadLoaders(@NotNull String version) {
         if (loaders.containsKey(version)) return;
-        List<String> builds = new ArrayList<>();
+        List<String> loaders = new ArrayList<>();
         String url = "https://meta.fabricmc.net/v2/versions/loader/%s".formatted(version);
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
@@ -79,17 +105,17 @@ public class FabricTemplateProvider implements TemplateProvider {
                 JsonArray json = new JsonStreamParser(reader).next().getAsJsonArray();
                 if (json.isEmpty()) return;
                 for (JsonElement loader : json) {
-                    builds.add(
+                    loaders.add(
                             String.valueOf(
                                     loader.getAsJsonObject()
                                             .get("loader")
                                             .getAsJsonObject()
                                             .get("version")
-                                            .getAsInt()));
+                                            .getAsString()));
                 }
             }
         } catch (Throwable ignored) {
         }
-        this.loaders.put(version, builds);
+        this.loaders.put(version, loaders);
     }
 }

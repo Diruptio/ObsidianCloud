@@ -52,7 +52,7 @@ public class LocalOCServer extends OCServer {
             command.addAll(getData().jvmArgs());
             command.add("-jar");
             command.add("server.jar");
-            command.addAll(getData().jvmArgs());
+            command.addAll(getData().args());
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getData().environmentVariables());

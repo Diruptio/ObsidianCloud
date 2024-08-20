@@ -1,11 +1,7 @@
 package de.obsidiancloud.node.local.template.fabric;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonStreamParser;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,8 +15,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
 
 public class FabricTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
@@ -34,7 +30,7 @@ public class FabricTemplate extends OCTemplate {
         super("fabric/%s/%s/%s".formatted(version, loader, installer));
         this.version = version;
         this.loader = loader;
-        this.installer = installer();
+        this.installer = installer;
     }
 
     @Override
@@ -74,39 +70,11 @@ public class FabricTemplate extends OCTemplate {
         con.getInputStream().transferTo(Files.newOutputStream(file));
     }
 
-    private @NotNull String installer() {
-        try {
-            String url =
-                    "https://meta.fabricmc.net/v2/versions/installer"
-                            .formatted(version, loader, installer);
-            HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
-            con.setConnectTimeout(5000);
-            con.setReadTimeout(5000);
-            if (con.getResponseCode() != 200) throw new RuntimeException();
-            InputStreamReader reader = new InputStreamReader(con.getInputStream());
-            JsonArray json = new JsonStreamParser(reader).next().getAsJsonArray();
-            if (json.isEmpty()) throw new RuntimeException();
-
-            for (int index = json.size() - 1; index > 0; index--) {
-                final JsonObject jsonObject = json.get(index).getAsJsonObject();
-
-                if (jsonObject.get("stable").getAsBoolean()) {
-                    return jsonObject.get("version").getAsString();
-                }
-            }
-
-            throw new RuntimeException();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-    }
-
     private void prepare(@NotNull Path directory) throws IOException, InterruptedException {
         List<String> command = new ArrayList<>();
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(AikarsFlags.DEFAULT));
         command.add("-jar");
         command.add("server.jar");
 
@@ -130,9 +98,9 @@ public class FabricTemplate extends OCTemplate {
         process.waitFor();
 
         // Clean up
-        FileSystemUtils.deleteRecursively(directory.resolve("logs"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_nether"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_the_end"));
+        FileUtils.deleteDirectory(directory.resolve("logs").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
     }
 }
