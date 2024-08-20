@@ -5,7 +5,6 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.NotNull;
 
 public class ServerCommand extends Command {
