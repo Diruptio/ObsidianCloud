@@ -5,6 +5,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import java.util.stream.Collectors;
+
 import org.jetbrains.annotations.NotNull;
 
 public class ServerCommand extends Command {
@@ -43,9 +44,11 @@ public class ServerCommand extends Command {
             return;
         }
 
+        final OCServer.TransferableServerData data = server.getData();
+
         switch (args[1]) {
             case "start" -> {
-                if (server.getStatus() != OCServer.Status.OFFLINE) {
+                if (data.status() != OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is already running.");
 
                     return;
@@ -55,9 +58,9 @@ public class ServerCommand extends Command {
             }
 
             case "stop" -> {
-                if (server.getStatus() == OCServer.Status.OFFLINE) {
+                if (data.status() == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
-                } else if (server.getStatus() == OCServer.Status.STARTING) {
+                } else if (data.status() == OCServer.Status.STARTING) {
                     executor.sendMessage("§cServer is currently starting.");
                 } else {
                     server.stop();
@@ -65,7 +68,7 @@ public class ServerCommand extends Command {
             }
 
             case "restart" -> {
-                if (server.getStatus() == OCServer.Status.OFFLINE) {
+                if (data.status() == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
                 } else {
                     server.stop();
@@ -74,7 +77,7 @@ public class ServerCommand extends Command {
             }
 
             case "kill" -> {
-                if (server.getStatus() == OCServer.Status.OFFLINE) {
+                if (data.status() == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
                 } else {
                     server.kill();
@@ -82,7 +85,13 @@ public class ServerCommand extends Command {
             }
 
             case "delete" -> {
-                // TODO Implement server deletion
+                if (data.status() == OCServer.Status.STARTING) {
+                    executor.sendMessage("§cServer is currently starting.");
+                } else if (data.status() != OCServer.Status.OFFLINE) {
+                    executor.sendMessage("§cServer is currently running.");
+                } else {
+                    ObsidianCloudAPI.get().deleteServer(server);
+                }
             }
 
             case "set" -> {
