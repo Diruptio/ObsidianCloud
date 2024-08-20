@@ -101,36 +101,9 @@ public class ObsidianCloudNode {
         List<LocalOCServer> servers = new ArrayList<>();
         for (String name : serversConfig.getData().keySet()) {
             try {
-                ConfigSection section = Objects.requireNonNull(serversConfig.getSection(name));
-                String task = section.getString("task");
-                OCServer.Type type = OCServer.Type.valueOf(section.getString("type"));
-                boolean autoStart = section.getBoolean("auto_start");
-                String executable = Objects.requireNonNull(section.getString("executable"));
-                int memory = section.getInt("memory");
-                List<String> jvmArgs = section.getList("jvm_args", new ArrayList<>());
-                List<String> args = section.getList("args", new ArrayList<>());
-                Map<String, String> environmentVariables = new HashMap<>();
-                ConfigSection environmentVariablesSection =
-                        Objects.requireNonNull(section.getSection("environment_variables"));
-                environmentVariablesSection
-                        .getData()
-                        .forEach((key, value) -> environmentVariables.put(key, value.toString()));
-                int port = section.getInt("port");
+                String serverData = Objects.requireNonNull(serversConfig.getString(name));
                 servers.add(
-                        new LocalOCServer(
-                                task,
-                                name,
-                                type,
-                                OCServer.LifecycleState.OFFLINE,
-                                OCServer.Status.OFFLINE,
-                                autoStart,
-                                false,
-                                executable,
-                                memory,
-                                jvmArgs,
-                                args,
-                                environmentVariables,
-                                port));
+                        new LocalOCServer(OCServer.TransferableServerData.fromString(serverData)));
             } catch (Throwable ignored) {
             }
         }

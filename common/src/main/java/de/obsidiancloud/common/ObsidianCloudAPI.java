@@ -2,6 +2,7 @@ package de.obsidiancloud.common;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -91,6 +92,21 @@ public abstract class ObsidianCloudAPI {
         }
         return null;
     }
+
+    /**
+     * Creates a new server from the given task.
+     *
+     * @param task The task of the server.
+     * @return The created server.
+     */
+    public abstract @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task);
+
+    /**
+     * Deletes a server.
+     *
+     * @param server The server to delete.
+     */
+    public abstract @NotNull CompletableFuture<Void> deleteServer(@NotNull OCServer server);
 
     /**
      * Gets the local server.
