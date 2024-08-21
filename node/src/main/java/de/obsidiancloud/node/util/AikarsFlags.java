@@ -1,7 +1,7 @@
 package de.obsidiancloud.node.util;
 
 public class AikarsFlags {
-    /** The default flags for the JVM. */
+    /** JVM flags for Paper servers */
     public static final String[] DEFAULT =
             new String[] {
                 "-XX:+UseG1GC",

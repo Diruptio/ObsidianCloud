@@ -1,5 +1,10 @@
 package de.obsidiancloud.common;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonStreamParser;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
@@ -7,63 +12,17 @@ import org.jetbrains.annotations.Nullable;
 
 /** Represents a server in the cluster. */
 public abstract class OCServer {
-    private final String task;
-    private final String name;
-    private final Type type;
-    private LifecycleState lifecycleState;
-    private Status status;
-    private final boolean autoStart;
-    private final String executable;
-    private final int memory;
-    private final List<String> jvmArgs;
-    private final List<String> args;
-    private final Map<String, String> environmentVariables;
-    private final int port;
-    private final List<OCPlayer> players;
+    private @NotNull TransferableServerData data;
+    private final @NotNull List<OCPlayer> players;
 
     /**
      * Create a new OCServer with the specified parameters.
      *
-     * @param task The task which created the server
-     * @param name The name of the server
-     * @param type The type of the server
-     * @param lifecycleState The lifecycle state of the server
-     * @param status The status of the server
-     * @param autoStart Whether the server should automatically start
-     * @param executable The java executable of the server
-     * @param memory The amount of memory allocated to the server
-     * @param jvmArgs The JVM arguments of the server
-     * @param args The arguments of the server
-     * @param environmentVariables The environment variables of the server
-     * @param port The minimum port number on which the server is running
+     * @param data The data of the server
      * @param players The list of players currently connected to the server
      */
-    public OCServer(
-            @Nullable String task,
-            @NotNull String name,
-            @NotNull Type type,
-            @NotNull LifecycleState lifecycleState,
-            @NotNull Status status,
-            boolean autoStart,
-            @NotNull String executable,
-            int memory,
-            @NotNull List<String> jvmArgs,
-            @NotNull List<String> args,
-            @NotNull Map<String, String> environmentVariables,
-            int port,
-            @NotNull List<OCPlayer> players) {
-        this.task = task;
-        this.name = name;
-        this.type = type;
-        this.lifecycleState = lifecycleState;
-        this.status = status;
-        this.autoStart = autoStart;
-        this.executable = executable;
-        this.memory = memory;
-        this.jvmArgs = jvmArgs;
-        this.args = args;
-        this.environmentVariables = environmentVariables;
-        this.port = port;
+    public OCServer(@NotNull TransferableServerData data, @NotNull List<OCPlayer> players) {
+        this.data = data;
         this.players = players;
     }
 
@@ -77,6 +36,20 @@ public abstract class OCServer {
     public abstract void kill();
 
     /**
+     * Sets the lifecycle state of the server.
+     *
+     * @param lifecycleState The lifecycle state of the server
+     */
+    public abstract void setLifecycleState(@NotNull LifecycleState lifecycleState);
+
+    /**
+     * Sets the status of the server.
+     *
+     * @param status The status of the server
+     */
+    public abstract void setStatus(@NotNull Status status);
+
+    /**
      * Gets the node of the server.
      *
      * @return Returns the node of the server.
@@ -84,129 +57,21 @@ public abstract class OCServer {
     public abstract @NotNull OCNode getNode();
 
     /**
-     * Gets the task which created the server.
-     *
-     * @return Returns the task of the server.
-     */
-    public @Nullable String getTask() {
-        return task;
-    }
-
-    /**
      * Gets the name of the server.
      *
      * @return Returns the name of the server.
      */
     public @NotNull String getName() {
-        return name;
+        return data.name();
     }
 
     /**
-     * Gets the type of the server.
+     * Gets the data of the server.
      *
-     * @return Returns the type of the server.
+     * @return Returns the data of the server.
      */
-    public @NotNull Type getType() {
-        return type;
-    }
-
-    /**
-     * Gets the lifecycle state of the server.
-     *
-     * @return Returns the lifecycle state of the server.
-     */
-    public @NotNull LifecycleState getLifecycleState() {
-        return lifecycleState;
-    }
-
-    /**
-     * Sets the lifecycle state of the server.
-     *
-     * @param lifecycleState The new lifecycle state of the server.
-     */
-    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
-        this.lifecycleState = lifecycleState;
-    }
-
-    /**
-     * Gets the status of the server.
-     *
-     * @return Returns the status of the server.
-     */
-    public @NotNull Status getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets the status of the server.
-     *
-     * @param status The new status of the server.
-     */
-    public void setStatus(@NotNull Status status) {
-        this.status = status;
-    }
-
-    /**
-     * Checks whether the server should automatically start.
-     *
-     * @return Returns whether the server should automatically start.
-     */
-    public boolean isAutoStart() {
-        return autoStart;
-    }
-
-    /**
-     * Gets the java executable of the server.
-     *
-     * @return Returns the java executable of the server.
-     */
-    public @NotNull String getExecutable() {
-        return executable;
-    }
-
-    /**
-     * Gets the amount of memory allocated to the server.
-     *
-     * @return Returns the amount of memory allocated to the server.
-     */
-    public int getMemory() {
-        return memory;
-    }
-
-    /**
-     * Gets the JVM arguments of the server.
-     *
-     * @return Returns the JVM arguments of the server.
-     */
-    public @NotNull List<String> getJvmArgs() {
-        return jvmArgs;
-    }
-
-    /**
-     * Gets the arguments of the server.
-     *
-     * @return Returns the arguments of the server.
-     */
-    public @NotNull List<String> getArgs() {
-        return args;
-    }
-
-    /**
-     * Gets the environment variables of the server.
-     *
-     * @return Returns the environment variables of the server.
-     */
-    public @NotNull Map<String, String> getEnvironmentVariables() {
-        return environmentVariables;
-    }
-
-    /**
-     * Gets the port number on which the server is running.
-     *
-     * @return Returns the port number on which the server is running.
-     */
-    public int getPort() {
-        return port;
+    public @NotNull TransferableServerData getData() {
+        return data;
     }
 
     /**
@@ -216,6 +81,15 @@ public abstract class OCServer {
      */
     public @NotNull List<OCPlayer> getPlayers() {
         return players;
+    }
+
+    /**
+     * Updates the data of the server. (Unsafe, not recommended to use)
+     *
+     * @param data The new data of the server
+     */
+    public void updateData(@NotNull TransferableServerData data) {
+        this.data = data;
     }
 
     /** Represents the type of a server. */
@@ -233,8 +107,8 @@ public abstract class OCServer {
         VELOCITY(true, "shutdown", "platform/velocity");
 
         private final boolean proxy;
-        private final String stopCommand;
-        private final String template;
+        private final @NotNull String stopCommand;
+        private final @NotNull String template;
 
         Type(boolean proxy, @NotNull String stopCommand, @NotNull String template) {
             this.proxy = proxy;
@@ -295,5 +169,88 @@ public abstract class OCServer {
 
         /** The server is offline. */
         OFFLINE
+    }
+
+    public record TransferableServerData(
+            @Nullable String task,
+            @NotNull String name,
+            @NotNull Type type,
+            @NotNull LifecycleState lifecycleState,
+            @NotNull Status status,
+            boolean autoStart,
+            boolean autoDelete,
+            @NotNull String executable,
+            int memory,
+            @NotNull List<String> jvmArgs,
+            @NotNull List<String> args,
+            @NotNull Map<String, String> environmentVariables,
+            int port) {
+        @Override
+        public String toString() {
+            JsonObject json = new JsonObject();
+            json.addProperty("task", task);
+            json.addProperty("name", name);
+            json.addProperty("type", type.name());
+            json.addProperty("lifecycle_state", lifecycleState.name());
+            json.addProperty("status", status.name());
+            json.addProperty("auto_start", autoStart);
+            json.addProperty("auto_delete", autoDelete);
+            json.addProperty("executable", executable);
+            json.addProperty("memory", memory);
+            JsonArray jvmArgsArray = new JsonArray();
+            jvmArgs.forEach(jvmArgsArray::add);
+            json.add("jvmArgs", jvmArgsArray);
+            JsonArray argsArray = new JsonArray();
+            args.forEach(argsArray::add);
+            json.add("args", argsArray);
+            JsonObject environmentVariablesObject = new JsonObject();
+            environmentVariables.forEach(environmentVariablesObject::addProperty);
+            json.add("environment_variables", environmentVariablesObject);
+            json.addProperty("port", port);
+            return json.toString();
+        }
+
+        public static @NotNull TransferableServerData fromString(@NotNull String string) {
+            JsonObject json = new JsonStreamParser(string).next().getAsJsonObject();
+            String task = json.get("task").isJsonNull() ? null : json.get("task").getAsString();
+            String name = json.get("name").getAsString();
+            Type type = Type.valueOf(json.get("type").getAsString());
+            LifecycleState lifecycleState =
+                    LifecycleState.valueOf(json.get("lifecycle_state").getAsString());
+            Status status = Status.valueOf(json.get("status").getAsString());
+            boolean autoStart = json.get("auto_start").getAsBoolean();
+            boolean autoDelete = json.get("auto_delete").getAsBoolean();
+            String executable = json.get("executable").getAsString();
+            int memory = json.get("memory").getAsInt();
+            List<String> jvmArgs = new ArrayList<>();
+            json.get("jvmArgs")
+                    .getAsJsonArray()
+                    .forEach(element -> jvmArgs.add(element.getAsString()));
+            List<String> args = new ArrayList<>();
+            json.get("args").getAsJsonArray().forEach(element -> args.add(element.getAsString()));
+            Map<String, String> environmentVariables = new HashMap<>();
+            json.get("environment_variables")
+                    .getAsJsonObject()
+                    .entrySet()
+                    .forEach(
+                            entry ->
+                                    environmentVariables.put(
+                                            entry.getKey(), entry.getValue().getAsString()));
+            int port = json.get("port").getAsInt();
+            return new TransferableServerData(
+                    task,
+                    name,
+                    type,
+                    lifecycleState,
+                    status,
+                    autoStart,
+                    autoDelete,
+                    executable,
+                    memory,
+                    jvmArgs,
+                    args,
+                    environmentVariables,
+                    port);
+        }
     }
 }

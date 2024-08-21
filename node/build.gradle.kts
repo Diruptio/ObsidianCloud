@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("org.springframework:spring-core:6.1.10")
+    implementation("commons-io:commons-io:2.16.1")
 }
 
 val addPlatformJars =
@@ -34,6 +34,11 @@ val generateSources =
     }
 sourceSets.main.get().java.srcDir(generateSources.map { it.outputs })
 
+java {
+    withJavadocJar()
+    withSourcesJar()
+}
+
 tasks {
     compileJava {
         dependsOn(addPlatformJars)
@@ -52,16 +57,16 @@ tasks {
     }
 
     named<JavaExec>("run") {
+        workingDir = rootProject.file("run")
+        workingDir.mkdirs()
         val exampleModuleJarTask = project(":modules:example-module").tasks.named("jar").get()
         dependsOn(exampleModuleJarTask)
         doFirst {
             val module = exampleModuleJarTask.outputs.files.first()
-            val moduleDir = file("run/modules")
+            val moduleDir = workingDir.file("modules")
             moduleDir.mkdirs()
             module.copyTo(moduleDir.resolve(module.name), true)
         }
-        workingDir = file("run")
-        workingDir.mkdirs()
         standardOutput = System.out
         standardInput = System.`in`
     }

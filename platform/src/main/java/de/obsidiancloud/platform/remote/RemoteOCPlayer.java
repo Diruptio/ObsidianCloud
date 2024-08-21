@@ -25,7 +25,7 @@ public class RemoteOCPlayer extends OCPlayer {
     public @Nullable RemoteOCServer getProxy() {
         if (node.isConnected()) {
             for (OCServer server : node.getServers()) {
-                if (server.getType().isProxy() && server.getPlayers().contains(this)) {
+                if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
                     return (RemoteOCServer) server;
                 }
             }
@@ -37,7 +37,7 @@ public class RemoteOCPlayer extends OCPlayer {
     public @Nullable RemoteOCServer getServer() {
         if (node.isConnected()) {
             for (OCServer server : node.getServers()) {
-                if (!server.getType().isProxy() && server.getPlayers().contains(this)) {
+                if (!server.getData().type().isProxy() && server.getPlayers().contains(this)) {
                     return (RemoteOCServer) server;
                 }
             }
