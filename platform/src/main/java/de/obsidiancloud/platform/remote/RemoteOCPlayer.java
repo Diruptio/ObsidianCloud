@@ -1,6 +1,5 @@
 package de.obsidiancloud.platform.remote;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
@@ -14,35 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 /** A player on a remote server. */
 public class RemoteOCPlayer extends OCPlayer {
-    private final @NotNull OCNode node;
-
-    public RemoteOCPlayer(@NotNull UUID uuid, @NotNull String name, @NotNull OCNode node) {
+    public RemoteOCPlayer(@NotNull UUID uuid, @NotNull String name) {
         super(uuid, name);
-        this.node = node;
-    }
-
-    @Override
-    public @Nullable RemoteOCServer getProxy() {
-        if (node.isConnected()) {
-            for (OCServer server : node.getServers()) {
-                if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
-                    return (RemoteOCServer) server;
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public @Nullable RemoteOCServer getServer() {
-        if (node.isConnected()) {
-            for (OCServer server : node.getServers()) {
-                if (!server.getData().type().isProxy() && server.getPlayers().contains(this)) {
-                    return (RemoteOCServer) server;
-                }
-            }
-        }
-        return null;
     }
 
     @Override

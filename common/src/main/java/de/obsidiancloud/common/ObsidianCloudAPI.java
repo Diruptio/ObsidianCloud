@@ -10,6 +10,9 @@ import org.jetbrains.annotations.Nullable;
 public abstract class ObsidianCloudAPI {
     private static ObsidianCloudAPI instance = null;
 
+    /** Create a new instance of ObsidianCloudAPI. */
+    public ObsidianCloudAPI() {}
+
     /**
      * Gets a list of all nodes.
      *
@@ -97,7 +100,7 @@ public abstract class ObsidianCloudAPI {
      * Creates a new server from the given task.
      *
      * @param task The task of the server.
-     * @return The created server.
+     * @return A future that completes with the server when it is created.
      */
     public abstract @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task);
 
@@ -105,6 +108,7 @@ public abstract class ObsidianCloudAPI {
      * Deletes a server.
      *
      * @param server The server to delete.
+     * @return A future that completes when the server is deleted.
      */
     public abstract @NotNull CompletableFuture<Void> deleteServer(@NotNull OCServer server);
 
