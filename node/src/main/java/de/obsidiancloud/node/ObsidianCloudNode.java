@@ -13,15 +13,14 @@ import de.obsidiancloud.common.console.ConsoleCommandExecutor;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
 import de.obsidiancloud.common.network.NetworkServer;
-import de.obsidiancloud.common.network.packets.CustomMessagePacket;
-import de.obsidiancloud.common.network.packets.PlayerKickPacket;
-import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
+import de.obsidiancloud.common.network.packets.*;
 import de.obsidiancloud.node.command.KickCommand;
 import de.obsidiancloud.node.command.ListCommand;
 import de.obsidiancloud.node.command.ScreenCommand;
 import de.obsidiancloud.node.command.ShutdownCommand;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
+import de.obsidiancloud.node.local.TaskParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
 import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
@@ -34,7 +33,7 @@ import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
 import de.obsidiancloud.node.threads.NodeThread;
-import de.obsidiancloud.node.util.TaskParser;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -106,7 +105,9 @@ public class ObsidianCloudNode {
             try {
                 String serverData = Objects.requireNonNull(serversConfig.getString(name));
                 servers.add(
-                        new LocalOCServer(OCServer.TransferableServerData.fromString(serverData)));
+                        new LocalOCServer(
+                                OCServer.TransferableServerData.fromString(serverData),
+                                OCServer.Status.OFFLINE));
             } catch (Throwable ignored) {
             }
         }
@@ -120,9 +121,17 @@ public class ObsidianCloudNode {
     }
 
     public static void reload() {
-        loadTemplateProviders();
+        registerPlatforms();
+        registerTemplateProviders();
         registerCommands();
         loadTasks();
+    }
+
+    private static void registerPlatforms() {
+        OCServer.Platform.getPlatforms().clear();
+        OCServer.Platform.getPlatforms().add(OCServer.Platform.PAPER);
+        OCServer.Platform.getPlatforms().add(OCServer.Platform.FABRIC);
+        OCServer.Platform.getPlatforms().add(OCServer.Platform.VELOCITY);
     }
 
     private static void registerCommands() {
@@ -134,7 +143,7 @@ public class ObsidianCloudNode {
         commandProvider.registerCommand(new ShutdownCommand());
     }
 
-    private static void loadTemplateProviders() {
+    private static void registerTemplateProviders() {
         templateProviders.clear();
         templateProviders.add(new SimpleTemplateProvider());
         templateProviders.add(new PlatformTemplateProvider());
@@ -145,12 +154,15 @@ public class ObsidianCloudNode {
     private static void loadTasks() {
         api.getTasks().clear();
         try {
-            Files.createDirectories(Path.of("tasks"));
-            Stream<Path> files = Files.list(Path.of("tasks"));
-            for (Path file : (Iterable<Path>) files::iterator) {
+            Path directory = Path.of("tasks");
+            Files.createDirectories(directory);
+            Stream<Path> files = Files.walk(directory, FileVisitOption.FOLLOW_LINKS);
+            for (Path file : files.filter(Files::isRegularFile).toArray(Path[]::new)) {
                 try {
                     api.getTasks().add(TaskParser.parse(file));
-                } catch (Throwable ignored) {
+                } catch (Exception e) {
+                    logger.log(
+                            Level.SEVERE, "Failed to load task: " + directory.relativize(file), e);
                 }
             }
             files.close();
@@ -160,9 +172,20 @@ public class ObsidianCloudNode {
     }
 
     private static void registerPackets() {
+        // common
         NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerAddedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerCreatePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerDeletePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerRemovedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatePacket.class);
+
+        // node
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class LocalOCServer extends OCServer {
-    public LocalOCServer(@NotNull OCServer.TransferableServerData data, @NotNull Status status) {
+    public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
         super(data, status, new ArrayList<>());
     }
 

@@ -12,9 +12,7 @@ public class RemoteOCServer extends OCServer {
     private final @NotNull OCNode node;
 
     public RemoteOCServer(
-            @NotNull OCServer.TransferableServerData data,
-            @NotNull OCServer.Status status,
-            @NotNull OCNode node) {
+            @NotNull TransferableServerData data, @NotNull Status status, @NotNull OCNode node) {
         super(data, status, new ArrayList<>());
         this.node = node;
     }

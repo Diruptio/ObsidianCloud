@@ -103,6 +103,15 @@ public abstract class OCServer {
         this.data = data;
     }
 
+    /**
+     * Updates the status of the server. (Unsafe, please do not use)
+     *
+     * @param status The new status of the server
+     */
+    public void updateStatus(@NotNull Status status) {
+        this.status = status;
+    }
+
     /** The types of servers. */
     public enum Type {
         /** A normal minecraft server. (Paper, Fabric, Forge) */
