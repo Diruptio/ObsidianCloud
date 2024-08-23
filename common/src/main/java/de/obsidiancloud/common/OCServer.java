@@ -193,8 +193,9 @@ public abstract class OCServer {
      * @param staticServer If the server is static
      * @param autoStart If the server should be started automatically
      * @param executable The execution string of the server. This is equivalent to a <b>shell
-     *     script</b> line. The placeholder <i>%SERVER_PORT%</i> will be replaced. If the type is
-     *     {@link Type#SERVER} or {@link Type#PROXY}, this should be a java executable.
+     *     script</b> line. The placeholders <i>%SERVER_PORT%, %AIKARS_FLAGS%</i> will be replaced.
+     *     If the type is {@link Type#SERVER} or {@link Type#PROXY}, this should be a java
+     *     executable.
      * @param memory The memory of the server (will be ignored if type is {@link Type#CUSTOM})
      * @param jvmArgs The JVM arguments of the server (will be ignored if type is {@link
      *     Type#CUSTOM})

@@ -6,6 +6,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
+import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -46,12 +47,23 @@ public class LocalOCServer extends OCServer {
 
             List<String> command = new ArrayList<>();
             command.add(getData().executable());
-            command.add("-Xms" + getData().memory() + "M");
-            command.add("-Xmx" + getData().memory() + "M");
-            command.addAll(getData().jvmArgs());
-            command.add("-jar");
-            command.add("server.jar");
-            command.addAll(getData().jvmArgs());
+            if (getData().type() != Type.CUSTOM) {
+                command.add("-Xms" + getData().memory() + "M");
+                command.add("-Xmx" + getData().memory() + "M");
+                command.addAll(getData().jvmArgs());
+                command.add("-jar");
+                command.add("server.jar");
+                command.addAll(getData().args());
+            }
+            for (int i = 0; i < command.size(); i++) {
+                String arg = command.get(i);
+                if (arg.equals("%AIKARS_FLAGS%")) {
+                    command.remove(i);
+                    command.addAll(i, List.of(AikarsFlags.DEFAULT));
+                } else {
+                    command.set(i, arg.replace("%SERVER_PORT%", String.valueOf(port)));
+                }
+            }
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getData().environmentVariables());

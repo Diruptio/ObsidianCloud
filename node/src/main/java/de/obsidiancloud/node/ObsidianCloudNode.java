@@ -44,7 +44,7 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public class ObsidianCloudNode {
-    private static final Logger logger = Logger.getLogger("main");
+    private static final @NotNull Logger logger = Logger.getLogger("main");
     private static final ConsoleCommandExecutor executor = new ConsoleCommandExecutor(logger);
     private static Console console;
     private static Config config;
@@ -66,9 +66,6 @@ public class ObsidianCloudNode {
             List<LocalOCServer> servers = loadServersConfig();
             api = new NodeObsidianCloudAPI(loadLocalNode(servers));
             ObsidianCloudAPI.setInstance(api);
-            reload();
-            nodeThread = new NodeThread();
-            nodeThread.start();
 
             registerPackets();
             ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
@@ -76,6 +73,10 @@ public class ObsidianCloudNode {
             int port = localNode.getInt("port", 3005);
             networkServer = new NetworkServer(host, port, ObsidianCloudNode::clientConnected);
             networkServer.start();
+
+            reload();
+            nodeThread = new NodeThread();
+            nodeThread.start();
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);
         }

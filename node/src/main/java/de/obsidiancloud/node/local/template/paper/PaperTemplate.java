@@ -20,10 +20,11 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PaperTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
-    private final Logger logger = ObsidianCloudNode.getLogger();
-    private final String version;
-    private final String build;
+    private final @NotNull Path templatesDirectory =
+            Path.of("generated-templates").resolve("paper");
+    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
+    private final @NotNull String version;
+    private final @NotNull String build;
 
     public PaperTemplate(@NotNull String version, @NotNull String build) {
         super("paper/%s/%s".formatted(version, build));
