@@ -1,5 +1,6 @@
 package de.obsidiancloud.platform;
 
+import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.NetworkHandler;
@@ -7,9 +8,7 @@ import de.obsidiancloud.common.network.listener.PlayerKickListener;
 import de.obsidiancloud.common.network.listener.PlayerMessageListener;
 import de.obsidiancloud.common.network.listener.ServerRemovedListener;
 import de.obsidiancloud.common.network.listener.ServerUpdatedListener;
-import de.obsidiancloud.common.network.packets.CustomMessagePacket;
-import de.obsidiancloud.common.network.packets.PlayerKickPacket;
-import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
+import de.obsidiancloud.common.network.packets.*;
 import de.obsidiancloud.platform.local.LocalOCServer;
 import de.obsidiancloud.platform.network.listener.ServerAddedListener;
 import de.obsidiancloud.platform.network.listener.SyncListener;
@@ -27,12 +26,24 @@ public class ObsidianCloudPlatform {
         createAPI(localServer);
         connect();
         new AutoReconnectTask().start();
+        localServer.setStatus(OCServer.Status.READY);
     }
 
     private static void registerPackets() {
+        // common
         NetworkHandler.getPacketRegistry().registerPacket(CustomMessagePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerKickPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(PlayerMessagePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerAddedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerCreatePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerDeletePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerRemovedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatedPacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatePacket.class);
+
+        // platform
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);

@@ -1,7 +1,7 @@
 package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCServer;
-import de.obsidiancloud.common.network.packets.ServerUpdatePacket;
+import de.obsidiancloud.common.network.packets.ServerStatusChangePacket;
 import java.util.ArrayList;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,8 +9,10 @@ public class RemoteOCServer extends OCServer {
     private final @NotNull RemoteOCNode node;
 
     public RemoteOCServer(
-            @NotNull OCServer.TransferableServerData data, @NotNull RemoteOCNode node) {
-        super(data, new ArrayList<>());
+            @NotNull TransferableServerData data,
+            @NotNull Status status,
+            @NotNull RemoteOCNode node) {
+        super(data, status, new ArrayList<>());
         this.node = node;
     }
 
@@ -30,49 +32,10 @@ public class RemoteOCServer extends OCServer {
     }
 
     @Override
-    public void setLifecycleState(@NotNull LifecycleState lifecycleState) {
-        OCServer.TransferableServerData data = getData();
-        data =
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        lifecycleState,
-                        data.status(),
-                        data.autoStart(),
-                        data.autoDelete(),
-                        data.executable(),
-                        data.memory(),
-                        data.jvmArgs(),
-                        data.args(),
-                        data.environmentVariables(),
-                        data.port());
-        ServerUpdatePacket packet = new ServerUpdatePacket();
-        packet.setServerData(data);
-        node.getConnection().send(packet);
-    }
-
-    @Override
     public void setStatus(@NotNull Status status) {
-        OCServer.TransferableServerData data = getData();
-        data =
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.lifecycleState(),
-                        status,
-                        data.autoStart(),
-                        data.autoDelete(),
-                        data.executable(),
-                        data.memory(),
-                        data.jvmArgs(),
-                        data.args(),
-                        data.environmentVariables(),
-                        data.port());
-        updateData(data);
-        ServerUpdatePacket packet = new ServerUpdatePacket();
-        packet.setServerData(data);
+        ServerStatusChangePacket packet = new ServerStatusChangePacket();
+        packet.setName(getName());
+        packet.setStatus(status);
         node.getConnection().send(packet);
     }
 
