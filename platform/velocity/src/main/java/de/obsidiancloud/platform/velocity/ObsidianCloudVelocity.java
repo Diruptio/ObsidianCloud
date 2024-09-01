@@ -15,6 +15,7 @@ import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
+@SuppressWarnings("unused")
 @Plugin(id = "obsidiancloud", name = "ObsidianCloud", version = VelocityBuildConstants.VERSION)
 public class ObsidianCloudVelocity {
     private static ObsidianCloudVelocity instance;
