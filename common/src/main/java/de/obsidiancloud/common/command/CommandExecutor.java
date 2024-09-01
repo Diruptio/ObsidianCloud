@@ -18,7 +18,7 @@ public interface CommandExecutor {
         } else {
             String[] args = new String[parts.length - 1];
             System.arraycopy(parts, 1, args, 0, args.length);
-            command.execute(this, parts);
+            command.execute(this, args);
         }
     }
 
