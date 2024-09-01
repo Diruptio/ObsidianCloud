@@ -14,6 +14,7 @@ public class ServerCommand extends Command {
     public ServerCommand() {
         super("server");
         setUsage("server <server>");
+        addAlias("ser");
     }
 
     @Override
@@ -34,13 +35,18 @@ public class ServerCommand extends Command {
         final OCServer server = ObsidianCloudAPI.get().getServer(serverArg);
 
         if (server == null) {
-            executor.sendMessage("§cServer with name §e" + serverArg + " could not be found.");
+            executor.sendMessage("§cServer with name §e" + serverArg + " §ccould not be found.");
 
             return;
         }
 
         if (argCount == 1) {
-            executor.sendMessage("server " + serverArg + " <start|stop|restart|kill|delete|set>");
+            executor.sendMessage(
+                    "§cUsage: "
+                            + executor.getCommandPrefix()
+                            + "server "
+                            + serverArg
+                            + " <start|stop|restart|kill|delete|set>");
 
             return;
         }
@@ -98,7 +104,11 @@ public class ServerCommand extends Command {
             case "set" -> {
                 if (argCount == 2) {
                     executor.sendMessage(
-                            "server " + serverArg + " set <name|autostart|memory|env>");
+                            "§cUsage: "
+                                    + executor.getCommandPrefix()
+                                    + "server "
+                                    + serverArg
+                                    + " set <name|autostart|memory|env>");
 
                     return;
                 }
@@ -106,7 +116,12 @@ public class ServerCommand extends Command {
                 switch (args[2]) {
                     case "name" -> {
                         if (argCount == 3) {
-                            executor.sendMessage("server " + serverArg + " set name <name>");
+                            executor.sendMessage(
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set name <name>");
 
                             return;
                         }
@@ -125,7 +140,11 @@ public class ServerCommand extends Command {
                     case "autostart" -> {
                         if (argCount == 3) {
                             executor.sendMessage(
-                                    "server " + serverArg + " set autostart <true|false>");
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set autostart <true|false>");
 
                             return;
                         }
@@ -136,7 +155,11 @@ public class ServerCommand extends Command {
 
                         if (!condition && !value.equalsIgnoreCase("false")) {
                             executor.sendMessage(
-                                    "server " + serverArg + " set autostart <true|false>");
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set autostart <true|false>");
 
                             return;
                         }
@@ -147,7 +170,11 @@ public class ServerCommand extends Command {
                     case "memory" -> {
                         if (argCount == 3) {
                             executor.sendMessage(
-                                    "server " + serverArg + " set memory <memory in mb>");
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set memory <memory in mb>");
 
                             return;
                         }
@@ -164,13 +191,22 @@ public class ServerCommand extends Command {
                             server.setMemory(value);
                         } catch (final NumberFormatException exception) {
                             executor.sendMessage(
-                                    "server " + serverArg + " set memory <memory in mb>");
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set memory <memory in mb>");
                         }
                     }
 
                     case "env" -> {
                         if (argCount == 3) {
-                            executor.sendMessage("server " + serverArg + " set env <set|remove>");
+                            executor.sendMessage(
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set env <set|remove>");
 
                             return;
                         }
@@ -179,7 +215,11 @@ public class ServerCommand extends Command {
                             case "set" -> {
                                 if (argCount == 4) {
                                     executor.sendMessage(
-                                            "server " + serverArg + " set env set <key>");
+                                            "§cUsage: "
+                                                    + executor.getCommandPrefix()
+                                                    + "server "
+                                                    + serverArg
+                                                    + " set env set <key>");
 
                                     return;
                                 }
@@ -188,7 +228,9 @@ public class ServerCommand extends Command {
 
                                 if (argCount == 5) {
                                     executor.sendMessage(
-                                            "server "
+                                            "§cUsage: "
+                                                    + executor.getCommandPrefix()
+                                                    + "server "
                                                     + serverArg
                                                     + " set env set "
                                                     + keyArg
@@ -208,7 +250,11 @@ public class ServerCommand extends Command {
                             case "remove" -> {
                                 if (argCount == 4) {
                                     executor.sendMessage(
-                                            "server " + serverArg + " set env remove <key>");
+                                            "§cUsage: "
+                                                    + executor.getCommandPrefix()
+                                                    + "server "
+                                                    + serverArg
+                                                    + " set env remove <key>");
 
                                     return;
                                 }
@@ -234,19 +280,31 @@ public class ServerCommand extends Command {
 
                             default ->
                                     executor.sendMessage(
-                                            "server " + serverArg + " set env <set|remove>");
+                                            "§cUsage: "
+                                                    + executor.getCommandPrefix()
+                                                    + "server "
+                                                    + serverArg
+                                                    + " set env <set|remove>");
                         }
                     }
 
                     default ->
                             executor.sendMessage(
-                                    "server " + serverArg + " set <name|autostart|memory|env>");
+                                    "§cUsage: "
+                                            + executor.getCommandPrefix()
+                                            + "server "
+                                            + serverArg
+                                            + " set <name|autostart|memory|env>");
                 }
             }
 
             default ->
                     executor.sendMessage(
-                            "server " + serverArg + " <start|stop|restart|kill|delete|set>");
+                            "§cUsage: "
+                                    + executor.getCommandPrefix()
+                                    + "server "
+                                    + serverArg
+                                    + " <start|stop|restart|kill|delete|set>");
         }
     }
 }

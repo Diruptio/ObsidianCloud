@@ -42,7 +42,7 @@ public class RemoteOCServer extends OCServer {
     }
 
     @Override
-    public void setName(String name) {
+    public void setName(@NotNull String name) {
         sendUpdatePacket(
                 new TransferableServerData(
                         data.task(),
