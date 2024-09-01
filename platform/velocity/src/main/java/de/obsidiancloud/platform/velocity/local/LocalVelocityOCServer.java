@@ -1,17 +1,16 @@
 package de.obsidiancloud.platform.velocity.local;
 
-import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.platform.local.LocalOCServer;
 import de.obsidiancloud.platform.velocity.ObsidianCloudVelocity;
 import org.jetbrains.annotations.NotNull;
 
-public class ProxyOCServer extends LocalOCServer {
-    public ProxyOCServer(@NotNull OCServer.TransferableServerData data) {
-        super(data);
+public class LocalVelocityOCServer extends LocalOCServer {
+    public LocalVelocityOCServer(@NotNull TransferableServerData data) {
+        super(data, Status.STARTING);
     }
 
     @Override
     public void stop() {
-        ObsidianCloudVelocity.getServer().shutdown();
+        ObsidianCloudVelocity.getInstance().getServer().shutdown();
     }
 }
