@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Represents a server in the cluster. */
 public abstract class OCServer {
-    private @NotNull TransferableServerData data;
+    /** The data of the server. */
+    protected @NotNull TransferableServerData data;
 
     /** The status of the server. */
     protected @NotNull Status status;
@@ -43,6 +45,20 @@ public abstract class OCServer {
 
     /** Kills the server. */
     public abstract void kill();
+
+    public abstract void setAutoStart(boolean autoStart);
+
+    public abstract void setExecutable(@NotNull String executable);
+
+    public abstract void setMemory(int memory);
+
+    public abstract void setJvmArgs(@NotNull List<String> jvmArgs);
+
+    public abstract void setArgs(@NotNull List<String> args);
+
+    public abstract void setEnvironmentVariables(@NotNull Map<String, String> environmentVariables);
+
+    public abstract void setPort(int port);
 
     /**
      * Gets the status of the server.
@@ -99,6 +115,7 @@ public abstract class OCServer {
      *
      * @param data The new data of the server
      */
+    @ApiStatus.Internal
     public void updateData(@NotNull TransferableServerData data) {
         this.data = data;
     }
@@ -108,6 +125,7 @@ public abstract class OCServer {
      *
      * @param status The new status of the server
      */
+    @ApiStatus.Internal
     public void updateStatus(@NotNull Status status) {
         this.status = status;
     }
