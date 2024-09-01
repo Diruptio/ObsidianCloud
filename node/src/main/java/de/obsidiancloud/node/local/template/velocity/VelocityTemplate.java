@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
 
 public class VelocityTemplate extends OCTemplate {
     private final Path templatesDirectory = Path.of("generated-templates").resolve("velocity");
@@ -93,6 +93,6 @@ public class VelocityTemplate extends OCTemplate {
         process.waitFor();
 
         // Clean up
-        FileSystemUtils.deleteRecursively(directory.resolve("logs"));
+        FileUtils.deleteDirectory(directory.resolve("logs").toFile());
     }
 }

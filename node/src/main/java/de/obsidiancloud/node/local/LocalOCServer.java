@@ -6,7 +6,7 @@ import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
-import de.obsidiancloud.node.util.AikarsFlags;
+import de.obsidiancloud.node.util.Flags;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -14,6 +14,7 @@ import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,13 +24,12 @@ public class LocalOCServer extends OCServer {
     private Process process;
 
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
-        super(data, status, new ArrayList<>());
+        super(data, status, new HashSet<>());
     }
 
     @Override
     public void start() {
         try {
-            setLifecycleState(LifecycleState.ONLINE);
             setStatus(Status.STARTING);
             ObsidianCloudNode.getLogger().info("Starting server " + getName() + "...");
 
@@ -60,7 +60,13 @@ public class LocalOCServer extends OCServer {
                 String arg = command.get(i);
                 if (arg.equals("%AIKARS_FLAGS%")) {
                     command.remove(i);
-                    command.addAll(i, List.of(AikarsFlags.DEFAULT));
+                    command.addAll(i, List.of(Flags.AIKARS_FLAGS));
+                    i += Flags.VELOCITY_FLAGS.length - 1;
+                }
+                if (arg.equals("%VELOCITY_FLAGS%")) {
+                    command.remove(i);
+                    command.addAll(i, List.of(Flags.VELOCITY_FLAGS));
+                    i += Flags.VELOCITY_FLAGS.length - 1;
                 } else {
                     command.set(i, arg.replace("%SERVER_PORT%", String.valueOf(port)));
                 }

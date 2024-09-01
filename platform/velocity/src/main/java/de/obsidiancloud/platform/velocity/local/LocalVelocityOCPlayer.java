@@ -24,7 +24,8 @@ public class LocalVelocityOCPlayer extends OCPlayer {
     @Override
     public @Nullable OCServer getProxy() {
         for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
+            if (server.getData().type() == OCServer.Type.PROXY
+                    && server.getPlayers().contains(this)) {
                 return server;
             }
         }
@@ -38,7 +39,7 @@ public class LocalVelocityOCPlayer extends OCPlayer {
 
     @Override
     public void connect(@NotNull OCServer server) {
-        ProxyServer velocityServer = ObsidianCloudVelocity.getServer();
+        ProxyServer velocityServer = ObsidianCloudVelocity.getInstance().getServer();
         Optional<Player> player = velocityServer.getPlayer(getUUID());
         if (player.isPresent()) {
             Optional<RegisteredServer> registeredServer =

@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class LocalOCServer extends OCServer {
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
-        super(data, status, new ArrayList<>());
+        super(data, status, new HashSet<>());
     }
 
     @Override
