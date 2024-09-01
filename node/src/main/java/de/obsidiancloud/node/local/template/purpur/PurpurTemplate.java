@@ -16,14 +16,15 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.util.FileSystemUtils;
 
 public class PurpurTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
-    private final Logger logger = ObsidianCloudNode.getLogger();
-    private final String version;
-    private final String build;
+    private final @NotNull Path templatesDirectory =
+            Path.of("generated-templates").resolve("purpur");
+    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
+    private final @NotNull String version;
+    private final @NotNull String build;
 
     public PurpurTemplate(@NotNull String version, @NotNull String build) {
         super("purpur/%s/%s".formatted(version, build));
@@ -84,7 +85,7 @@ public class PurpurTemplate extends OCTemplate {
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
-            if (reader.readLine().matches(".*Done.*For help, type \"help\"")) {
+            if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
                 process.getOutputStream().write("stop\n".getBytes());
                 process.getOutputStream().flush();
                 break;
@@ -94,9 +95,9 @@ public class PurpurTemplate extends OCTemplate {
         process.waitFor();
 
         // Clean up
-        FileSystemUtils.deleteRecursively(directory.resolve("logs"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_nether"));
-        FileSystemUtils.deleteRecursively(directory.resolve("world_the_end"));
+        FileUtils.deleteDirectory(directory.resolve("logs").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
+        FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
     }
 }

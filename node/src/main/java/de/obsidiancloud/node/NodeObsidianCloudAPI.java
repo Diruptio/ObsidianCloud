@@ -82,16 +82,16 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
                                 task.name(),
                                 name,
                                 task.type(),
-                                OCServer.LifecycleState.CREATING,
-                                OCServer.Status.OFFLINE,
+                                task.platform(),
+                                task.staticServer(),
                                 task.autoStart(),
-                                task.autoDelete(),
                                 task.executable(),
                                 task.memory(),
                                 task.jvmArgs(),
                                 task.args(),
                                 task.environmentVariables(),
-                                task.port()));
+                                task.port()),
+                        OCServer.Status.CREATING);
 
         ServerCreateEvent event = new ServerCreateEvent(server);
         EventManager.call(event);

@@ -14,14 +14,15 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.springframework.util.FileSystemUtils;
+import org.apache.commons.io.FileUtils;
+import org.jetbrains.annotations.NotNull;
 
 public class ServerCreateThread extends Thread {
-    private final LocalOCServer server;
-    private final List<String> templates;
+    private final @NotNull LocalOCServer server;
+    private final @NotNull List<String> templates;
 
-    public ServerCreateThread(LocalOCServer server, List<String> templates) {
-        super("ServerLoadThread-" + server.getName());
+    public ServerCreateThread(@NotNull LocalOCServer server, @NotNull List<String> templates) {
+        super("ServerCreateThread-" + server.getName());
         this.server = server;
         this.templates = templates;
     }
@@ -29,27 +30,29 @@ public class ServerCreateThread extends Thread {
     @Override
     public void run() {
         ObsidianCloudNode.getLogger().info("Creating server " + server.getName() + "...");
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            ServerAddedPacket packet = new ServerAddedPacket();
+            packet.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
+            packet.setServerData(server.getData());
+            packet.setServerStatus(server.getStatus());
+            connection.send(packet);
+        }
         try {
             Path directory = server.getDirectory();
             if (Files.exists(directory)) {
-                FileSystemUtils.deleteRecursively(directory);
+                FileUtils.deleteDirectory(directory.toFile());
             }
             Files.createDirectories(directory);
             List<String> templates = new ArrayList<>(this.templates);
-            templates.add(server.getData().type().getTemplate());
+            OCServer.Platform platform = server.getData().platform();
+            if (platform != null) {
+                templates.addAll(platform.templates());
+            }
             for (String template : templates) {
                 OCTemplate t = ObsidianCloudNode.getTemplate(template);
                 if (t != null) t.apply(directory);
             }
-            server.setLifecycleState(OCServer.LifecycleState.OFFLINE);
             server.setStatus(LocalOCServer.Status.OFFLINE);
-
-            for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
-                ServerAddedPacket packet = new ServerAddedPacket();
-                packet.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
-                packet.setServerData(server.getData());
-                connection.send(packet);
-            }
             EventManager.call(new ServerAddedEvent(server));
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()

@@ -2,7 +2,6 @@ package de.obsidiancloud.platform.paper.local;
 
 import de.obsidiancloud.common.OCPlayer;
 import de.obsidiancloud.common.OCServer;
-import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.platform.paper.ObsidianCloudPaper;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -18,21 +17,6 @@ public class LocalPaperOCPlayer extends OCPlayer {
     public LocalPaperOCPlayer(@NotNull Player player) {
         super(player.getUniqueId(), player.getName());
         this.player = player;
-    }
-
-    @Override
-    public @Nullable OCServer getProxy() {
-        for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getData().type().isProxy() && server.getPlayers().contains(this)) {
-                return server;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public @Nullable OCServer getServer() {
-        return ObsidianCloudAPI.get().getLocalServer();
     }
 
     @Override

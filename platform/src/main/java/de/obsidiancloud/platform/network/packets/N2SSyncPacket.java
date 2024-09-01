@@ -36,11 +36,12 @@ public class N2SSyncPacket extends ReadablePacket {
             for (int j = 0; j < serverCount; j++) {
                 OCServer.TransferableServerData data =
                         OCServer.TransferableServerData.fromString(readString(byteBuf));
-                RemoteOCServer server = new RemoteOCServer(data, node);
+                OCServer.Status status = OCServer.Status.valueOf(readString(byteBuf));
+                RemoteOCServer server = new RemoteOCServer(data, status, node);
                 int playerCount = byteBuf.readInt();
                 for (int k = 0; k < playerCount; k++) {
                     server.getPlayers()
-                            .add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf), node));
+                            .add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf)));
                 }
                 node.getServers().add(server);
             }

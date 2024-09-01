@@ -13,8 +13,12 @@ public class ServerAddedListener implements PacketListener<ServerAddedPacket> {
     @Override
     public void handle(@NotNull ServerAddedPacket packet, @NotNull Connection connection) {
         OCNode node = ObsidianCloudAPI.get().getNode(packet.getNode());
-        if (node instanceof RemoteOCNode remoteNode && packet.getServerData() != null) {
-            RemoteOCServer server = new RemoteOCServer(packet.getServerData(), remoteNode);
+        if (node instanceof RemoteOCNode remoteNode
+                && packet.getServerData() != null
+                && packet.getServerStatus() != null) {
+            RemoteOCServer server =
+                    new RemoteOCServer(
+                            packet.getServerData(), packet.getServerStatus(), remoteNode);
             node.getServers().add(server);
             // TODO: Call ServerAddedEvent
         }
