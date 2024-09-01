@@ -34,6 +34,7 @@ val generateSources =
         into(layout.buildDirectory.dir("generated/sources/java"))
         expand(
             mapOf(
+                "version" to version,
                 "paper_platform_file" to paperTask.outputs.files.first().name,
                 "velocity_platform_file" to velocityTask.outputs.files.first().name,
             ),
