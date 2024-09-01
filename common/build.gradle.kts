@@ -9,7 +9,7 @@ repositories {
 dependencies {
     compileOnly("org.jetbrains:annotations:24.1.0")
     implementation("com.google.code.gson:gson:2.11.0")
-    implementation("org.yaml:snakeyaml:2.2")
+    implementation("org.yaml:snakeyaml:2.3")
     implementation("net.kyori:adventure-api:4.17.0")
     implementation("net.kyori:adventure-text-serializer-gson:4.17.0")
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
