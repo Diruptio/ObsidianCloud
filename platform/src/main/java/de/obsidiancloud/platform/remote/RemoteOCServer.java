@@ -42,6 +42,24 @@ public class RemoteOCServer extends OCServer {
     }
 
     @Override
+    public void setName(String name) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        name,
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port()));
+    }
+
+    @Override
     public void setAutoStart(boolean autoStart) {
         sendUpdatePacket(
                 new TransferableServerData(

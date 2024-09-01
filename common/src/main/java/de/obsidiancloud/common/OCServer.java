@@ -46,6 +46,8 @@ public abstract class OCServer {
     /** Kills the server. */
     public abstract void kill();
 
+    public abstract void setName(String name);
+
     public abstract void setAutoStart(boolean autoStart);
 
     public abstract void setExecutable(@NotNull String executable);

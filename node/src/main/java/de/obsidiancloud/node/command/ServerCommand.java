@@ -4,6 +4,8 @@ import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,11 +45,11 @@ public class ServerCommand extends Command {
             return;
         }
 
-        final OCServer.TransferableServerData data = server.getData();
+        final OCServer.Status status = server.getStatus();
 
         switch (args[1]) {
             case "start" -> {
-                if (data.status() != OCServer.Status.OFFLINE) {
+                if (status != OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is already running.");
 
                     return;
@@ -57,9 +59,9 @@ public class ServerCommand extends Command {
             }
 
             case "stop" -> {
-                if (data.status() == OCServer.Status.OFFLINE) {
+                if (status == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
-                } else if (data.status() == OCServer.Status.STARTING) {
+                } else if (status == OCServer.Status.STARTING) {
                     executor.sendMessage("§cServer is currently starting.");
                 } else {
                     server.stop();
@@ -67,7 +69,7 @@ public class ServerCommand extends Command {
             }
 
             case "restart" -> {
-                if (data.status() == OCServer.Status.OFFLINE) {
+                if (status == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
                 } else {
                     server.stop();
@@ -76,7 +78,7 @@ public class ServerCommand extends Command {
             }
 
             case "kill" -> {
-                if (data.status() == OCServer.Status.OFFLINE) {
+                if (status == OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is not running.");
                 } else {
                     server.kill();
@@ -84,9 +86,9 @@ public class ServerCommand extends Command {
             }
 
             case "delete" -> {
-                if (data.status() == OCServer.Status.STARTING) {
+                if (status == OCServer.Status.STARTING) {
                     executor.sendMessage("§cServer is currently starting.");
-                } else if (data.status() != OCServer.Status.OFFLINE) {
+                } else if (status != OCServer.Status.OFFLINE) {
                     executor.sendMessage("§cServer is currently running.");
                 } else {
                     ObsidianCloudAPI.get().deleteServer(server);
@@ -109,7 +111,15 @@ public class ServerCommand extends Command {
                             return;
                         }
 
-                        // TODO Implement set name args[3]
+                        final String value = args[3];
+
+                        if (ObsidianCloudAPI.get().getServer(value) != null) {
+                            executor.sendMessage("§cName already exists");
+
+                            return;
+                        }
+
+                        server.setName(value);
                     }
 
                     case "autostart" -> {
@@ -120,7 +130,18 @@ public class ServerCommand extends Command {
                             return;
                         }
 
-                        // TODO Implement set autostart args[3]
+                        final String value = args[3];
+
+                        final boolean condition = value.equalsIgnoreCase("true");
+
+                        if (!condition && !value.equalsIgnoreCase("false")) {
+                            executor.sendMessage(
+                                    "server " + serverArg + " set autostart <true|false>");
+
+                            return;
+                        }
+
+                        server.setAutoStart(condition);
                     }
 
                     case "memory" -> {
@@ -131,7 +152,20 @@ public class ServerCommand extends Command {
                             return;
                         }
 
-                        // TODO Implement set memory args[3]
+                        try {
+                            final int value = Integer.parseInt(args[3]);
+
+                            if (value <= 0) {
+                                executor.sendMessage("§cMemory should be more than 0");
+
+                                return;
+                            }
+
+                            server.setMemory(value);
+                        } catch (final NumberFormatException exception) {
+                            executor.sendMessage(
+                                    "server " + serverArg + " set memory <memory in mb>");
+                        }
                     }
 
                     case "env" -> {
@@ -163,7 +197,12 @@ public class ServerCommand extends Command {
                                     return;
                                 }
 
-                                // TODO Implement set env args[5]
+                                final Map<String, String> newEnvironmentVariables =
+                                        new HashMap<>(server.getData().environmentVariables());
+
+                                newEnvironmentVariables.put(keyArg, args[5]);
+
+                                server.setEnvironmentVariables(newEnvironmentVariables);
                             }
 
                             case "remove" -> {
@@ -174,7 +213,23 @@ public class ServerCommand extends Command {
                                     return;
                                 }
 
-                                // TODO Implement remove env args[4]
+                                final String keyArg = args[4];
+
+                                final Map<String, String> oldEnvironmentVariables =
+                                        server.getData().environmentVariables();
+
+                                if (!oldEnvironmentVariables.containsKey(keyArg)) {
+                                    executor.sendMessage("§cKey not found");
+
+                                    return;
+                                }
+
+                                final Map<String, String> newEnvironmentVariables =
+                                        new HashMap<>(server.getData().environmentVariables());
+
+                                newEnvironmentVariables.remove(args[4]);
+
+                                server.setEnvironmentVariables(newEnvironmentVariables);
                             }
 
                             default ->
