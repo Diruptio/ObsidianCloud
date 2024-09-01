@@ -37,7 +37,7 @@ public class FabricTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory =
-                    templatesDirectory.resolve(version).resolve(loader).resolve(installer);
+                    templatesDirectory.resolve(version).resolve(loader);
             if (!Files.exists(buildDirectory)) {
                 download(buildDirectory);
                 prepare(buildDirectory);

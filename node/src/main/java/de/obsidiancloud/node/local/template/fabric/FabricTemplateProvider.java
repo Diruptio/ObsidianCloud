@@ -6,6 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonStreamParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.jetbrains.annotations.NotNull;
 
 public class FabricTemplateProvider implements TemplateProvider {
@@ -30,7 +32,11 @@ public class FabricTemplateProvider implements TemplateProvider {
             InputStreamReader reader = new InputStreamReader(con.getInputStream());
             JsonArray json = new JsonStreamParser(reader).next().getAsJsonArray();
             for (JsonElement version : json) {
-                versions.add(version.getAsJsonObject().get("version").getAsString());
+                final JsonObject versionObject = version.getAsJsonObject();
+
+                if (versionObject.get("stable").getAsBoolean()) {
+                    versions.add(version.getAsJsonObject().get("version").getAsString());
+                }
             }
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);
@@ -45,7 +51,7 @@ public class FabricTemplateProvider implements TemplateProvider {
 
         String version;
         if (path.length == 1 || path[1].equalsIgnoreCase("latest")) {
-            version = versions.get(versions.size() - 1);
+            version = versions.get(0);
         } else {
             version = path[1];
         }
@@ -60,7 +66,7 @@ public class FabricTemplateProvider implements TemplateProvider {
         loadLoaders(version);
         if (loaders.get(version).isEmpty()) return null;
         else if (loader.equalsIgnoreCase("latest")) {
-            loader = loaders.get(version).get(loaders.get(version).size() - 1);
+            loader = loaders.get(version).get(0);
         } else if (!loaders.get(version).contains(loader)) return null;
 
         return new FabricTemplate(version, loader, installer());
