@@ -135,6 +135,25 @@ public class LocalOCServer extends OCServer {
     }
 
     @Override
+    public void setName(@NotNull String name) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        name,
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
     public void setAutoStart(boolean autoStart) {
         data =
                 new TransferableServerData(
