@@ -14,16 +14,25 @@ import org.jetbrains.annotations.Nullable;
 /** Represents a server in the cluster. */
 public abstract class OCServer {
     private @NotNull TransferableServerData data;
+
+    /** The status of the server. */
+    protected @NotNull Status status;
+
     private final @NotNull Set<OCPlayer> players;
 
     /**
      * Create a new OCServer with the specified parameters.
      *
      * @param data The data of the server
+     * @param status The status of the server
      * @param players The list of players currently connected to the server
      */
-    public OCServer(@NotNull TransferableServerData data, @NotNull Set<OCPlayer> players) {
+    public OCServer(
+            @NotNull TransferableServerData data,
+            @NotNull Status status,
+            @NotNull Set<OCPlayer> players) {
         this.data = data;
+        this.status = status;
         this.players = players;
     }
 
@@ -37,11 +46,13 @@ public abstract class OCServer {
     public abstract void kill();
 
     /**
-     * Sets the lifecycle state of the server.
+     * Gets the status of the server.
      *
-     * @param lifecycleState The lifecycle state of the server
+     * @return The status of the server
      */
-    public abstract void setLifecycleState(@NotNull LifecycleState lifecycleState);
+    public @NotNull Status getStatus() {
+        return status;
+    }
 
     /**
      * Sets the status of the server.
@@ -53,14 +64,14 @@ public abstract class OCServer {
     /**
      * Gets the node of the server.
      *
-     * @return Returns the node of the server.
+     * @return The node of the server.
      */
     public abstract @NotNull OCNode getNode();
 
     /**
-     * Gets the name of the server.
+     * Gets the name of the server. (This is equivalent to {@code getData().name()})
      *
-     * @return Returns the name of the server.
+     * @return The name of the server.
      */
     public @NotNull String getName() {
         return data.name();
@@ -85,7 +96,7 @@ public abstract class OCServer {
     }
 
     /**
-     * Updates the data of the server. (Unsafe, not recommended to use)
+     * Updates the data of the server. (Unsafe, please do not use)
      *
      * @param data The new data of the server
      */
@@ -93,93 +104,113 @@ public abstract class OCServer {
         this.data = data;
     }
 
-    /** Represents the type of a server. */
+    /**
+     * Updates the status of the server. (Unsafe, please do not use)
+     *
+     * @param status The new status of the server
+     */
+    public void updateStatus(@NotNull Status status) {
+        this.status = status;
+    }
+
+    /** The types of servers. */
     public enum Type {
-        /** Represents a paper server. */
-        PAPER(false, "stop", "platform/paper"),
+        /** A normal minecraft server. (Paper, Fabric, Forge) */
+        SERVER,
 
-        /** Represents a fabric server. */
-        FABRIC(false, "stop", "platform/fabric"),
-
-        /** Represents a forge server. */
-        FORGE(false, "stop", "platform/forge"),
-
-        /** Represents a velocity server. */
-        VELOCITY(true, "shutdown", "platform/velocity");
-
-        private final boolean proxy;
-        private final @NotNull String stopCommand;
-        private final @NotNull String template;
-
-        Type(boolean proxy, @NotNull String stopCommand, @NotNull String template) {
-            this.proxy = proxy;
-            this.stopCommand = stopCommand;
-            this.template = template;
-        }
+        /** A minecraft proxy server. (Velocity) */
+        PROXY,
 
         /**
-         * Checks whether the server type is a proxy.
-         *
-         * @return Returns true if the server is a proxy, otherwise false.
+         * Everything that is <b>not supported</b> by ObsidianCloud <b>can be executed</b> with the
+         * custom server type. Fields platform, memory, jvmArgs and args will be <b>ignored</b> by
+         * ObsidianCloud.
          */
-        public boolean isProxy() {
-            return proxy;
-        }
+        CUSTOM
+    }
+
+    /**
+     * The platform/software of a (non-custom) server.
+     *
+     * @param name The name of the platform
+     * @param type The server type of the platform
+     * @param stopCommand The terminal command to stop the server
+     * @param templates The list of templates to apply for the server
+     */
+    public record Platform(
+            @NotNull String name,
+            @NotNull Type type,
+            @NotNull String stopCommand,
+            @NotNull List<String> templates) {
+        private static final List<Platform> platforms = new ArrayList<>();
+
+        /** A paper server. */
+        public static final Platform PAPER =
+                new Platform("paper", Type.SERVER, "stop", List.of("platform/paper"));
+
+        /** A fabric server. */
+        public static final Platform FABRIC =
+                new Platform("paper", Type.SERVER, "stop", List.of("platform/fabric"));
+
+        /** A velocity server. */
+        public static final Platform VELOCITY =
+                new Platform("paper", Type.PROXY, "shutdown", List.of("platform/velocity"));
 
         /**
-         * Gets the command to stop the server.
+         * Gets a list of all platforms.
          *
-         * @return Returns the command to stop the server.
+         * @return The list of all platforms.
          */
-        public @NotNull String getStopCommand() {
-            return stopCommand;
-        }
-
-        /**
-         * Gets the template of the server.
-         *
-         * @return Returns the template of the server.
-         */
-        public @NotNull String getTemplate() {
-            return template;
+        public static @NotNull List<Platform> getPlatforms() {
+            return platforms;
         }
     }
 
-    /** Represents the lifecycle state of a server. */
-    public enum LifecycleState {
+    /** Status of the server. */
+    public enum Status {
         /** The server is being created. */
         CREATING,
 
-        /** The server is online. */
-        ONLINE,
-
         /** The server is offline. */
-        OFFLINE
-    }
+        OFFLINE,
 
-    /** Represents the status of a server. */
-    public enum Status {
         /** The server is starting. */
         STARTING,
 
-        /** The server is running. */
+        /** The server is online and ready. */
         READY,
 
-        /** The server is running. */
-        NOT_READY,
-
-        /** The server is offline. */
-        OFFLINE
+        /** The server is online but not ready. */
+        NOT_READY
     }
 
+    /**
+     * Represents the data of a server.
+     *
+     * @param task The task which created the server ({@code null} if not created by a task)
+     * @param name The name of the server
+     * @param type The type of the server
+     * @param platform The platform of the server ({@code null} if type is {@link Type#CUSTOM})
+     * @param staticServer If the server is static
+     * @param autoStart If the server should be started automatically
+     * @param executable The execution string of the server. This is equivalent to a <b>shell
+     *     script</b> line. The placeholders <i>%SERVER_PORT%, %AIKARS_FLAGS%</i> will be replaced.
+     *     If the type is {@link Type#SERVER} or {@link Type#PROXY}, this should be a java
+     *     executable.
+     * @param memory The memory of the server (will be ignored if type is {@link Type#CUSTOM})
+     * @param jvmArgs The JVM arguments of the server (will be ignored if type is {@link
+     *     Type#CUSTOM})
+     * @param args The arguments of the server (will be ignored if type is {@link Type#CUSTOM})
+     * @param environmentVariables The environment variables of the server
+     * @param port The port of the server ({@code 0} if type is {@link Type#CUSTOM})
+     */
     public record TransferableServerData(
             @Nullable String task,
             @NotNull String name,
             @NotNull Type type,
-            @NotNull LifecycleState lifecycleState,
-            @NotNull Status status,
+            @Nullable Platform platform,
+            boolean staticServer,
             boolean autoStart,
-            boolean autoDelete,
             @NotNull String executable,
             int memory,
             @NotNull List<String> jvmArgs,
@@ -192,10 +223,8 @@ public abstract class OCServer {
             json.addProperty("task", task);
             json.addProperty("name", name);
             json.addProperty("type", type.name());
-            json.addProperty("lifecycle_state", lifecycleState.name());
-            json.addProperty("status", status.name());
+            json.addProperty("static", staticServer);
             json.addProperty("auto_start", autoStart);
-            json.addProperty("auto_delete", autoDelete);
             json.addProperty("executable", executable);
             json.addProperty("memory", memory);
             JsonArray jvmArgsArray = new JsonArray();
@@ -216,11 +245,18 @@ public abstract class OCServer {
             String task = json.get("task").isJsonNull() ? null : json.get("task").getAsString();
             String name = json.get("name").getAsString();
             Type type = Type.valueOf(json.get("type").getAsString());
-            LifecycleState lifecycleState =
-                    LifecycleState.valueOf(json.get("lifecycle_state").getAsString());
-            Status status = Status.valueOf(json.get("status").getAsString());
+            Platform platform = null;
+            if (json.get("platform").isJsonObject()) {
+                JsonObject platformJson = json.get("platform").getAsJsonObject();
+                for (Platform p : Platform.getPlatforms()) {
+                    if (p.name().equalsIgnoreCase(platformJson.get("name").getAsString())) {
+                        platform = p;
+                        break;
+                    }
+                }
+            }
+            boolean staticServer = json.get("static").getAsBoolean();
             boolean autoStart = json.get("auto_start").getAsBoolean();
-            boolean autoDelete = json.get("auto_delete").getAsBoolean();
             String executable = json.get("executable").getAsString();
             int memory = json.get("memory").getAsInt();
             List<String> jvmArgs = new ArrayList<>();
@@ -242,10 +278,9 @@ public abstract class OCServer {
                     task,
                     name,
                     type,
-                    lifecycleState,
-                    status,
+                    platform,
+                    staticServer,
                     autoStart,
-                    autoDelete,
                     executable,
                     memory,
                     jvmArgs,

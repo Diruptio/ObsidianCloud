@@ -10,11 +10,13 @@ import org.jetbrains.annotations.Nullable;
 public class ServerAddedPacket extends Packet {
     private String node;
     private OCServer.TransferableServerData serverData;
+    private OCServer.Status serverStatus;
 
     @Override
     public void write(@NotNull ByteBuf byteBuf) {
         writeString(byteBuf, node);
         writeString(byteBuf, serverData == null ? "" : serverData.toString());
+        writeString(byteBuf, serverStatus == null ? "" : serverStatus.toString());
     }
 
     @Override
@@ -25,6 +27,8 @@ public class ServerAddedPacket extends Packet {
                 serverData.isEmpty()
                         ? null
                         : OCServer.TransferableServerData.fromString(readString(byteBuf));
+        String serverStatus = readString(byteBuf);
+        this.serverStatus = serverStatus.isEmpty() ? null : OCServer.Status.valueOf(serverStatus);
     }
 
     /**
@@ -61,5 +65,23 @@ public class ServerAddedPacket extends Packet {
      */
     public void setServerData(@Nullable OCServer.TransferableServerData serverData) {
         this.serverData = serverData;
+    }
+
+    /**
+     * Gets the status of the server
+     *
+     * @return The status of the server
+     */
+    public @Nullable OCServer.Status getServerStatus() {
+        return serverStatus;
+    }
+
+    /**
+     * Sets the status of the server
+     *
+     * @param serverStatus The status of the server
+     */
+    public void setServerStatus(@Nullable OCServer.Status serverStatus) {
+        this.serverStatus = serverStatus;
     }
 }

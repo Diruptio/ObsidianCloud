@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("org.springframework:spring-core:6.1.12")
+    implementation("commons-io:commons-io:2.16.1")
 }
 
 val addPlatformJars =
@@ -64,7 +64,7 @@ tasks {
     }
 
     named<JavaExec>("run") {
-        workingDir = file("run")
+        workingDir = rootProject.file("run")
         workingDir.mkdirs()
         standardOutput = System.out
         standardInput = System.`in`

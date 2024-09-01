@@ -27,14 +27,30 @@ public abstract class OCPlayer implements CommandExecutor {
      *
      * @return Returns the proxy of this player.
      */
-    public abstract @Nullable OCServer getProxy();
+    public @Nullable OCServer getProxy() {
+        for (OCServer server : ObsidianCloudAPI.get().getServers()) {
+            if (server.getPlayers().contains(this)
+                    && server.getData().type() == OCServer.Type.PROXY) {
+                return server;
+            }
+        }
+        return null;
+    }
 
     /**
      * Gets the server of this player.
      *
      * @return Returns the server of this player.
      */
-    public abstract @Nullable OCServer getServer();
+    public @Nullable OCServer getServer() {
+        for (OCServer server : ObsidianCloudAPI.get().getServers()) {
+            if (server.getPlayers().contains(this)
+                    && server.getData().type() == OCServer.Type.SERVER) {
+                return server;
+            }
+        }
+        return null;
+    }
 
     /**
      * Connects the player to the given server.

@@ -1,6 +1,5 @@
 package de.obsidiancloud.node.network.listener;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
@@ -20,8 +19,7 @@ public class S2NPlayerJoinListener implements PacketListener<S2NPlayerJoinPacket
         if (server.isPresent()) {
             UUID uuid = packet.getUUID();
             String name = packet.getName();
-            OCNode node = server.get().getNode();
-            server.get().getPlayers().add(new RemoteOCPlayer(uuid, name, node));
+            server.get().getPlayers().add(new RemoteOCPlayer(uuid, name));
         }
     }
 }
