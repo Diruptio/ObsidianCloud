@@ -5,6 +5,7 @@ import de.obsidiancloud.node.local.template.OCTemplate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.file.Files;
@@ -78,7 +79,11 @@ public class FabricTemplate extends OCTemplate {
         command.add("server.jar");
 
         // First run
-        new ProcessBuilder(command).directory(directory.toFile()).start().waitFor();
+        new ProcessBuilder(command)
+                .directory(directory.toFile())
+                .start()
+                .getInputStream()
+                .transferTo(OutputStream.nullOutputStream());
 
         // Accept EULA
         Files.write(directory.resolve("eula.txt"), "eula=true".getBytes());
