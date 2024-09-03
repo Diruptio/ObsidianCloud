@@ -16,6 +16,7 @@ public class ServerCreateListener implements PacketListener<ServerCreatePacket> 
             ServerAddedPacket response = new ServerAddedPacket();
             response.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
             response.setServerData(null);
+            response.setServerStatus(null);
             connection.send(response);
         } else {
             ObsidianCloudAPI.get().createServer(task);

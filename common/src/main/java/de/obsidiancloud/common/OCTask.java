@@ -2,14 +2,16 @@ package de.obsidiancloud.common;
 
 import java.util.List;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Represents a task in the cluster.
  *
  * @param name The name of the task
  * @param type The type of the servers created by the task
+ * @param staticServer Whether the servers should be deleted when they are stopped
  * @param autoStart Whether the servers should automatically start
- * @param autoDelete Whether the servers should be deleted when they are stopped
  * @param executable The java executable of the servers
  * @param memory The amount of memory allocated to the servers
  * @param jvmArgs The JVM arguments of the servers
@@ -20,15 +22,16 @@ import java.util.Map;
  * @param minAmount The minimum amount of servers
  */
 public record OCTask(
-        String name,
-        OCServer.Type type,
+        @NotNull String name,
+        @NotNull OCServer.Type type,
+        @Nullable OCServer.Platform platform,
+        boolean staticServer,
         boolean autoStart,
-        boolean autoDelete,
         String executable,
         int memory,
-        List<String> jvmArgs,
-        List<String> args,
-        Map<String, String> environmentVariables,
+        @NotNull List<String> jvmArgs,
+        @NotNull List<String> args,
+        @NotNull Map<String, String> environmentVariables,
         int port,
-        List<String> templates,
+        @NotNull List<String> templates,
         int minAmount) {}

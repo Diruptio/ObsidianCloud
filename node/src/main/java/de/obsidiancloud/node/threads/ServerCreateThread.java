@@ -30,6 +30,13 @@ public class ServerCreateThread extends Thread {
     @Override
     public void run() {
         ObsidianCloudNode.getLogger().info("Creating server " + server.getName() + "...");
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            ServerAddedPacket packet = new ServerAddedPacket();
+            packet.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
+            packet.setServerData(server.getData());
+            packet.setServerStatus(server.getStatus());
+            connection.send(packet);
+        }
         try {
             Path directory = server.getDirectory();
             if (Files.exists(directory)) {
@@ -37,20 +44,15 @@ public class ServerCreateThread extends Thread {
             }
             Files.createDirectories(directory);
             List<String> templates = new ArrayList<>(this.templates);
-            templates.add(server.getData().type().getTemplate());
+            OCServer.Platform platform = server.getData().platform();
+            if (platform != null) {
+                templates.addAll(platform.templates());
+            }
             for (String template : templates) {
                 OCTemplate t = ObsidianCloudNode.getTemplate(template);
                 if (t != null) t.apply(directory);
             }
-            server.setLifecycleState(OCServer.LifecycleState.OFFLINE);
             server.setStatus(LocalOCServer.Status.OFFLINE);
-
-            for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
-                ServerAddedPacket packet = new ServerAddedPacket();
-                packet.setNode(ObsidianCloudAPI.get().getLocalNode().getName());
-                packet.setServerData(server.getData());
-                connection.send(packet);
-            }
             EventManager.call(new ServerAddedEvent(server));
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()

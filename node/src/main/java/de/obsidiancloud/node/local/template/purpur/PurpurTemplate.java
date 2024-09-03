@@ -21,10 +21,11 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PurpurTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
-    private final Logger logger = ObsidianCloudNode.getLogger();
-    private final String version;
-    private final String build;
+    private final @NotNull Path templatesDirectory =
+            Path.of("generated-templates").resolve("purpur");
+    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
+    private final @NotNull String version;
+    private final @NotNull String build;
 
     public PurpurTemplate(@NotNull String version, @NotNull String build) {
         super("purpur/%s/%s".formatted(version, build));
@@ -89,7 +90,7 @@ public class PurpurTemplate extends OCTemplate {
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
-            if (reader.readLine().matches(".*Done.*For help, type \"help\"")) {
+            if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
                 process.getOutputStream().write("stop\n".getBytes());
                 process.getOutputStream().flush();
                 break;
