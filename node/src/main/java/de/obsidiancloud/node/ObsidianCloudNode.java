@@ -237,4 +237,13 @@ public class ObsidianCloudNode {
     public static NetworkServer getNetworkServer() {
         return networkServer;
     }
+
+    /**
+     * Gets the console command executor.
+     *
+     * @return The console command executor.
+     */
+    public static @NotNull ConsoleCommandExecutor getExecutor() {
+        return executor;
+    }
 }
