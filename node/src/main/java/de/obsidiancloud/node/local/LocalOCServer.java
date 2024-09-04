@@ -5,6 +5,7 @@ import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
+import de.obsidiancloud.common.network.packets.ServerUpdatedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.util.Flags;
 import java.io.BufferedReader;
@@ -16,6 +17,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
 public class LocalOCServer extends OCServer {
@@ -61,9 +63,8 @@ public class LocalOCServer extends OCServer {
                 if (arg.equals("%AIKARS_FLAGS%")) {
                     command.remove(i);
                     command.addAll(i, List.of(Flags.AIKARS_FLAGS));
-                    i += Flags.VELOCITY_FLAGS.length - 1;
-                }
-                if (arg.equals("%VELOCITY_FLAGS%")) {
+                    i += Flags.AIKARS_FLAGS.length - 1;
+                } else if (arg.equals("%VELOCITY_FLAGS%")) {
                     command.remove(i);
                     command.addAll(i, List.of(Flags.VELOCITY_FLAGS));
                     i += Flags.VELOCITY_FLAGS.length - 1;
@@ -130,6 +131,166 @@ public class LocalOCServer extends OCServer {
         }
     }
 
+    private void sendUpdatedPacket() {
+        ServerUpdatedPacket packet = new ServerUpdatedPacket();
+        packet.setServerData(data);
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            connection.send(packet);
+        }
+    }
+
+    @Override
+    public void setName(@NotNull String name) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        name,
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setAutoStart(boolean autoStart) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        autoStart,
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setExecutable(@NotNull String executable) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        executable,
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setMemory(int memory) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        memory,
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setJvmArgs(@NotNull List<String> jvmArgs) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        jvmArgs,
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setArgs(@NotNull List<String> args) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        args,
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setEnvironmentVariables(@NotNull Map<String, String> environmentVariables) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        environmentVariables,
+                        data.port());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setPort(int port) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        port);
+        sendUpdatedPacket();
+    }
+
     @Override
     public @NotNull OCNode getNode() {
         return ObsidianCloudAPI.get().getLocalNode();
@@ -158,10 +319,6 @@ public class LocalOCServer extends OCServer {
 
     public void setScreen(boolean screen) {
         this.screen = screen;
-    }
-
-    public Process getProcess() {
-        return process;
     }
 
     private class ScreenThread extends Thread {
