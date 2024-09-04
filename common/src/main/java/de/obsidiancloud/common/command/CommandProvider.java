@@ -4,6 +4,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** A command provider is responsible for managing commands. */
 public interface CommandProvider {
     /**
      * Registers a command

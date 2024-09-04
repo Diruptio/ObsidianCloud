@@ -7,6 +7,7 @@ import org.jline.reader.Completer;
 import org.jline.reader.LineReader;
 import org.jline.reader.ParsedLine;
 
+/** A completer for command names, aliases and arguments */
 public class CommandCompleter implements Completer {
     @Override
     public void complete(LineReader reader, ParsedLine line, List<Candidate> list) {

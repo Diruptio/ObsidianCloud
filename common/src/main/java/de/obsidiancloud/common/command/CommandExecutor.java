@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+/** A command executor (The node's console, a player, etc.) */
 public interface CommandExecutor {
     /**
      * Executes the command

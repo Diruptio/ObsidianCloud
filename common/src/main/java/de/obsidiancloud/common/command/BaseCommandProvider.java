@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
+/** The base implementation of the {@link CommandProvider} interface. */
 public class BaseCommandProvider implements CommandProvider {
     private final List<Command> commands = new ArrayList<>();
 
