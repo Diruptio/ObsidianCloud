@@ -2,9 +2,8 @@ package de.obsidiancloud.node.remote;
 
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.network.packets.ServerStatusChangePacket;
-import java.util.HashSet;
 import de.obsidiancloud.common.network.packets.ServerUpdatePacket;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;

@@ -14,16 +14,15 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LocalOCServer extends OCServer {
     private Connection connection;
     private boolean screen = false;
-    private Process process;
+    private @Nullable Process process = null;
 
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
         super(data, status, new HashSet<>());
@@ -313,6 +312,10 @@ public class LocalOCServer extends OCServer {
         setStatus(Status.OFFLINE);
     }
 
+    public @Nullable Process getProcess() {
+        return process;
+    }
+
     public boolean isScreen() {
         return screen;
     }
@@ -329,7 +332,7 @@ public class LocalOCServer extends OCServer {
 
         @Override
         public void run() {
-            try (BufferedReader reader = process.inputReader()) {
+            try (BufferedReader reader = Objects.requireNonNull(process).inputReader()) {
                 while (process.isAlive()) {
                     String line = reader.readLine();
                     if (screen && line != null) {
