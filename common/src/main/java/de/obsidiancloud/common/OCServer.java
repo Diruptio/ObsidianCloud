@@ -48,12 +48,14 @@ public abstract class OCServer {
 
     /**
      * Sets the name of the server.
+     *
      * @param name The name of the server
      */
     public abstract void setName(@NotNull String name);
 
     /**
      * Sets whether the server should start automatically.
+     *
      * @param autoStart Whether the server should start automatically
      */
     public abstract void setAutoStart(boolean autoStart);
@@ -95,6 +97,7 @@ public abstract class OCServer {
 
     /**
      * Sets the port of the server.
+     *
      * @param port The port of the server
      */
     public abstract void setPort(int port);
