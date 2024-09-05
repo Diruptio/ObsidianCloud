@@ -25,10 +25,7 @@ import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
-import de.obsidiancloud.node.network.packets.N2SSyncPacket;
-import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
-import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
-import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
+import de.obsidiancloud.node.network.packets.*;
 import de.obsidiancloud.node.threads.NodeThread;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -185,6 +182,7 @@ public class ObsidianCloudNode {
         NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatePacket.class);
 
         // node
+        NetworkHandler.getPacketRegistry().registerPacket(N2NScreenPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);
@@ -238,5 +236,14 @@ public class ObsidianCloudNode {
      */
     public static NetworkServer getNetworkServer() {
         return networkServer;
+    }
+
+    /**
+     * Gets the console command executor.
+     *
+     * @return The console command executor.
+     */
+    public static @NotNull ConsoleCommandExecutor getExecutor() {
+        return executor;
     }
 }
