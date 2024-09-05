@@ -31,6 +31,8 @@ import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
 import de.obsidiancloud.node.threads.NodeThread;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -116,7 +118,13 @@ public class ObsidianCloudNode {
     private static LocalOCNode loadLocalNode(List<LocalOCServer> servers) {
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         String name = Objects.requireNonNull(localNode.getString("name"));
-        return new LocalOCNode(name, servers);
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(Objects.requireNonNull(localNode.getString("host")));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        return new LocalOCNode(name, address, servers);
     }
 
     public static void reload() {

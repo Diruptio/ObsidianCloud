@@ -3,6 +3,7 @@ package de.obsidiancloud.node.remote;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.network.Connection;
+import java.net.InetAddress;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +11,11 @@ public class RemoteOCNode extends OCNode {
     private Connection connection = null;
     private final List<RemoteOCServer> servers;
 
-    public RemoteOCNode(@NotNull String name, @NotNull List<RemoteOCServer> servers) {
-        super(name);
+    public RemoteOCNode(
+            @NotNull String name,
+            @NotNull InetAddress address,
+            @NotNull List<RemoteOCServer> servers) {
+        super(name, address);
         this.servers = servers;
     }
 

@@ -19,6 +19,7 @@ public class N2SSyncPacket extends WritablePacket {
         byteBuf.writeInt(nodes.size());
         for (OCNode node : nodes) {
             writeString(byteBuf, node.getName());
+            writeString(byteBuf, node.getAddress().getHostAddress());
             List<OCServer> servers = new ArrayList<>(node.getServers());
             servers.remove(target);
             byteBuf.writeInt(node.getServers().size() - 1);

@@ -9,6 +9,8 @@ import de.obsidiancloud.platform.remote.RemoteOCNode;
 import de.obsidiancloud.platform.remote.RemoteOCPlayer;
 import de.obsidiancloud.platform.remote.RemoteOCServer;
 import io.netty.buffer.ByteBuf;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
@@ -24,10 +26,16 @@ public class N2SSyncPacket extends ReadablePacket {
         int nodeCount = byteBuf.readInt();
         for (int i = 0; i < nodeCount; i++) {
             String nodeName = readString(byteBuf);
+            InetAddress address;
+            try {
+                address = InetAddress.getByName(readString(byteBuf));
+            } catch (UnknownHostException e) {
+                throw new RuntimeException(e);
+            }
             List<RemoteOCServer> servers = new ArrayList<>();
             OCNode node;
             if (nodeName.equals(api.getLocalNode().getName())) {
-                node = new RemoteOCNode(nodeName, servers);
+                node = new RemoteOCNode(nodeName, address, servers);
                 nodes.add((RemoteOCNode) node);
             } else {
                 node = api.getLocalNode();
