@@ -16,8 +16,8 @@ public class N2NScreenPacket extends Packet {
     public void write(@NotNull ByteBuf byteBuf) {
         writeString(byteBuf, server);
         byteBuf.writeBoolean(executor instanceof OCPlayer);
-        if (executor instanceof OCPlayer) {
-            writeUUID(byteBuf, ((OCPlayer) executor).getUUID());
+        if (executor instanceof OCPlayer player) {
+            writeUUID(byteBuf, player.getUUID());
         }
     }
 

@@ -8,6 +8,7 @@ import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.network.packets.N2NScreenPacket;
 import de.obsidiancloud.node.remote.RemoteOCServer;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class N2NScreenListener implements PacketListener<N2NScreenPacket> {
@@ -16,10 +17,15 @@ public class N2NScreenListener implements PacketListener<N2NScreenPacket> {
         OCServer server = ObsidianCloudAPI.get().getServer(packet.getServer());
         CommandExecutor executor = packet.getExecutor();
         if (server instanceof LocalOCServer localServer) {
-            if (localServer.getScreenReaders().contains(executor)) {
-                localServer.getScreenReaders().remove(executor);
+            Set<CommandExecutor> screenReaders = localServer.getScreenReaders();
+            if (screenReaders.contains(executor)) {
+                screenReaders.remove(executor);
+                executor.sendMessage(
+                        "§aScreen mirroring of §e" + server.getName() + " §ahas been disabled.");
             } else {
-                localServer.getScreenReaders().add(executor);
+                screenReaders.add(executor);
+                executor.sendMessage(
+                        "§aScreen mirroring of §e" + server.getName() + " §ahas been enabled.");
             }
         } else if (server instanceof RemoteOCServer remoteServer) {
             remoteServer.getNode().getConnection().send(packet);

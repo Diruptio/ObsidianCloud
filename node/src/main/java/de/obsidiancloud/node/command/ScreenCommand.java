@@ -7,6 +7,7 @@ import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.network.packets.N2NScreenPacket;
 import de.obsidiancloud.node.remote.RemoteOCServer;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
 public class ScreenCommand extends Command {
@@ -28,12 +29,13 @@ public class ScreenCommand extends Command {
         if (server == null) {
             executor.sendMessage("§cThe server §e" + args[0] + " §cdoes not exist.");
         } else if (server instanceof LocalOCServer localServer) {
-            if (localServer.getScreenReaders().contains(executor)) {
-                localServer.getScreenReaders().remove(executor);
+            Set<CommandExecutor> screenReaders = localServer.getScreenReaders();
+            if (screenReaders.contains(executor)) {
+                screenReaders.remove(executor);
                 executor.sendMessage(
                         "§aScreen mirroring of §e" + args[0] + " §ahas been disabled.");
             } else {
-                localServer.getScreenReaders().add(executor);
+                screenReaders.add(executor);
                 executor.sendMessage("§aScreen mirroring of §e" + args[0] + " §ahas been enabled.");
             }
         } else if (server instanceof RemoteOCServer remoteServer) {
