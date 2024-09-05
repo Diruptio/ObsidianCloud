@@ -5,6 +5,7 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** A command which can be executed by a {@link CommandExecutor} */
 public abstract class Command {
     private static final List<CommandProvider> providers = new ArrayList<>();
     private final String name;
@@ -23,42 +24,6 @@ public abstract class Command {
     }
 
     /**
-     * Adds an alias to the command
-     *
-     * @param description The description of the command
-     * @return Returns the command
-     */
-    public Command setDescription(@NotNull String description) {
-        this.description = description;
-        return this;
-    }
-
-    /**
-     * Sets the usage of the command
-     *
-     * @param usage The usage of the command
-     * @return Returns the command
-     */
-    public Command setUsage(@NotNull String usage) {
-        this.usage = usage;
-        return this;
-    }
-
-    /**
-     * Adds an alias to the command
-     *
-     * @param alias The alias to add
-     * @return Returns the command
-     */
-    public Command addAlias(@NotNull String alias) {
-        String[] aliases = new String[this.aliases.length + 1];
-        System.arraycopy(this.aliases, 0, aliases, 0, this.aliases.length);
-        aliases[this.aliases.length] = alias;
-        this.aliases = aliases;
-        return this;
-    }
-
-    /**
      * Executes the command
      *
      * @param executor The executor of the command
@@ -71,7 +36,7 @@ public abstract class Command {
      *
      * @param executor The executor of the command
      * @param args The arguments of the command
-     * @return Returns a {@code List<String>} with the tab completions
+     * @return A {@code List<String>} with the tab completions
      */
     public @NotNull List<String> tabComplete(
             @NotNull CommandExecutor executor, @NotNull String[] args) {
@@ -81,7 +46,7 @@ public abstract class Command {
     /**
      * Gets the name of the command
      *
-     * @return Returns the name of the command
+     * @return The name
      */
     public @NotNull String getName() {
         return name;
@@ -90,34 +55,71 @@ public abstract class Command {
     /**
      * Gets the description of the command
      *
-     * @return Returns the description of the command
+     * @return The description
      */
     public @Nullable String getDescription() {
         return description;
     }
 
     /**
-     * Gets the usage of the command
+     * Sets the description of the command
      *
-     * @return Returns the usage of the command
+     * @param description The description
+     * @return The command
+     */
+    public @NotNull Command setDescription(@NotNull String description) {
+        this.description = description;
+        return this;
+    }
+
+    /**
+     * Gets the usage of the command with the command prefix of the executor
+     *
+     * @param executor The executor of the command
+     * @return The usage
      */
     public @Nullable String getUsage(@NotNull CommandExecutor executor) {
         return executor.getCommandPrefix() + usage;
     }
 
     /**
+     * Sets the usage of the command
+     *
+     * @param usage The usage
+     * @return The command
+     */
+    public @NotNull Command setUsage(@NotNull String usage) {
+        this.usage = usage;
+        return this;
+    }
+
+    /**
      * Gets the aliases of the command
      *
-     * @return Returns the aliases of the command
+     * @return The aliases
      */
     public @NotNull String[] getAliases() {
         return aliases;
     }
 
     /**
+     * Adds an alias to the command
+     *
+     * @param alias The alias
+     * @return The command
+     */
+    public @NotNull Command addAlias(@NotNull String alias) {
+        String[] aliases = new String[this.aliases.length + 1];
+        System.arraycopy(this.aliases, 0, aliases, 0, this.aliases.length);
+        aliases[this.aliases.length] = alias;
+        this.aliases = aliases;
+        return this;
+    }
+
+    /**
      * Gets all registered command providers
      *
-     * @return Returns a {@code List<CommandProvider>} with all registered command providers
+     * @return A {@code List<CommandProvider>} with all registered command providers
      */
     public static @NotNull List<CommandProvider> getProviders() {
         return providers;

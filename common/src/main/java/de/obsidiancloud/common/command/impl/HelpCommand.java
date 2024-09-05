@@ -7,7 +7,9 @@ import java.util.Arrays;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
+/** The help command shows help for all commands or a specific command. */
 public class HelpCommand extends Command {
+    /** Creates a new help command. */
     public HelpCommand() {
         super("help");
         setDescription("Shows help");
