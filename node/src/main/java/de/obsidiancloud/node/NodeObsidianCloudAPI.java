@@ -22,7 +22,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
     private final @NotNull LocalOCNode localNode;
@@ -67,15 +66,15 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
     }
 
     @Override
-    public @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
-        // Find name
+    public @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+        // Find an available name
         int n = 1;
         while (getServer(task.name() + "-" + n) != null) {
             n++;
         }
         String name = task.name() + "-" + n;
 
-        // Create server instance
+        // Create a server instance
         LocalOCServer server =
                 new LocalOCServer(
                         new OCServer.TransferableServerData(
@@ -102,7 +101,7 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
         localNode.getServers().add(server);
         new ServerCreateThread(server, task.templates()).start();
 
-        // Return server
+        // Return the server
         return CompletableFuture.completedFuture(server);
     }
 

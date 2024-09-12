@@ -132,7 +132,12 @@ public class ObsidianCloudNode {
 
     private static void registerCommands() {
         Command.registerProvider(commandProvider);
+
+        // common
         commandProvider.registerCommand(new HelpCommand());
+
+        // node
+        commandProvider.registerCommand(new CreateCommand());
         commandProvider.registerCommand(new KickCommand());
         commandProvider.registerCommand(new ListCommand());
         commandProvider.registerCommand(new ScreenCommand());
