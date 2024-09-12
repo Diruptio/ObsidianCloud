@@ -1,8 +1,7 @@
-package de.obsidiancloud.node.local.template.paper;
+package de.obsidiancloud.node.local.template.fabric;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.AikarsFlags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,23 +19,25 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class PaperTemplate extends OCTemplate {
-    private final @NotNull Path templatesDirectory =
-            Path.of("generated-templates").resolve("paper");
-    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
-    private final @NotNull String version;
-    private final @NotNull String build;
+public class FabricTemplate extends OCTemplate {
+    private final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
+    private final Logger logger = ObsidianCloudNode.getLogger();
+    private final String version;
+    private final String loader;
+    private final String installer;
 
-    public PaperTemplate(@NotNull String version, @NotNull String build) {
-        super("paper/%s/%s".formatted(version, build));
+    public FabricTemplate(
+            @NotNull String version, @NotNull String loader, @NotNull String installer) {
+        super("fabric/%s/%s/%s".formatted(version, loader, installer));
         this.version = version;
-        this.build = build;
+        this.loader = loader;
+        this.installer = installer;
     }
 
     @Override
     public void apply(@NotNull Path targetDirectory) {
         try {
-            Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
+            Path buildDirectory = templatesDirectory.resolve(version).resolve(loader);
             if (!Files.exists(buildDirectory)) {
                 download(buildDirectory);
                 prepare(buildDirectory);
@@ -57,8 +58,8 @@ public class PaperTemplate extends OCTemplate {
 
     private void download(@NotNull Path directory) throws IOException {
         String url =
-                "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
-                        .formatted(version, build, version, build);
+                "https://meta.fabricmc.net/v2/versions/loader/%s/%s/%s/server/jar"
+                        .formatted(version, loader, installer);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
@@ -74,7 +75,6 @@ public class PaperTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(AikarsFlags.DEFAULT));
         command.add("-jar");
         command.add("server.jar");
 
