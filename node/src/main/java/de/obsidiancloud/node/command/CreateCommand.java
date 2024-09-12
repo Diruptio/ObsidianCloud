@@ -16,19 +16,20 @@ public class CreateCommand extends Command {
     @Override
     public void execute(@NotNull CommandExecutor executor, @NotNull String[] args) {
         if (args.length >= 2 && args[0].equalsIgnoreCase("from")) {
-            String taskName = args[1];
-            OCTask task = ObsidianCloudAPI.get().getTask(taskName);
+            String taskArg = args[1];
+            OCTask task = ObsidianCloudAPI.get().getTask(taskArg);
             if (task == null) {
-                executor.sendMessage("§cThe task §e" + taskName + " §cdoes not exist.");
+                executor.sendMessage("§cThe task §e" + taskArg + " §cdoes not exist.");
                 return;
             }
 
             int amount = 1;
             if (args.length >= 3) {
+                String amountArg = args[2];
                 try {
-                    amount = Integer.parseInt(args[2]);
+                    amount = Integer.parseInt(amountArg);
                 } catch (NumberFormatException e) {
-                    executor.sendMessage("§cThe amount §e" + args[2] + " §cis not a number.");
+                    executor.sendMessage("§cThe amount §e" + amountArg + " §cis not a number.");
                     return;
                 }
             }
