@@ -17,12 +17,26 @@ import org.jetbrains.annotations.NotNull;
 
 /** A synchronization packet from a node to the server. */
 public class N2SSyncPacket extends ReadablePacket {
-    private List<RemoteOCNode> nodes;
+    private List<RemoteOCServer> localNodeServers;
+    private List<RemoteOCNode> remoteNodes;
 
     @Override
     public void read(@NotNull ByteBuf byteBuf) {
         PlatformObsidianCloudAPI api = (PlatformObsidianCloudAPI) ObsidianCloudAPI.get();
-        nodes = new ArrayList<>();
+        localNodeServers = new ArrayList<>();
+        int localNodeServerCount = byteBuf.readInt();
+        for (int i = 0; i < localNodeServerCount; i++) {
+            OCServer.TransferableServerData data =
+                    OCServer.TransferableServerData.fromString(readString(byteBuf));
+            OCServer.Status status = OCServer.Status.valueOf(readString(byteBuf));
+            RemoteOCServer server = new RemoteOCServer(data, status, api.getLocalNode());
+            int playerCount = byteBuf.readInt();
+            for (int j = 0; j < playerCount; j++) {
+                server.getPlayers().add(new RemoteOCPlayer(readUUID(byteBuf), readString(byteBuf)));
+            }
+            localNodeServers.add(server);
+        }
+        remoteNodes = new ArrayList<>();
         int nodeCount = byteBuf.readInt();
         for (int i = 0; i < nodeCount; i++) {
             String nodeName = readString(byteBuf);
@@ -36,7 +50,7 @@ public class N2SSyncPacket extends ReadablePacket {
             OCNode node;
             if (nodeName.equals(api.getLocalNode().getName())) {
                 node = new RemoteOCNode(nodeName, address, servers);
-                nodes.add((RemoteOCNode) node);
+                remoteNodes.add((RemoteOCNode) node);
             } else {
                 node = api.getLocalNode();
             }
@@ -57,11 +71,20 @@ public class N2SSyncPacket extends ReadablePacket {
     }
 
     /**
+     * Gets the local node's servers.
+     *
+     * @return The local node's servers
+     */
+    public @NotNull List<RemoteOCServer> getLocalNodeServers() {
+        return localNodeServers;
+    }
+
+    /**
      * Gets the nodes.
      *
      * @return The nodes
      */
-    public @NotNull List<RemoteOCNode> getNodes() {
-        return nodes;
+    public @NotNull List<RemoteOCNode> getRemoteNodes() {
+        return remoteNodes;
     }
 }

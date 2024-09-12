@@ -8,9 +8,15 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.platform.ObsidianCloudPlatform;
+import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
 import de.obsidiancloud.platform.velocity.listener.PlayerListener;
 import de.obsidiancloud.platform.velocity.local.LocalVelocityOCServer;
+import de.obsidiancloud.platform.velocity.network.listener.ServerAddedListener;
+import de.obsidiancloud.platform.velocity.network.listener.ServerRemovedListener;
+import de.obsidiancloud.platform.velocity.network.listener.SyncListener;
 import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -39,6 +45,12 @@ public class ObsidianCloudVelocity {
         String serverData = System.getenv("OC_SERVER_DATA");
         ObsidianCloudPlatform.onEnable(
                 new LocalVelocityOCServer(OCServer.TransferableServerData.fromString(serverData)));
+
+        Connection connection =
+                ((RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode()).getConnection();
+        connection.addPacketListener(new ServerAddedListener());
+        connection.addPacketListener(new ServerRemovedListener());
+        connection.addPacketListener(new SyncListener());
 
         server.getEventManager().register(this, new PlayerListener());
     }
