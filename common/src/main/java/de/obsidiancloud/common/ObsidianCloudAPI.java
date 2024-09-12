@@ -102,7 +102,7 @@ public abstract class ObsidianCloudAPI {
      * @param task The task of the server.
      * @return A future that completes with the server when it is created.
      */
-    public abstract @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task);
+    public abstract @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task);
 
     /**
      * Deletes a server.

@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
     private final @NotNull RemoteLocalOCNode localNode;
@@ -65,7 +64,7 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
     }
 
     @Override
-    public @Nullable CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
+    public @NotNull CompletableFuture<OCServer> createServer(@NotNull OCTask task) {
         String name = task.name();
         Connection connection = localNode.getConnection();
 
