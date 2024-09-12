@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 
+/** A console command executor is responsible for executing commands on the console. */
 public class ConsoleCommandExecutor implements CommandExecutor {
     private Logger logger;
 

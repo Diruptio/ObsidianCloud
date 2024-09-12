@@ -46,20 +46,60 @@ public abstract class OCServer {
     /** Kills the server. */
     public abstract void kill();
 
+    /**
+     * Sets the name of the server.
+     *
+     * @param name The name of the server
+     */
     public abstract void setName(@NotNull String name);
 
+    /**
+     * Sets whether the server should start automatically.
+     *
+     * @param autoStart Whether the server should start automatically
+     */
     public abstract void setAutoStart(boolean autoStart);
 
+    /**
+     * Sets the executable of the server.
+     *
+     * @param executable The executable of the server
+     */
     public abstract void setExecutable(@NotNull String executable);
 
+    /**
+     * Sets the memory of the server.
+     *
+     * @param memory The memory of the server
+     */
     public abstract void setMemory(int memory);
 
+    /**
+     * Sets the JVM arguments of the server.
+     *
+     * @param jvmArgs The JVM arguments of the server
+     */
     public abstract void setJvmArgs(@NotNull List<String> jvmArgs);
 
+    /**
+     * Sets the arguments of the server.
+     *
+     * @param args The arguments of the server
+     */
     public abstract void setArgs(@NotNull List<String> args);
 
+    /**
+     * Sets the environment variables of the server.
+     *
+     * @param environmentVariables The environment variables of the server
+     */
     public abstract void setEnvironmentVariables(@NotNull Map<String, String> environmentVariables);
 
+    /**
+     * Sets the port of the server.
+     *
+     * @param port The port of the server
+     */
     public abstract void setPort(int port);
 
     /**
