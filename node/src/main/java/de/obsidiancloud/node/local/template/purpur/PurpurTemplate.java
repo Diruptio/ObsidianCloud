@@ -12,8 +12,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -21,11 +20,11 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PurpurTemplate extends OCTemplate {
-    private final @NotNull Path templatesDirectory =
-            Path.of("generated-templates").resolve("purpur");
-    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
-    private final @NotNull String version;
-    private final @NotNull String build;
+    private static final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
+    private static final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Map<PurpurTemplate, Object> locks = new HashMap<>();
+    private final String version;
+    private final String build;
 
     public PurpurTemplate(@NotNull String version, @NotNull String build) {
         super("purpur/%s/%s".formatted(version, build));
@@ -37,9 +36,14 @@ public class PurpurTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
-            if (!Files.exists(buildDirectory)) {
+
+            if (locks.containsKey(this)) {
+                locks.get(this).wait();
+            } else if (!Files.exists(buildDirectory)) {
+                locks.put(this, new Object());
                 download(buildDirectory);
                 prepare(buildDirectory);
+                locks.remove(this).notifyAll();
             }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
@@ -104,5 +108,17 @@ public class PurpurTemplate extends OCTemplate {
         FileUtils.deleteDirectory(directory.resolve("world").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof PurpurTemplate other
+                && version.equals(other.version)
+                && build.equals(other.build);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version, build);
     }
 }
