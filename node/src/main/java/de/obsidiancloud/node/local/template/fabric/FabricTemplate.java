@@ -12,7 +12,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -20,8 +22,9 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
-    private final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
+    private static final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Map<FabricTemplate, Object> locks = new HashMap<>();
     private final String version;
     private final String loader;
     private final String installer;
@@ -38,9 +41,14 @@ public class FabricTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(loader);
-            if (!Files.exists(buildDirectory)) {
+
+            if (locks.containsKey(this)) {
+                locks.get(this).wait();
+            } else if (!Files.exists(buildDirectory)) {
+                locks.put(this, new Object());
                 download(buildDirectory);
                 prepare(buildDirectory);
+                locks.remove(this).notifyAll();
             }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
