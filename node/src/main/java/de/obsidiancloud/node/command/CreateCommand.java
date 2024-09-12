@@ -16,9 +16,10 @@ public class CreateCommand extends Command {
     @Override
     public void execute(@NotNull CommandExecutor executor, @NotNull String[] args) {
         if (args.length >= 2 && args[0].equalsIgnoreCase("from")) {
-            OCTask task = ObsidianCloudAPI.get().getTask(args[1]);
+            String taskName = args[1];
+            OCTask task = ObsidianCloudAPI.get().getTask(taskName);
             if (task == null) {
-                executor.sendMessage("§cThe task §e" + args[1] + " §cdoes not exist.");
+                executor.sendMessage("§cThe task §e" + taskName + " §cdoes not exist.");
                 return;
             }
 
