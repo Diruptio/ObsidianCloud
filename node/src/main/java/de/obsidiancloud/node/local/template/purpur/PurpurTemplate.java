@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class PurpurTemplate extends OCTemplate {
     private static final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
     private static final Logger logger = ObsidianCloudNode.getLogger();
-    private static final Map<PurpurTemplate, Object> locks = new HashMap<>();
+    private static final Set<PurpurTemplate> locks = new HashSet<>();
     private final String version;
     private final String build;
 
@@ -37,13 +37,25 @@ public class PurpurTemplate extends OCTemplate {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
 
-            if (locks.containsKey(this)) {
-                locks.get(this).wait();
+            boolean locked;
+            synchronized (locks) {
+                locked = locks.contains(this);
+            }
+            if (locked) {
+                while (true) {
+                    synchronized (locks) {
+                        if (!locks.contains(this)) break;
+                    }
+                }
             } else if (!Files.exists(buildDirectory)) {
-                locks.put(this, new Object());
+                synchronized (locks) {
+                    locks.add(this);
+                }
                 download(buildDirectory);
                 prepare(buildDirectory);
-                locks.remove(this).notifyAll();
+                synchronized (locks) {
+                    locks.remove(this);
+                }
             }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
