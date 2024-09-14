@@ -20,16 +20,14 @@ import de.obsidiancloud.node.local.LocalOCServer;
 import de.obsidiancloud.node.local.TaskParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
+import de.obsidiancloud.node.local.template.fabric.FabricTemplateProvider;
 import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.local.template.velocity.VelocityTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
-import de.obsidiancloud.node.network.packets.N2SSyncPacket;
-import de.obsidiancloud.node.network.packets.S2NHandshakePacket;
-import de.obsidiancloud.node.network.packets.S2NPlayerJoinPacket;
-import de.obsidiancloud.node.network.packets.S2NPlayerLeavePacket;
+import de.obsidiancloud.node.network.packets.*;
 import de.obsidiancloud.node.threads.NodeThread;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -143,7 +141,12 @@ public class ObsidianCloudNode {
 
     private static void registerCommands() {
         Command.registerProvider(commandProvider);
+
+        // common
         commandProvider.registerCommand(new HelpCommand());
+
+        // node
+        commandProvider.registerCommand(new CreateCommand());
         commandProvider.registerCommand(new KickCommand());
         commandProvider.registerCommand(new ListCommand());
         commandProvider.registerCommand(new ScreenCommand());
@@ -157,7 +160,7 @@ public class ObsidianCloudNode {
         templateProviders.add(new PlatformTemplateProvider());
         templateProviders.add(new PaperTemplateProvider());
         templateProviders.add(new PurpurTemplateProvider());
-        // TODO: FabricTemplateProvider
+        templateProviders.add(new FabricTemplateProvider());
         templateProviders.add(new VelocityTemplateProvider());
     }
 
@@ -196,6 +199,7 @@ public class ObsidianCloudNode {
         NetworkHandler.getPacketRegistry().registerPacket(ServerUpdatePacket.class);
 
         // node
+        NetworkHandler.getPacketRegistry().registerPacket(N2NScreenPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(N2SSyncPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NHandshakePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(S2NPlayerJoinPacket.class);
@@ -249,5 +253,14 @@ public class ObsidianCloudNode {
      */
     public static NetworkServer getNetworkServer() {
         return networkServer;
+    }
+
+    /**
+     * Gets the console command executor.
+     *
+     * @return The console command executor.
+     */
+    public static @NotNull ConsoleCommandExecutor getExecutor() {
+        return executor;
     }
 }

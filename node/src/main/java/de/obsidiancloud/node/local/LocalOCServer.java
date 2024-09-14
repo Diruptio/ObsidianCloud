@@ -3,6 +3,7 @@ package de.obsidiancloud.node.local;
 import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
+import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import de.obsidiancloud.common.network.packets.ServerUpdatedPacket;
@@ -16,12 +17,11 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class LocalOCServer extends OCServer {
+    private final Set<CommandExecutor> screenReaders = new HashSet<>();
     private Connection connection;
-    private boolean screen = false;
-    private @Nullable Process process = null;
+    private Process process;
 
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
         super(data, status, new HashSet<>());
@@ -311,16 +311,8 @@ public class LocalOCServer extends OCServer {
         setStatus(Status.OFFLINE);
     }
 
-    public @Nullable Process getProcess() {
-        return process;
-    }
-
-    public boolean isScreen() {
-        return screen;
-    }
-
-    public void setScreen(boolean screen) {
-        this.screen = screen;
+    public @NotNull Set<CommandExecutor> getScreenReaders() {
+        return screenReaders;
     }
 
     private class ScreenThread extends Thread {
@@ -334,9 +326,8 @@ public class LocalOCServer extends OCServer {
             try (BufferedReader reader = Objects.requireNonNull(process).inputReader()) {
                 while (process.isAlive()) {
                     String line = reader.readLine();
-                    if (screen && line != null) {
-                        ObsidianCloudNode.getLogger()
-                                .info("[%s] %s".formatted(LocalOCServer.this.getName(), line));
+                    for (CommandExecutor screenReader : screenReaders) {
+                        screenReader.sendMessage(line);
                     }
                 }
             } catch (Throwable ignored) {

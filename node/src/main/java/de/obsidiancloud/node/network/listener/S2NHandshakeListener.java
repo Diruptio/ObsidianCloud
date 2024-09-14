@@ -26,8 +26,9 @@ public class S2NHandshakeListener implements PacketListener<S2NHandshakePacket> 
                     connection.addPacketListener(new ServerRemovedListener());
                     connection.addPacketListener(new ServerStatusChangedListener());
                     connection.addPacketListener(new ServerUpdatedListener());
-                    // node
 
+                    // node
+                    connection.addPacketListener(new N2NScreenListener());
                     connection.addPacketListener(new S2NPlayerJoinListener());
                     connection.addPacketListener(new S2NPlayerLeaveListener());
                     connection.addPacketListener(new ServerAddedListener());

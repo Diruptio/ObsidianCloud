@@ -1,8 +1,7 @@
-package de.obsidiancloud.node.local.template.paper;
+package de.obsidiancloud.node.local.template.fabric;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.Flags;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -19,23 +18,26 @@ import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
-public class PaperTemplate extends OCTemplate {
-    private static final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
+public class FabricTemplate extends OCTemplate {
+    private static final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
     private static final Logger logger = ObsidianCloudNode.getLogger();
-    private static final Set<PaperTemplate> locks = new HashSet<>();
+    private static final Set<FabricTemplate> locks = new HashSet<>();
     private final String version;
-    private final String build;
+    private final String loader;
+    private final String installer;
 
-    public PaperTemplate(@NotNull String version, @NotNull String build) {
-        super("paper/%s/%s".formatted(version, build));
+    public FabricTemplate(
+            @NotNull String version, @NotNull String loader, @NotNull String installer) {
+        super("fabric/%s/%s/%s".formatted(version, loader, installer));
         this.version = version;
-        this.build = build;
+        this.loader = loader;
+        this.installer = installer;
     }
 
     @Override
     public void apply(@NotNull Path targetDirectory) {
         try {
-            Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
+            Path buildDirectory = templatesDirectory.resolve(version).resolve(loader);
 
             boolean locked;
             synchronized (locks) {
@@ -73,8 +75,8 @@ public class PaperTemplate extends OCTemplate {
 
     private void download(@NotNull Path directory) throws IOException {
         String url =
-                "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
-                        .formatted(version, build, version, build);
+                "https://meta.fabricmc.net/v2/versions/loader/%s/%s/%s/server/jar"
+                        .formatted(version, loader, installer);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
@@ -90,7 +92,6 @@ public class PaperTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(Flags.AIKARS_FLAGS));
         command.add("-jar");
         command.add("server.jar");
 
@@ -126,13 +127,14 @@ public class PaperTemplate extends OCTemplate {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof PaperTemplate other
+        return o instanceof FabricTemplate other
                 && version.equals(other.version)
-                && build.equals(other.build);
+                && loader.equals(other.loader)
+                && installer.equals(other.installer);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(version, build);
+        return Objects.hash(version, loader, installer);
     }
 }
