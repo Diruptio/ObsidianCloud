@@ -17,8 +17,10 @@ val addPlatformJars =
     tasks.register<Copy>("addPlatformJars") {
         val paperTask = project(":platform:paper").tasks.named("reobfJar").get()
         dependsOn(paperTask)
+        val velocityTask = project(":platform:velocity").tasks.named("jar").get()
+        dependsOn(velocityTask)
         doFirst { delete(layout.buildDirectory.dir("generated/sources/resources").get()) }
-        from(paperTask.outputs)
+        from(paperTask.outputs, velocityTask.outputs)
         into(layout.buildDirectory.dir("generated/sources/resources"))
     }
 sourceSets.main.get().resources.srcDir(addPlatformJars.map { it.outputs })
