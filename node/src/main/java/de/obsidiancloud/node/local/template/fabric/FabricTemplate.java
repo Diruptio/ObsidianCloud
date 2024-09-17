@@ -11,8 +11,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -20,8 +19,9 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricTemplate extends OCTemplate {
-    private final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
-    private final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
+    private static final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Set<FabricTemplate> locks = new HashSet<>();
     private final String version;
     private final String loader;
     private final String installer;
@@ -38,9 +38,26 @@ public class FabricTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(loader);
-            if (!Files.exists(buildDirectory)) {
+
+            boolean locked;
+            synchronized (locks) {
+                locked = locks.contains(this);
+            }
+            if (locked) {
+                while (true) {
+                    synchronized (locks) {
+                        if (!locks.contains(this)) break;
+                    }
+                }
+            } else if (!Files.exists(buildDirectory)) {
+                synchronized (locks) {
+                    locks.add(this);
+                }
                 download(buildDirectory);
                 prepare(buildDirectory);
+                synchronized (locks) {
+                    locks.remove(this);
+                }
             }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
@@ -52,7 +69,7 @@ public class FabricTemplate extends OCTemplate {
                 }
             }
         } catch (Throwable exception) {
-            logger.log(Level.SEVERE, "Failed to compose template " + getPath(), exception);
+            logger.log(Level.SEVERE, "Failed to apply template " + getPath(), exception);
         }
     }
 
@@ -106,5 +123,18 @@ public class FabricTemplate extends OCTemplate {
         FileUtils.deleteDirectory(directory.resolve("world").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof FabricTemplate other
+                && version.equals(other.version)
+                && loader.equals(other.loader)
+                && installer.equals(other.installer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version, loader, installer);
     }
 }

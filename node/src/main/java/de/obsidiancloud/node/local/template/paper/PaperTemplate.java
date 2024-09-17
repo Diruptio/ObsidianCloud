@@ -12,8 +12,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -21,11 +20,11 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PaperTemplate extends OCTemplate {
-    private final @NotNull Path templatesDirectory =
-            Path.of("generated-templates").resolve("paper");
-    private final @NotNull Logger logger = ObsidianCloudNode.getLogger();
-    private final @NotNull String version;
-    private final @NotNull String build;
+    private static final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
+    private static final Logger logger = ObsidianCloudNode.getLogger();
+    private static final Set<PaperTemplate> locks = new HashSet<>();
+    private final String version;
+    private final String build;
 
     public PaperTemplate(@NotNull String version, @NotNull String build) {
         super("paper/%s/%s".formatted(version, build));
@@ -37,9 +36,26 @@ public class PaperTemplate extends OCTemplate {
     public void apply(@NotNull Path targetDirectory) {
         try {
             Path buildDirectory = templatesDirectory.resolve(version).resolve(build);
-            if (!Files.exists(buildDirectory)) {
+
+            boolean locked;
+            synchronized (locks) {
+                locked = locks.contains(this);
+            }
+            if (locked) {
+                while (true) {
+                    synchronized (locks) {
+                        if (!locks.contains(this)) break;
+                    }
+                }
+            } else if (!Files.exists(buildDirectory)) {
+                synchronized (locks) {
+                    locks.add(this);
+                }
                 download(buildDirectory);
                 prepare(buildDirectory);
+                synchronized (locks) {
+                    locks.remove(this);
+                }
             }
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
@@ -51,7 +67,7 @@ public class PaperTemplate extends OCTemplate {
                 }
             }
         } catch (Throwable exception) {
-            logger.log(Level.SEVERE, "Failed to compose template " + getPath(), exception);
+            logger.log(Level.SEVERE, "Failed to apply template " + getPath(), exception);
         }
     }
 
@@ -106,5 +122,17 @@ public class PaperTemplate extends OCTemplate {
         FileUtils.deleteDirectory(directory.resolve("world").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_nether").toFile());
         FileUtils.deleteDirectory(directory.resolve("world_the_end").toFile());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof PaperTemplate other
+                && version.equals(other.version)
+                && build.equals(other.build);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(version, build);
     }
 }
