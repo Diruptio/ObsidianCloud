@@ -9,11 +9,9 @@ import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import de.obsidiancloud.common.network.packets.ServerUpdatedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.util.Flags;
+import de.obsidiancloud.node.util.NetworkUtil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.channels.ServerSocketChannel;
 import java.nio.file.Path;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +20,7 @@ public class LocalOCServer extends OCServer {
     private final Set<CommandExecutor> screenReaders = new HashSet<>();
     private Connection connection;
     private Process process;
+    private int port;
 
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
         super(data, status, new HashSet<>());
@@ -33,18 +32,8 @@ public class LocalOCServer extends OCServer {
             setStatus(Status.STARTING);
             ObsidianCloudNode.getLogger().info("Starting server " + getName() + "...");
 
-            int port = getData().port();
-
-            while (true) {
-                try (ServerSocketChannel channel = ServerSocketChannel.open()) {
-                    channel.bind(new InetSocketAddress(port));
-                    break;
-                } catch (IOException exception) {
-                    if (exception.getMessage().contains("Address already in use")) {
-                        port++;
-                    } else throw exception;
-                }
-            }
+            port = NetworkUtil.getFreePort(getData().port());
+            NetworkUtil.blockPort(port);
 
             List<String> command = new ArrayList<>();
             command.add(getData().executable());
@@ -94,6 +83,7 @@ public class LocalOCServer extends OCServer {
                 Platform platform = getData().platform();
                 if (platform == null) {
                     process.destroy();
+                    NetworkUtil.unblockPort(port);
                 } else {
                     try (BufferedWriter writer = process.outputWriter()) {
                         writer.write(getData().platform().stopCommand() + "\n");
@@ -112,6 +102,7 @@ public class LocalOCServer extends OCServer {
             if (process != null && process.isAlive()) {
                 ObsidianCloudNode.getLogger().info("Killing server " + getName() + "...");
                 process.destroy();
+                NetworkUtil.unblockPort(port);
             }
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);
@@ -308,6 +299,7 @@ public class LocalOCServer extends OCServer {
 
     private void stopped() {
         ObsidianCloudNode.getLogger().info("Server " + getName() + " stopped");
+        NetworkUtil.unblockPort(port);
         setStatus(Status.OFFLINE);
     }
 

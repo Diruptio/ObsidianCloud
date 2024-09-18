@@ -3,6 +3,7 @@ package de.obsidiancloud.node.local.template.paper;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.util.Flags;
+import de.obsidiancloud.node.util.NetworkUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -102,7 +103,13 @@ public class PaperTemplate extends OCTemplate {
                 .transferTo(OutputStream.nullOutputStream());
 
         // Accept EULA
-        Files.write(directory.resolve("eula.txt"), "eula=true".getBytes());
+        Files.writeString(directory.resolve("eula.txt"), "eula=true");
+
+        // Set server port
+        String serverProperties = Files.readString(directory.resolve("server.properties"));
+        int port = NetworkUtil.getFreePort(40000);
+        serverProperties = serverProperties.replaceAll("^server-port=.*", "server-port=" + port);
+        Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
