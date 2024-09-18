@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     compileOnly("org.jetbrains:annotations:24.1.0")
-    implementation("commons-io:commons-io:2.16.1")
+    implementation("commons-io:commons-io:2.17.0")
 }
 
 val addPlatformJars =
