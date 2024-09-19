@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
     private final @NotNull OCNode node;
@@ -56,7 +57,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -74,7 +77,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -92,7 +97,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -110,7 +117,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -128,7 +137,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         jvmArgs,
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -146,7 +157,9 @@ public class RemoteOCServer extends OCServer {
                         args,
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -164,7 +177,9 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         environmentVariables,
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -182,7 +197,49 @@ public class RemoteOCServer extends OCServer {
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        port));
+                        port,
+                        data.linkToProxies(),
+                        data.fallback()));
+    }
+
+    @Override
+    public void setLinkToProxies(@Nullable List<String> linkToProxies) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port(),
+                        linkToProxies,
+                        data.fallback()));
+    }
+
+    @Override
+    public void setFallback(boolean fallback) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port(),
+                        data.linkToProxies(),
+                        fallback));
     }
 
     @Override

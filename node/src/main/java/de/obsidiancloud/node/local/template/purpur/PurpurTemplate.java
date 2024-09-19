@@ -106,7 +106,8 @@ public class PurpurTemplate extends OCTemplate {
         // Set server port
         String serverProperties = Files.readString(directory.resolve("server.properties"));
         int port = NetworkUtil.getFreePort(40000);
-        serverProperties = serverProperties.replaceAll("^server-port=.*", "server-port=" + port);
+        NetworkUtil.blockPort(port);
+        serverProperties = serverProperties.replaceAll("server-port=.*", "server-port=" + port);
         Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
@@ -121,6 +122,7 @@ public class PurpurTemplate extends OCTemplate {
         }
         reader.close();
         process.waitFor();
+        NetworkUtil.unblockPort(port);
 
         // Clean up
         FileUtils.deleteDirectory(directory.resolve("logs").toFile());

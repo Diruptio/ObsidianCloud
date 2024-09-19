@@ -5,6 +5,7 @@ import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.common.network.Connection;
+import de.obsidiancloud.common.network.packets.ServerPortChangedPacket;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import de.obsidiancloud.common.network.packets.ServerUpdatedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
@@ -12,15 +13,16 @@ import de.obsidiancloud.node.util.Flags;
 import de.obsidiancloud.node.util.NetworkUtil;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LocalOCServer extends OCServer {
     private final Set<CommandExecutor> screenReaders = new HashSet<>();
     private Connection connection;
     private Process process;
-    private int port;
 
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
         super(data, status, new HashSet<>());
@@ -34,6 +36,12 @@ public class LocalOCServer extends OCServer {
 
             port = NetworkUtil.getFreePort(getData().port());
             NetworkUtil.blockPort(port);
+            ServerPortChangedPacket packet = new ServerPortChangedPacket();
+            packet.setName(getName());
+            packet.setPort(port);
+            for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+                connection.send(packet);
+            }
 
             List<String> command = new ArrayList<>();
             command.add(getData().executable());
@@ -43,6 +51,18 @@ public class LocalOCServer extends OCServer {
                 command.addAll(getData().jvmArgs());
                 command.add("-jar");
                 command.add("server.jar");
+                if (getData().platform() == Platform.PAPER
+                        || getData().platform() == Platform.FABRIC) {
+                    String serverProperties =
+                            Files.readString(getDirectory().resolve("server.properties"));
+                    serverProperties =
+                            serverProperties.replaceAll("server-port=.*", "server-port=" + port);
+                    Files.writeString(
+                            getDirectory().resolve("server.properties"), serverProperties);
+                } else if (getData().platform() == Platform.VELOCITY) {
+                    command.add("--port");
+                    command.add(String.valueOf(port));
+                }
                 command.addAll(getData().args());
             }
             for (int i = 0; i < command.size(); i++) {
@@ -62,11 +82,13 @@ public class LocalOCServer extends OCServer {
             ProcessBuilder builder = new ProcessBuilder(command);
             builder.directory(getDirectory().toFile());
             builder.environment().putAll(getData().environmentVariables());
+            builder.environment().put("OC_NODE_NAME", getNode().getName());
             builder.environment().put("OC_NODE_HOST", "127.0.0.1");
             int nodePort = ObsidianCloudNode.getNetworkServer().getPort();
             builder.environment().put("OC_NODE_PORT", String.valueOf(nodePort));
             builder.environment().put("OC_CLUSTERKEY", ObsidianCloudNode.getClusterKey().get());
             builder.environment().put("OC_SERVER_DATA", getData().toString());
+            builder.environment().put("OC_SERVER_PORT", String.valueOf(port));
             process = builder.start();
             process.onExit().thenRun(this::stopped);
             new ScreenThread().start();
@@ -83,7 +105,6 @@ public class LocalOCServer extends OCServer {
                 Platform platform = getData().platform();
                 if (platform == null) {
                     process.destroy();
-                    NetworkUtil.unblockPort(port);
                 } else {
                     try (BufferedWriter writer = process.outputWriter()) {
                         writer.write(getData().platform().stopCommand() + "\n");
@@ -102,7 +123,6 @@ public class LocalOCServer extends OCServer {
             if (process != null && process.isAlive()) {
                 ObsidianCloudNode.getLogger().info("Killing server " + getName() + "...");
                 process.destroy();
-                NetworkUtil.unblockPort(port);
             }
         } catch (Throwable exception) {
             exception.printStackTrace(System.err);
@@ -140,10 +160,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -159,10 +181,12 @@ public class LocalOCServer extends OCServer {
                         autoStart,
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -178,10 +202,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         executable,
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -197,10 +223,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         memory,
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -216,10 +244,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         jvmArgs,
+                        data.args(),
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -235,10 +265,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        args,
                         data.jvmArgs(),
+                        args,
                         data.environmentVariables(),
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -254,10 +286,12 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         environmentVariables,
-                        data.port());
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback());
         sendUpdatedPacket();
     }
 
@@ -273,10 +307,54 @@ public class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        port);
+                        port,
+                        data.linkToProxies(),
+                        data.fallback());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setLinkToProxies(@Nullable List<String> linkToProxies) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port(),
+                        linkToProxies,
+                        data.fallback());
+        sendUpdatedPacket();
+    }
+
+    @Override
+    public void setFallback(boolean fallback) {
+        data =
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port(),
+                        data.linkToProxies(),
+                        fallback);
         sendUpdatedPacket();
     }
 
@@ -289,7 +367,7 @@ public class LocalOCServer extends OCServer {
         return Path.of("servers").resolve(getName());
     }
 
-    public Connection getConnection() {
+    public @Nullable Connection getConnection() {
         return connection;
     }
 
@@ -300,11 +378,21 @@ public class LocalOCServer extends OCServer {
     private void stopped() {
         ObsidianCloudNode.getLogger().info("Server " + getName() + " stopped");
         NetworkUtil.unblockPort(port);
+        ServerPortChangedPacket packet = new ServerPortChangedPacket();
+        packet.setName(getName());
+        packet.setPort(-1);
+        for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
+            connection.send(packet);
+        }
         setStatus(Status.OFFLINE);
     }
 
     public @NotNull Set<CommandExecutor> getScreenReaders() {
         return screenReaders;
+    }
+
+    public @Nullable Process getProcess() {
+        return process;
     }
 
     private class ScreenThread extends Thread {

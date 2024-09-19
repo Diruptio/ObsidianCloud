@@ -1,25 +1,24 @@
 package de.obsidiancloud.common.network.packets;
 
-import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.network.Packet;
 import io.netty.buffer.ByteBuf;
 import org.jetbrains.annotations.NotNull;
 
-/** Sent when the status of a server was updated. */
-public class ServerStatusChangedPacket extends Packet {
+/** Sent when the port of a server was updated. */
+public class ServerPortChangedPacket extends Packet {
     private String name;
-    private OCServer.Status status;
+    private int port;
 
     @Override
     public void write(@NotNull ByteBuf byteBuf) {
         writeString(byteBuf, name);
-        writeString(byteBuf, status.toString());
+        byteBuf.writeInt(port);
     }
 
     @Override
     public void read(@NotNull ByteBuf byteBuf) {
         name = readString(byteBuf);
-        status = OCServer.Status.valueOf(readString(byteBuf));
+        port = byteBuf.readInt();
     }
 
     /**
@@ -41,20 +40,20 @@ public class ServerStatusChangedPacket extends Packet {
     }
 
     /**
-     * Gets the status of the server.
+     * Gets the port of the server.
      *
-     * @return The status
+     * @return The port
      */
-    public @NotNull OCServer.Status getStatus() {
-        return status;
+    public int getPort() {
+        return port;
     }
 
     /**
-     * Sets the status of the server.
+     * Sets the port of the server.
      *
-     * @param status The status
+     * @param port The port
      */
-    public void setStatus(@NotNull OCServer.Status status) {
-        this.status = status;
+    public void setPort(int port) {
+        this.port = port;
     }
 }

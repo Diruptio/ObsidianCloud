@@ -27,4 +27,8 @@ public class LocalOCNode extends OCNode {
     public @NotNull List<OCServer> getServers() {
         return (List<OCServer>) (List<?>) servers;
     }
+
+    public @NotNull List<LocalOCServer> getLocalServers() {
+        return servers;
+    }
 }

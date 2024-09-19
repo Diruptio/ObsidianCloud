@@ -13,10 +13,11 @@ import org.jetbrains.annotations.NotNull;
 /** The network server for ObsidianCloud. */
 public class NetworkServer extends Thread {
     private final Logger logger = Logger.getLogger("NetworkServer");
-    private final @NotNull String host;
+    private final String host;
     private final int port;
-    private final @NotNull Consumer<Connection> clientConnectedCallback;
-    private final @NotNull List<Connection> connections = new CopyOnWriteArrayList<>();
+    private final Consumer<Connection> clientConnectedCallback;
+    private final Consumer<Connection> clientDisconnectedCallback;
+    private final List<Connection> connections = new CopyOnWriteArrayList<>();
     private ServerChannel channel;
 
     /**
@@ -25,12 +26,17 @@ public class NetworkServer extends Thread {
      * @param host The host
      * @param port The port
      * @param clientConnectedCallback The callback which is called when a client connects
+     * @param clientDisconnectedCallback The callback which is called when a client disconnects
      */
     public NetworkServer(
-            @NotNull String host, int port, @NotNull Consumer<Connection> clientConnectedCallback) {
+            @NotNull String host,
+            int port,
+            @NotNull Consumer<Connection> clientConnectedCallback,
+            @NotNull Consumer<Connection> clientDisconnectedCallback) {
         this.host = host;
         this.port = port;
         this.clientConnectedCallback = clientConnectedCallback;
+        this.clientDisconnectedCallback = clientDisconnectedCallback;
         setName("NetworkServer");
     }
 
@@ -38,7 +44,8 @@ public class NetworkServer extends Thread {
     public void run() {
         try {
             ServerBootstrap serverBootstrap =
-                    NetworkHandler.buildServerBootstrap(clientConnectedCallback);
+                    NetworkHandler.buildServerBootstrap(
+                            clientConnectedCallback, clientDisconnectedCallback);
 
             ChannelFuture f = serverBootstrap.bind(host, port).sync();
             logger.log(Level.INFO, "ObsidianCloud Server started on %s:%d".formatted(host, port));

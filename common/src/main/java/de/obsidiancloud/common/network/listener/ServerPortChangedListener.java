@@ -4,17 +4,16 @@ import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.PacketListener;
-import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
+import de.obsidiancloud.common.network.packets.ServerPortChangedPacket;
 import org.jetbrains.annotations.NotNull;
 
-/** Called when a server's status was updated. */
-public class ServerStatusChangedListener implements PacketListener<ServerStatusChangedPacket> {
+/** Called when a server's port has changed. */
+public class ServerPortChangedListener implements PacketListener<ServerPortChangedPacket> {
     @Override
-    public void handle(@NotNull ServerStatusChangedPacket packet, @NotNull Connection connection) {
+    public void handle(@NotNull ServerPortChangedPacket packet, @NotNull Connection connection) {
         OCServer server = ObsidianCloudAPI.get().getServer(packet.getName());
         if (server != null) {
-            server.updateStatus(packet.getStatus());
-            // TODO: Call ServerStatusChangedEvent
+            server.updatePort(packet.getPort());
         }
     }
 }

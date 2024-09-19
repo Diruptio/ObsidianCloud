@@ -3,11 +3,11 @@ package de.obsidiancloud.node.util;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.ServerSocketChannel;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class NetworkUtil {
-    private static final List<Integer> blockedPorts = new ArrayList<>();
+    private static final List<Integer> blockedPorts = new CopyOnWriteArrayList<>();
 
     /**
      * Searches for a free port starting from the given minimum.
@@ -49,6 +49,6 @@ public class NetworkUtil {
      * @param port The port to unblock
      */
     public static void unblockPort(int port) {
-        blockedPorts.remove(port);
+        blockedPorts.remove((Integer) port);
     }
 }

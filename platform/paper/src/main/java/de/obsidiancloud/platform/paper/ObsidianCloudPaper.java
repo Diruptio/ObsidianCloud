@@ -20,8 +20,10 @@ public class ObsidianCloudPaper extends JavaPlugin {
     @Override
     public void onEnable() {
         String serverData = System.getenv("OC_SERVER_DATA");
-        ObsidianCloudPlatform.onEnable(
-                new LocalPaperOCServer(OCServer.TransferableServerData.fromString(serverData)));
+        LocalPaperOCServer localServer =
+                new LocalPaperOCServer(OCServer.TransferableServerData.fromString(serverData));
+        ObsidianCloudPlatform.onEnable(localServer);
+        localServer.updatePort(Integer.parseInt(System.getenv("OC_SERVER_PORT")));
 
         Bukkit.getPluginManager().registerEvents(new PlayerListener(), this);
     }

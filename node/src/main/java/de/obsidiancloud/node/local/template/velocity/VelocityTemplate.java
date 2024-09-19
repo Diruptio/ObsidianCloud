@@ -18,6 +18,8 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+
+import de.obsidiancloud.node.util.NetworkUtil;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -96,8 +98,10 @@ public class VelocityTemplate extends OCTemplate {
         command.addAll(List.of(Flags.VELOCITY_FLAGS));
         command.add("-jar");
         command.add("server.jar");
-
-        // TODO: Change port
+        command.add("--port");
+        int port = NetworkUtil.getFreePort(40000);
+        NetworkUtil.blockPort(port);
+        command.add(String.valueOf(port));
 
         // Run
         Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
@@ -111,6 +115,7 @@ public class VelocityTemplate extends OCTemplate {
         }
         reader.close();
         process.waitFor();
+        NetworkUtil.unblockPort(port);
 
         // Clean up
         FileUtils.deleteDirectory(directory.resolve("logs").toFile());

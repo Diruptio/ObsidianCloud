@@ -11,6 +11,6 @@ public class LocalVelocityOCServer extends LocalOCServer {
 
     @Override
     public void stop() {
-        ObsidianCloudVelocity.getInstance().getServer().shutdown();
+        ObsidianCloudVelocity.getInstance().getProxyServer().shutdown();
     }
 }

@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class LocalOCServer extends OCServer {
     public LocalOCServer(@NotNull TransferableServerData data, @NotNull Status status) {
@@ -53,10 +54,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -71,10 +74,12 @@ public abstract class LocalOCServer extends OCServer {
                         autoStart,
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -89,10 +94,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         executable,
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -107,10 +114,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         memory,
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -125,10 +134,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         jvmArgs,
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -143,10 +154,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        args,
                         data.jvmArgs(),
+                        args,
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -161,10 +174,12 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         environmentVariables,
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -179,10 +194,52 @@ public abstract class LocalOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        port,
+                        data.linkToProxies(),
+                        data.fallback()));
+    }
+
+    @Override
+    public void setLinkToProxies(@Nullable List<String> linkToProxies) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
                         data.args(),
                         data.jvmArgs(),
                         data.environmentVariables(),
-                        port));
+                        data.port(),
+                        linkToProxies,
+                        data.fallback()));
+    }
+
+    @Override
+    public void setFallback(boolean fallback) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.args(),
+                        data.jvmArgs(),
+                        data.environmentVariables(),
+                        data.port(),
+                        data.linkToProxies(),
+                        fallback));
     }
 
     @Override

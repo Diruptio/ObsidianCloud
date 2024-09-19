@@ -47,6 +47,7 @@ public class Connection {
     public void close() {
         if (channel != null) {
             channel.close();
+            packetListeners.clear();
         }
     }
 

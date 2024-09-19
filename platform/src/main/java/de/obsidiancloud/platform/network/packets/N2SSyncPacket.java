@@ -1,6 +1,5 @@
 package de.obsidiancloud.platform.network.packets;
 
-import de.obsidiancloud.common.OCNode;
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.network.ReadablePacket;
@@ -47,13 +46,8 @@ public class N2SSyncPacket extends ReadablePacket {
                 throw new RuntimeException(e);
             }
             List<RemoteOCServer> servers = new ArrayList<>();
-            OCNode node;
-            if (nodeName.equals(api.getLocalNode().getName())) {
-                node = new RemoteOCNode(nodeName, address, servers);
-                remoteNodes.add((RemoteOCNode) node);
-            } else {
-                node = api.getLocalNode();
-            }
+            RemoteOCNode node = new RemoteOCNode(nodeName, address, servers);
+            remoteNodes.add(node);
             int serverCount = byteBuf.readInt();
             for (int j = 0; j < serverCount; j++) {
                 OCServer.TransferableServerData data =

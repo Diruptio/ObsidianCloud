@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class RemoteOCServer extends OCServer {
     private final @NotNull RemoteOCNode node;
@@ -52,10 +53,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -70,10 +73,12 @@ public class RemoteOCServer extends OCServer {
                         autoStart,
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -88,10 +93,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         executable,
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -106,10 +113,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         memory,
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -124,10 +133,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         jvmArgs,
+                        data.args(),
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -142,10 +153,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        args,
                         data.jvmArgs(),
+                        args,
                         data.environmentVariables(),
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -160,10 +173,12 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         environmentVariables,
-                        data.port()));
+                        data.port(),
+                        data.linkToProxies(),
+                        data.fallback()));
     }
 
     @Override
@@ -178,10 +193,52 @@ public class RemoteOCServer extends OCServer {
                         data.autoStart(),
                         data.executable(),
                         data.memory(),
-                        data.args(),
                         data.jvmArgs(),
+                        data.args(),
                         data.environmentVariables(),
-                        port));
+                        port,
+                        data.linkToProxies(),
+                        data.fallback()));
+    }
+
+    @Override
+    public void setLinkToProxies(@Nullable List<String> linkToProxies) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port(),
+                        linkToProxies,
+                        data.fallback()));
+    }
+
+    @Override
+    public void setFallback(boolean fallback) {
+        sendUpdatePacket(
+                new TransferableServerData(
+                        data.task(),
+                        data.name(),
+                        data.type(),
+                        data.platform(),
+                        data.staticServer(),
+                        data.autoStart(),
+                        data.executable(),
+                        data.memory(),
+                        data.jvmArgs(),
+                        data.args(),
+                        data.environmentVariables(),
+                        data.port(),
+                        data.linkToProxies(),
+                        fallback));
     }
 
     @Override

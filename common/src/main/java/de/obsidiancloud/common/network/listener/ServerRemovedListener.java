@@ -7,6 +7,7 @@ import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.common.network.packets.ServerRemovedPacket;
 import org.jetbrains.annotations.NotNull;
 
+/** Called when a server was removed from the network. */
 public class ServerRemovedListener implements PacketListener<ServerRemovedPacket> {
     @Override
     public void handle(@NotNull ServerRemovedPacket packet, @NotNull Connection connection) {

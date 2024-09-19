@@ -39,7 +39,6 @@ public class CommandCommand extends Command {
             if (process != null && process.isAlive()) {
                 try (BufferedWriter writer = process.outputWriter()) {
                     writer.write(command + "\n");
-                    writer.flush();
                 }
             } else {
                 ObsidianCloudNode.getLogger()

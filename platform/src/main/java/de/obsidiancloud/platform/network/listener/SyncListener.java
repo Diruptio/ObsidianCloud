@@ -12,6 +12,6 @@ public class SyncListener implements PacketListener<N2SSyncPacket> {
     public void handle(@NotNull N2SSyncPacket packet, @NotNull Connection connection) {
         PlatformObsidianCloudAPI api = (PlatformObsidianCloudAPI) ObsidianCloudAPI.get();
         api.getRemoteNodes().clear();
-        api.getRemoteNodes().addAll(packet.getNodes());
+        api.getRemoteNodes().addAll(packet.getRemoteNodes());
     }
 }

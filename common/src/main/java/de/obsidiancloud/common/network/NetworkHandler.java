@@ -57,10 +57,12 @@ public class NetworkHandler {
      * Build a new server bootstrap.
      *
      * @param clientConnectedCallback The callback which is called when a client connects
+     * @param clientDisconnectedCallback The callback which is called when a client disconnects
      * @return The server bootstrap
      */
     public static @NotNull ServerBootstrap buildServerBootstrap(
-            @NotNull Consumer<Connection> clientConnectedCallback) {
+            @NotNull Consumer<Connection> clientConnectedCallback,
+            @NotNull Consumer<Connection> clientDisconnectedCallback) {
         return new ServerBootstrap()
                 .group(BOSS_GROUP, WORKER_GROUP)
                 .channel(SERVER_CHANNEL)
@@ -76,7 +78,10 @@ public class NetworkHandler {
                             @Override
                             protected void initChannel(Channel channel) {
                                 Pipeline.prepare(
-                                        channel, new ServerChannelHandler(clientConnectedCallback));
+                                        channel,
+                                        new ServerChannelHandler(
+                                                clientConnectedCallback,
+                                                clientDisconnectedCallback));
                             }
                         });
     }

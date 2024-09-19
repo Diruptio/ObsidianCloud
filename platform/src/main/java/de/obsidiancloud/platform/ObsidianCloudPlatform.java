@@ -39,6 +39,7 @@ public class ObsidianCloudPlatform {
         NetworkHandler.getPacketRegistry().registerPacket(ServerAddedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerCreatePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerDeletePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerPortChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerRemovedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangePacket.class);
