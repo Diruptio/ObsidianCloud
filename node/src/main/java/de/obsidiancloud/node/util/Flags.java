@@ -1,8 +1,9 @@
 package de.obsidiancloud.node.util;
 
-public class AikarsFlags {
-    /** JVM flags for Paper servers */
-    public static final String[] DEFAULT =
+/** The default flags for the JVM. */
+public class Flags {
+    /** Optimal flags for Paper servers */
+    public static final String[] AIKARS_FLAGS =
             new String[] {
                 "-XX:+UseG1GC",
                 "-XX:+ParallelRefProcEnabled",
@@ -24,5 +25,16 @@ public class AikarsFlags {
                 "-XX:MaxTenuringThreshold=1",
                 "-Dusing.aikars.flags=https://mcflags.emc.gs",
                 "-Daikars.new.flags=true"
+            };
+
+    /** Optimal flags for Velocity servers */
+    public static final String[] VELOCITY_FLAGS =
+            new String[] {
+                "-XX:+UseG1GC",
+                "-XX:G1HeapRegionSize=4M",
+                "-XX:+UnlockExperimentalVMOptions",
+                "-XX:+ParallelRefProcEnabled",
+                "-XX:+AlwaysPreTouch",
+                "-XX:MaxInlineLevel=15"
             };
 }

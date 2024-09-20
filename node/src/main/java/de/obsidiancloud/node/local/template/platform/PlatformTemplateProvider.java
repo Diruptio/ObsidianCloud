@@ -9,6 +9,8 @@ public class PlatformTemplateProvider implements TemplateProvider {
     public OCTemplate getTemplate(@NotNull String name) {
         if (name.equalsIgnoreCase("platform/paper")) {
             return new PaperPlatformTemplate(name);
+        } else if (name.equalsIgnoreCase("platform/velocity")) {
+            return new VelocityPlatformTemplate(name);
         } else {
             return null;
         }

@@ -11,12 +11,14 @@ public class ServerAddedPacket extends Packet {
     private String node;
     private OCServer.TransferableServerData serverData;
     private OCServer.Status serverStatus;
+    private int port;
 
     @Override
     public void write(@NotNull ByteBuf byteBuf) {
         writeString(byteBuf, node);
         writeString(byteBuf, serverData == null ? "" : serverData.toString());
         writeString(byteBuf, serverStatus == null ? "" : serverStatus.toString());
+        byteBuf.writeInt(port);
     }
 
     @Override
@@ -26,15 +28,16 @@ public class ServerAddedPacket extends Packet {
         this.serverData =
                 serverData.isEmpty()
                         ? null
-                        : OCServer.TransferableServerData.fromString(readString(byteBuf));
+                        : OCServer.TransferableServerData.fromString(serverData);
         String serverStatus = readString(byteBuf);
         this.serverStatus = serverStatus.isEmpty() ? null : OCServer.Status.valueOf(serverStatus);
+        port = byteBuf.readInt();
     }
 
     /**
      * Gets the name of the node
      *
-     * @return The name of the node
+     * @return The name
      */
     public @NotNull String getNode() {
         return node;
@@ -43,7 +46,7 @@ public class ServerAddedPacket extends Packet {
     /**
      * Sets the name of the node
      *
-     * @param node The name of the node
+     * @param node The name
      */
     public void setNode(@NotNull String node) {
         this.node = node;
@@ -52,7 +55,7 @@ public class ServerAddedPacket extends Packet {
     /**
      * Gets the data of the server
      *
-     * @return The data of the server
+     * @return The data
      */
     public @Nullable OCServer.TransferableServerData getServerData() {
         return serverData;
@@ -61,7 +64,7 @@ public class ServerAddedPacket extends Packet {
     /**
      * Sets the data of the server
      *
-     * @param serverData The data of the server
+     * @param serverData The data
      */
     public void setServerData(@Nullable OCServer.TransferableServerData serverData) {
         this.serverData = serverData;
@@ -70,7 +73,7 @@ public class ServerAddedPacket extends Packet {
     /**
      * Gets the status of the server
      *
-     * @return The status of the server
+     * @return The status
      */
     public @Nullable OCServer.Status getServerStatus() {
         return serverStatus;
@@ -79,9 +82,27 @@ public class ServerAddedPacket extends Packet {
     /**
      * Sets the status of the server
      *
-     * @param serverStatus The status of the server
+     * @param serverStatus The status
      */
     public void setServerStatus(@Nullable OCServer.Status serverStatus) {
         this.serverStatus = serverStatus;
+    }
+
+    /**
+     * Gets the port of the server
+     *
+     * @return The port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Sets the port of the server
+     *
+     * @param port The port
+     */
+    public void setPort(int port) {
+        this.port = port;
     }
 }

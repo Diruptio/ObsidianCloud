@@ -1,6 +1,6 @@
 package de.obsidiancloud.node.local.template.platform;
 
-import de.obsidiancloud.node.BuildConstants;
+import de.obsidiancloud.node.NodeBuildConstants;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class PaperPlatformTemplate extends OCTemplate {
     @Override
     public void apply(@NotNull Path targetDirectory) {
         try {
-            String name = BuildConstants.PAPER_PLATFORM_FILE;
+            String name = NodeBuildConstants.PAPER_PLATFORM_FILE;
             Path pluginsDirectory = targetDirectory.resolve("plugins");
             if (!Files.exists(pluginsDirectory)) Files.createDirectories(pluginsDirectory);
             Path target = pluginsDirectory.resolve(name);

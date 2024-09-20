@@ -7,6 +7,7 @@ import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.common.network.packets.PlayerMessagePacket;
 import org.jetbrains.annotations.NotNull;
 
+/** Listener for the PlayerMessagePacket. */
 public class PlayerMessageListener implements PacketListener<PlayerMessagePacket> {
     @Override
     public void handle(@NotNull PlayerMessagePacket packet, @NotNull Connection connection) {

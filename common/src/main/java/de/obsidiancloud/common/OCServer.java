@@ -1,12 +1,11 @@
 package de.obsidiancloud.common;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonStreamParser;
+import com.google.gson.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -19,7 +18,10 @@ public abstract class OCServer {
     /** The status of the server. */
     protected @NotNull Status status;
 
-    private final @NotNull List<OCPlayer> players;
+    /** The port of the server. */
+    protected int port = -1;
+
+    private final @NotNull Set<OCPlayer> players;
 
     /**
      * Create a new OCServer with the specified parameters.
@@ -31,7 +33,7 @@ public abstract class OCServer {
     public OCServer(
             @NotNull TransferableServerData data,
             @NotNull Status status,
-            @NotNull List<OCPlayer> players) {
+            @NotNull Set<OCPlayer> players) {
         this.data = data;
         this.status = status;
         this.players = players;
@@ -49,7 +51,7 @@ public abstract class OCServer {
     /**
      * Sets the name of the server.
      *
-     * @param name The name of the server
+     * @param name The name
      */
     public abstract void setName(@NotNull String name);
 
@@ -63,49 +65,63 @@ public abstract class OCServer {
     /**
      * Sets the executable of the server.
      *
-     * @param executable The executable of the server
+     * @param executable The executable
      */
     public abstract void setExecutable(@NotNull String executable);
 
     /**
      * Sets the memory of the server.
      *
-     * @param memory The memory of the server
+     * @param memory The memory
      */
     public abstract void setMemory(int memory);
 
     /**
      * Sets the JVM arguments of the server.
      *
-     * @param jvmArgs The JVM arguments of the server
+     * @param jvmArgs The JVM arguments
      */
     public abstract void setJvmArgs(@NotNull List<String> jvmArgs);
 
     /**
      * Sets the arguments of the server.
      *
-     * @param args The arguments of the server
+     * @param args The arguments
      */
     public abstract void setArgs(@NotNull List<String> args);
 
     /**
      * Sets the environment variables of the server.
      *
-     * @param environmentVariables The environment variables of the server
+     * @param environmentVariables The environment variables
      */
     public abstract void setEnvironmentVariables(@NotNull Map<String, String> environmentVariables);
 
     /**
-     * Sets the port of the server.
+     * Sets the proxies the server should be linked to.
      *
-     * @param port The port of the server
+     * @param linkToProxies The proxies the server should be linked to
+     */
+    public abstract void setLinkToProxies(@Nullable List<String> linkToProxies);
+
+    /**
+     * Sets the server to be a fallback server.
+     *
+     * @param fallback Whether the server is a fallback server
+     */
+    public abstract void setFallback(boolean fallback);
+
+    /**
+     * Sets the minimum port of the server.
+     *
+     * @param port The minimum port
      */
     public abstract void setPort(int port);
 
     /**
      * Gets the status of the server.
      *
-     * @return The status of the server
+     * @return The status
      */
     public @NotNull Status getStatus() {
         return status;
@@ -114,21 +130,30 @@ public abstract class OCServer {
     /**
      * Sets the status of the server.
      *
-     * @param status The status of the server
+     * @param status The status
      */
     public abstract void setStatus(@NotNull Status status);
 
     /**
+     * Gets the port of the server.
+     *
+     * @return The port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
      * Gets the node of the server.
      *
-     * @return The node of the server.
+     * @return The node
      */
     public abstract @NotNull OCNode getNode();
 
     /**
      * Gets the name of the server. (This is equivalent to {@code getData().name()})
      *
-     * @return The name of the server.
+     * @return The name
      */
     public @NotNull String getName() {
         return data.name();
@@ -137,7 +162,7 @@ public abstract class OCServer {
     /**
      * Gets the data of the server.
      *
-     * @return Returns the data of the server.
+     * @return The data
      */
     public @NotNull TransferableServerData getData() {
         return data;
@@ -146,16 +171,16 @@ public abstract class OCServer {
     /**
      * Gets the list of players currently connected to the server.
      *
-     * @return Returns the list of players currently connected to the server.
+     * @return The list of players
      */
-    public @NotNull List<OCPlayer> getPlayers() {
+    public @NotNull Set<OCPlayer> getPlayers() {
         return players;
     }
 
     /**
      * Updates the data of the server. (Unsafe, please do not use)
      *
-     * @param data The new data of the server
+     * @param data The new data
      */
     @ApiStatus.Internal
     public void updateData(@NotNull TransferableServerData data) {
@@ -165,11 +190,21 @@ public abstract class OCServer {
     /**
      * Updates the status of the server. (Unsafe, please do not use)
      *
-     * @param status The new status of the server
+     * @param status The new status
      */
     @ApiStatus.Internal
     public void updateStatus(@NotNull Status status) {
         this.status = status;
+    }
+
+    /**
+     * Updates the port of the server. (Unsafe, please do not use)
+     *
+     * @param port The new port
+     */
+    @ApiStatus.Internal
+    public void updatePort(int port) {
+        this.port = port;
     }
 
     /** The types of servers. */
@@ -209,19 +244,33 @@ public abstract class OCServer {
 
         /** A fabric server. */
         public static final Platform FABRIC =
-                new Platform("paper", Type.SERVER, "stop", List.of("platform/fabric"));
+                new Platform("fabric", Type.SERVER, "stop", List.of("platform/fabric"));
 
         /** A velocity server. */
         public static final Platform VELOCITY =
-                new Platform("paper", Type.PROXY, "shutdown", List.of("platform/velocity"));
+                new Platform("velocity", Type.PROXY, "shutdown", List.of("platform/velocity"));
 
         /**
          * Gets a list of all platforms.
          *
-         * @return The list of all platforms.
+         * @return All platforms
          */
         public static @NotNull List<Platform> getPlatforms() {
             return platforms;
+        }
+
+        /**
+         * Gets a platform by its name.
+         *
+         * @return The platform
+         */
+        public static @Nullable Platform getPlatform(@NotNull String name) {
+            for (Platform platform : platforms) {
+                if (platform.name().equalsIgnoreCase(name)) {
+                    return platform;
+                }
+            }
+            return null;
         }
     }
 
@@ -262,6 +311,11 @@ public abstract class OCServer {
      * @param args The arguments of the server (will be ignored if type is {@link Type#CUSTOM})
      * @param environmentVariables The environment variables of the server
      * @param port The port of the server ({@code 0} if type is {@link Type#CUSTOM})
+     * @param linkToProxies The list of proxies the server should be linked to or {@code null} if
+     *     the server should not be linked to any proxies (will be ignored if type is {@link
+     *     Type#CUSTOM})
+     * @param fallback If the server is a fallback server (will be ignored if type is {@link
+     *     Type#CUSTOM})
      */
     public record TransferableServerData(
             @Nullable String task,
@@ -275,13 +329,18 @@ public abstract class OCServer {
             @NotNull List<String> jvmArgs,
             @NotNull List<String> args,
             @NotNull Map<String, String> environmentVariables,
-            int port) {
+            int port,
+            @Nullable List<String> linkToProxies,
+            boolean fallback) {
         @Override
         public String toString() {
             JsonObject json = new JsonObject();
             json.addProperty("task", task);
             json.addProperty("name", name);
             json.addProperty("type", type.name());
+            if (platform != null) {
+                json.addProperty("platform", platform.name());
+            }
             json.addProperty("static", staticServer);
             json.addProperty("auto_start", autoStart);
             json.addProperty("executable", executable);
@@ -296,19 +355,30 @@ public abstract class OCServer {
             environmentVariables.forEach(environmentVariablesObject::addProperty);
             json.add("environment_variables", environmentVariablesObject);
             json.addProperty("port", port);
+            if (linkToProxies != null) {
+                JsonArray linkToProxiesArray = new JsonArray();
+                linkToProxies.forEach(linkToProxiesArray::add);
+                json.add("linkToProxies", linkToProxiesArray);
+            }
+            json.addProperty("fallback", fallback);
             return json.toString();
         }
 
+        /**
+         * Converts a {@link String} to a {@link TransferableServerData}.
+         *
+         * @param string The string
+         * @return The server data
+         */
         public static @NotNull TransferableServerData fromString(@NotNull String string) {
             JsonObject json = new JsonStreamParser(string).next().getAsJsonObject();
             String task = json.get("task").isJsonNull() ? null : json.get("task").getAsString();
             String name = json.get("name").getAsString();
             Type type = Type.valueOf(json.get("type").getAsString());
             Platform platform = null;
-            if (json.get("platform").isJsonObject()) {
-                JsonObject platformJson = json.get("platform").getAsJsonObject();
+            if (json.has("platform")) {
                 for (Platform p : Platform.getPlatforms()) {
-                    if (p.name().equalsIgnoreCase(platformJson.get("name").getAsString())) {
+                    if (p.name().equalsIgnoreCase(json.get("platform").getAsString())) {
                         platform = p;
                         break;
                     }
@@ -333,6 +403,14 @@ public abstract class OCServer {
                                     environmentVariables.put(
                                             entry.getKey(), entry.getValue().getAsString()));
             int port = json.get("port").getAsInt();
+            List<String> linkToProxies = null;
+            if (json.has("linkToProxies")) {
+                linkToProxies = new ArrayList<>();
+                for (JsonElement element : json.get("linkToProxies").getAsJsonArray()) {
+                    linkToProxies.add(element.getAsString());
+                }
+            }
+            boolean fallback = json.get("fallback").getAsBoolean();
             return new TransferableServerData(
                     task,
                     name,
@@ -345,7 +423,9 @@ public abstract class OCServer {
                     jvmArgs,
                     args,
                     environmentVariables,
-                    port);
+                    port,
+                    linkToProxies,
+                    fallback);
         }
     }
 }

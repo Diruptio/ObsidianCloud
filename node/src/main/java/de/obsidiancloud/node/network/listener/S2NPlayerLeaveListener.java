@@ -16,7 +16,6 @@ public class S2NPlayerLeaveListener implements PacketListener<S2NPlayerLeavePack
         NodeObsidianCloudAPI api = (NodeObsidianCloudAPI) ObsidianCloudAPI.get();
         OCPlayer player = ObsidianCloudAPI.get().getPlayer(packet.getUUID());
         if (player == null) return;
-        System.out.println(player.getName() + " left the network.");
         // server is a Minecraft server or a Proxy or null
         Optional<OCServer> server = api.getServer(connection);
         if (server.isPresent()) {

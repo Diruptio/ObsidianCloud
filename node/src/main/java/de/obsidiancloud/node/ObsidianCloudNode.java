@@ -1,6 +1,7 @@
 package de.obsidiancloud.node;
 
 import de.obsidiancloud.common.OCServer;
+import de.obsidiancloud.common.OCTask;
 import de.obsidiancloud.common.ObsidianCloudAPI;
 import de.obsidiancloud.common.command.BaseCommandProvider;
 import de.obsidiancloud.common.command.Command;
@@ -17,7 +18,6 @@ import de.obsidiancloud.common.network.packets.*;
 import de.obsidiancloud.node.command.*;
 import de.obsidiancloud.node.local.LocalOCNode;
 import de.obsidiancloud.node.local.LocalOCServer;
-import de.obsidiancloud.node.local.TaskParser;
 import de.obsidiancloud.node.local.template.OCTemplate;
 import de.obsidiancloud.node.local.template.TemplateProvider;
 import de.obsidiancloud.node.local.template.fabric.FabricTemplateProvider;
@@ -25,9 +25,12 @@ import de.obsidiancloud.node.local.template.paper.PaperTemplateProvider;
 import de.obsidiancloud.node.local.template.platform.PlatformTemplateProvider;
 import de.obsidiancloud.node.local.template.purpur.PurpurTemplateProvider;
 import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
+import de.obsidiancloud.node.local.template.velocity.VelocityTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.*;
 import de.obsidiancloud.node.threads.NodeThread;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,7 +69,12 @@ public class ObsidianCloudNode {
             ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
             String host = localNode.getString("host", "0.0.0.0");
             int port = localNode.getInt("port", 3005);
-            networkServer = new NetworkServer(host, port, ObsidianCloudNode::clientConnected);
+            networkServer =
+                    new NetworkServer(
+                            host,
+                            port,
+                            ObsidianCloudNode::clientConnected,
+                            ObsidianCloudNode::clientDisconnected);
             networkServer.start();
 
             reload();
@@ -79,6 +87,10 @@ public class ObsidianCloudNode {
 
     private static void clientConnected(@NotNull Connection connection) {
         connection.addPacketListener(new S2NHandshakeListener());
+    }
+
+    private static void clientDisconnected(@NotNull Connection connection) {
+        networkServer.getConnections().remove(connection);
     }
 
     private static void loadConfig() {
@@ -113,7 +125,13 @@ public class ObsidianCloudNode {
     private static LocalOCNode loadLocalNode(List<LocalOCServer> servers) {
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         String name = Objects.requireNonNull(localNode.getString("name"));
-        return new LocalOCNode(name, servers);
+        InetAddress address;
+        try {
+            address = InetAddress.getByName(Objects.requireNonNull(localNode.getString("host")));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        return new LocalOCNode(name, address, servers);
     }
 
     public static void reload() {
@@ -137,6 +155,7 @@ public class ObsidianCloudNode {
         commandProvider.registerCommand(new HelpCommand());
 
         // node
+        commandProvider.registerCommand(new CommandCommand());
         commandProvider.registerCommand(new CreateCommand());
         commandProvider.registerCommand(new KickCommand());
         commandProvider.registerCommand(new ListCommand());
@@ -152,6 +171,7 @@ public class ObsidianCloudNode {
         templateProviders.add(new PaperTemplateProvider());
         templateProviders.add(new PurpurTemplateProvider());
         templateProviders.add(new FabricTemplateProvider());
+        templateProviders.add(new VelocityTemplateProvider());
     }
 
     private static void loadTasks() {
@@ -162,7 +182,7 @@ public class ObsidianCloudNode {
             Stream<Path> files = Files.walk(directory, FileVisitOption.FOLLOW_LINKS);
             for (Path file : files.filter(Files::isRegularFile).toArray(Path[]::new)) {
                 try {
-                    api.getTasks().add(TaskParser.parse(file));
+                    api.getTasks().add(OCTask.fromFile(file));
                 } catch (Exception e) {
                     logger.log(
                             Level.SEVERE, "Failed to load task: " + directory.relativize(file), e);
@@ -182,6 +202,7 @@ public class ObsidianCloudNode {
         NetworkHandler.getPacketRegistry().registerPacket(ServerAddedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerCreatePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerDeletePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerPortChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerRemovedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangePacket.class);

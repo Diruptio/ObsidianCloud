@@ -2,7 +2,7 @@ package de.obsidiancloud.node.local.template.purpur;
 
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.template.OCTemplate;
-import de.obsidiancloud.node.util.AikarsFlags;
+import de.obsidiancloud.node.util.Flags;
 import de.obsidiancloud.node.util.NetworkUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -89,7 +89,7 @@ public class PurpurTemplate extends OCTemplate {
         command.add("java");
         command.add("-Xmx512M");
         command.add("-Xms512M");
-        command.addAll(List.of(AikarsFlags.DEFAULT));
+        command.addAll(List.of(Flags.AIKARS_FLAGS));
         command.add("-jar");
         command.add("server.jar");
 
@@ -105,8 +105,9 @@ public class PurpurTemplate extends OCTemplate {
 
         // Set server port
         String serverProperties = Files.readString(directory.resolve("server.properties"));
-        int port = NetworkUtil.getFreePort(40000);
-        serverProperties = serverProperties.replaceAll("^server-port=.*", "server-port=" + port);
+        int port = NetworkUtil.getFreePort(startPort);
+        NetworkUtil.blockPort(port);
+        serverProperties = serverProperties.replaceAll("server-port=.*", "server-port=" + port);
         Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
@@ -121,6 +122,7 @@ public class PurpurTemplate extends OCTemplate {
         }
         reader.close();
         process.waitFor();
+        NetworkUtil.unblockPort(port);
 
         // Clean up
         FileUtils.deleteDirectory(directory.resolve("logs").toFile());

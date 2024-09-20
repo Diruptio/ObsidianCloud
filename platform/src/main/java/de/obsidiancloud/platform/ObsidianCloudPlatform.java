@@ -17,6 +17,8 @@ import de.obsidiancloud.platform.network.packets.S2NHandshakePacket;
 import de.obsidiancloud.platform.network.packets.S2NPlayerJoinPacket;
 import de.obsidiancloud.platform.network.packets.S2NPlayerLeavePacket;
 import de.obsidiancloud.platform.remote.RemoteLocalOCNode;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class ObsidianCloudPlatform {
     private static PlatformObsidianCloudAPI api;
@@ -37,6 +39,7 @@ public class ObsidianCloudPlatform {
         NetworkHandler.getPacketRegistry().registerPacket(ServerAddedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerCreatePacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerDeletePacket.class);
+        NetworkHandler.getPacketRegistry().registerPacket(ServerPortChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerRemovedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangedPacket.class);
         NetworkHandler.getPacketRegistry().registerPacket(ServerStatusChangePacket.class);
@@ -58,7 +61,15 @@ public class ObsidianCloudPlatform {
 
     private static void createAPI(LocalOCServer localServer) {
         String nodeName = System.getenv("OC_NODE_NAME");
-        api = new PlatformObsidianCloudAPI(new RemoteLocalOCNode(nodeName, localServer));
+        String nodeHost = System.getenv("OC_NODE_HOST");
+        try {
+            api =
+                    new PlatformObsidianCloudAPI(
+                            new RemoteLocalOCNode(
+                                    nodeName, InetAddress.getByName(nodeHost), localServer));
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
         ObsidianCloudAPI.setInstance(api);
     }
 

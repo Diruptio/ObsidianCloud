@@ -25,7 +25,7 @@ public class ServerStatusChangedPacket extends Packet {
     /**
      * Gets the name of the server.
      *
-     * @return The name of the server.
+     * @return The name
      */
     public @NotNull String getName() {
         return name;
@@ -34,7 +34,7 @@ public class ServerStatusChangedPacket extends Packet {
     /**
      * Sets the name of the server.
      *
-     * @param name The name of the server.
+     * @param name The name
      */
     public void setName(@NotNull String name) {
         this.name = name;
@@ -43,7 +43,7 @@ public class ServerStatusChangedPacket extends Packet {
     /**
      * Gets the status of the server.
      *
-     * @return The status of the server.
+     * @return The status
      */
     public @NotNull OCServer.Status getStatus() {
         return status;
@@ -52,7 +52,7 @@ public class ServerStatusChangedPacket extends Packet {
     /**
      * Sets the status of the server.
      *
-     * @param status The status of the server.
+     * @param status The status
      */
     public void setStatus(@NotNull OCServer.Status status) {
         this.status = status;

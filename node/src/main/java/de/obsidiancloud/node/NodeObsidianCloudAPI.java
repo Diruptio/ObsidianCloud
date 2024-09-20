@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
@@ -89,7 +88,9 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
                                 task.jvmArgs(),
                                 task.args(),
                                 task.environmentVariables(),
-                                task.port()),
+                                task.port(),
+                                task.linkToProxies(),
+                                task.fallback()),
                         OCServer.Status.CREATING);
 
         ServerCreateEvent event = new ServerCreateEvent(server);
@@ -108,6 +109,7 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
     @Override
     public @NotNull CompletableFuture<Void> deleteServer(@NotNull OCServer server) {
         String name = server.getName();
+        CompletableFuture<Void> future = new CompletableFuture<>();
 
         if (server instanceof RemoteOCServer remoteServer) {
             Connection connection = remoteServer.getNode().getConnection();
@@ -116,8 +118,6 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
             packet.setName(name);
             connection.send(packet);
 
-            CompletableFuture<Void> future =
-                    new CompletableFuture<Void>().orTimeout(20, TimeUnit.SECONDS);
             PacketListener<ServerRemovedPacket> listener =
                     new PacketListener<>() {
                         @Override
@@ -133,24 +133,25 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
             connection.addPacketListener(listener);
             return future;
         } else {
-            localNode.getServers().remove(server);
-            new Thread(new ServerDeleteThread((LocalOCServer) server)).start();
+            future.thenRun(
+                    () -> {
+                        localNode.getServers().remove(server);
+                        ServerRemovedPacket packet = new ServerRemovedPacket();
+                        packet.setServerName(name);
+                        for (Connection connection :
+                                ObsidianCloudNode.getNetworkServer().getConnections()) {
+                            connection.send(packet);
+                        }
+                    });
+            new Thread(new ServerDeleteThread((LocalOCServer) server, future)).start();
 
-            ServerRemovedPacket packet = new ServerRemovedPacket();
-            packet.setServerName(name);
-            for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
-                connection.send(packet);
-            }
-
-            CompletableFuture<Void> future = new CompletableFuture<>();
-            future.complete(null);
             return future;
         }
     }
 
-    public @NotNull Optional<OCServer> getServer(Connection connection) {
+    public @NotNull Optional<OCServer> getServer(@NotNull Connection connection) {
         for (OCServer server : localNode.getServers()) {
-            if (((LocalOCServer) server).getConnection().equals(connection)) {
+            if (connection.equals(((LocalOCServer) server).getConnection())) {
                 return Optional.of(server);
             }
         }

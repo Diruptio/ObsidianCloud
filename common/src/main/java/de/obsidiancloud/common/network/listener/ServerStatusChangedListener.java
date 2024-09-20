@@ -7,6 +7,7 @@ import de.obsidiancloud.common.network.PacketListener;
 import de.obsidiancloud.common.network.packets.ServerStatusChangedPacket;
 import org.jetbrains.annotations.NotNull;
 
+/** Called when a server's status was updated. */
 public class ServerStatusChangedListener implements PacketListener<ServerStatusChangedPacket> {
     @Override
     public void handle(@NotNull ServerStatusChangedPacket packet, @NotNull Connection connection) {
