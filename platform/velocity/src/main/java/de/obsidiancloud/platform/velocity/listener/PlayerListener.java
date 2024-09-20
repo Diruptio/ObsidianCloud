@@ -15,9 +15,8 @@ public class PlayerListener {
     private final PlatformObsidianCloudAPI api = (PlatformObsidianCloudAPI) ObsidianCloudAPI.get();
 
     @Subscribe
-    public void onJoin(
-            @NotNull LoginEvent e) { // also Post or prelogin event exists joaaaaaaaaaaaaaaaaa
-        Player player = e.getPlayer();
+    public void onJoin(@NotNull LoginEvent event) {
+        Player player = event.getPlayer();
         api.getLocalServer().getPlayers().add(new LocalVelocityOCPlayer(player));
         S2NPlayerJoinPacket packet = new S2NPlayerJoinPacket();
         packet.setUUID(player.getUniqueId());
@@ -26,8 +25,8 @@ public class PlayerListener {
     }
 
     @Subscribe
-    public void onQuit(@NotNull DisconnectEvent e) {
-        Player player = e.getPlayer();
+    public void onQuit(@NotNull DisconnectEvent event) {
+        Player player = event.getPlayer();
         api.getLocalServer().getPlayers().remove(api.getPlayer(player.getUniqueId()));
         S2NPlayerLeavePacket packet = new S2NPlayerLeavePacket();
         packet.setUUID(player.getUniqueId());

@@ -107,7 +107,7 @@ public class PaperTemplate extends OCTemplate {
 
         // Set server port
         String serverProperties = Files.readString(directory.resolve("server.properties"));
-        int port = NetworkUtil.getFreePort(40000);
+        int port = NetworkUtil.getFreePort(startPort);
         NetworkUtil.blockPort(port);
         serverProperties = serverProperties.replaceAll("server-port=.*", "server-port=" + port);
         Files.writeString(directory.resolve("server.properties"), serverProperties);

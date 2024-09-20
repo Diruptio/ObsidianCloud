@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class OCTemplate {
+    protected static final int startPort = 40000;
     private final @NotNull String path;
 
     /**

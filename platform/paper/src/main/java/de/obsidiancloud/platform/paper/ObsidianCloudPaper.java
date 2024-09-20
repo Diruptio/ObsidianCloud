@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public class ObsidianCloudPaper extends JavaPlugin {
     private static ObsidianCloudPaper instance;
 

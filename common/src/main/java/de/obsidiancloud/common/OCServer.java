@@ -253,10 +253,24 @@ public abstract class OCServer {
         /**
          * Gets a list of all platforms.
          *
-         * @return The list of all platforms.
+         * @return All platforms
          */
         public static @NotNull List<Platform> getPlatforms() {
             return platforms;
+        }
+
+        /**
+         * Gets a platform by its name.
+         *
+         * @return The platform
+         */
+        public static @Nullable Platform getPlatform(@NotNull String name) {
+            for (Platform platform : platforms) {
+                if (platform.name().equalsIgnoreCase(name)) {
+                    return platform;
+                }
+            }
+            return null;
         }
     }
 

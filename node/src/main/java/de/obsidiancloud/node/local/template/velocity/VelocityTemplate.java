@@ -98,7 +98,7 @@ public class VelocityTemplate extends OCTemplate {
         command.add("-jar");
         command.add("server.jar");
         command.add("--port");
-        int port = NetworkUtil.getFreePort(40000);
+        int port = NetworkUtil.getFreePort(startPort);
         NetworkUtil.blockPort(port);
         command.add(String.valueOf(port));
 

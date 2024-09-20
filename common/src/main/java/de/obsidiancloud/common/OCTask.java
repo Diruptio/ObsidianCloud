@@ -91,12 +91,7 @@ public record OCTask(
         }
         OCServer.Platform platform = null;
         if (type != OCServer.Type.CUSTOM) {
-            for (OCServer.Platform p : OCServer.Platform.getPlatforms()) {
-                if (p.name().equalsIgnoreCase(platformName)) {
-                    platform = p;
-                    break;
-                }
-            }
+            platform = OCServer.Platform.getPlatform(platformName);
             if (platform == null) {
                 throw new IllegalArgumentException(
                         "\"platform\" (string) is none of "
