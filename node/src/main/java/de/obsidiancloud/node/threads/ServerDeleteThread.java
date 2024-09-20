@@ -11,8 +11,7 @@ public class ServerDeleteThread implements Runnable {
     private final LocalOCServer server;
     private final CompletableFuture<Void> callback;
 
-    public ServerDeleteThread(
-            @NotNull LocalOCServer server, @NotNull CompletableFuture<Void> callback) {
+    public ServerDeleteThread(@NotNull LocalOCServer server, @NotNull CompletableFuture<Void> callback) {
         this.server = server;
         this.callback = callback;
     }
@@ -25,10 +24,7 @@ public class ServerDeleteThread implements Runnable {
             callback.complete(null);
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
-                    .log(
-                            Level.SEVERE,
-                            "An error occurred while deleting server " + server.getName(),
-                            exception);
+                    .log(Level.SEVERE, "An error occurred while deleting server " + server.getName(), exception);
         }
     }
 }

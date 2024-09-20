@@ -41,9 +41,7 @@ public class ObsidianCloudVelocity {
 
     @Inject
     public ObsidianCloudVelocity(
-            @NotNull ProxyServer proxyServer,
-            @NotNull Logger logger,
-            @DataDirectory @NotNull Path dataDirectory) {
+            @NotNull ProxyServer proxyServer, @NotNull Logger logger, @DataDirectory @NotNull Path dataDirectory) {
         instance = this;
         this.proxyServer = proxyServer;
         this.logger = logger;
@@ -53,13 +51,11 @@ public class ObsidianCloudVelocity {
     @Subscribe
     public void onInitialise(ProxyInitializeEvent event) {
         String serverData = System.getenv("OC_SERVER_DATA");
-        localServer =
-                new LocalVelocityOCServer(OCServer.TransferableServerData.fromString(serverData));
+        localServer = new LocalVelocityOCServer(OCServer.TransferableServerData.fromString(serverData));
         localServer.updatePort(Integer.parseInt(System.getenv("OC_SERVER_PORT")));
         ObsidianCloudPlatform.onEnable(localServer);
 
-        Connection connection =
-                ((RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode()).getConnection();
+        Connection connection = ((RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode()).getConnection();
         connection.addPacketListener(new ServerAddedListener());
         connection.addPacketListener(new ServerRemovedListener());
         connection.addPacketListener(new SyncListener());
@@ -72,8 +68,7 @@ public class ObsidianCloudVelocity {
         ObsidianCloudPlatform.onDisable();
     }
 
-    public void registerServer(
-            @NotNull OCServer.TransferableServerData data, @NotNull OCNode node, int port) {
+    public void registerServer(@NotNull OCServer.TransferableServerData data, @NotNull OCNode node, int port) {
         String name = data.name();
         unregisterServer(name);
 
@@ -82,10 +77,14 @@ public class ObsidianCloudVelocity {
                 && (data.linkToProxies() == null
                         || data.linkToProxies().contains(localServer.getName())
                         || (localServer.getData().task() != null
-                                && data.linkToProxies().contains(localServer.getData().task())))) {
+                                && data.linkToProxies()
+                                        .contains(localServer.getData().task())))) {
             proxyServer.registerServer(new ServerInfo(name, address));
             if (data.fallback()
-                    && !proxyServer.getConfiguration().getAttemptConnectionOrder().contains(name)) {
+                    && !proxyServer
+                            .getConfiguration()
+                            .getAttemptConnectionOrder()
+                            .contains(name)) {
                 proxyServer.getConfiguration().getAttemptConnectionOrder().add(name);
             }
         }

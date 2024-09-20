@@ -20,12 +20,10 @@ public class N2NScreenListener implements PacketListener<N2NScreenPacket> {
             Set<CommandExecutor> screenReaders = localServer.getScreenReaders();
             if (screenReaders.contains(executor)) {
                 screenReaders.remove(executor);
-                executor.sendMessage(
-                        "§aScreen mirroring of §e" + server.getName() + " §ahas been disabled.");
+                executor.sendMessage("§aScreen mirroring of §e" + server.getName() + " §ahas been disabled.");
             } else {
                 screenReaders.add(executor);
-                executor.sendMessage(
-                        "§aScreen mirroring of §e" + server.getName() + " §ahas been enabled.");
+                executor.sendMessage("§aScreen mirroring of §e" + server.getName() + " §ahas been enabled.");
             }
         } else if (server instanceof RemoteOCServer remoteServer) {
             remoteServer.getNode().getConnection().send(packet);

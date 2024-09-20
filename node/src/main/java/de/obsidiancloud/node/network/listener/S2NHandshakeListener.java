@@ -41,12 +41,10 @@ public class S2NHandshakeListener implements PacketListener<S2NHandshakePacket> 
                     connection.addPacketListener(new ServerUpdateListener());
 
                     N2SSyncPacket syncPacket = new N2SSyncPacket();
-                    syncPacket.setLocalNodeServers(
-                            ((NodeObsidianCloudAPI) ObsidianCloudAPI.get())
-                                    .getLocalNode()
-                                    .getLocalServers());
-                    syncPacket.setRemoteNodes(
-                            ((NodeObsidianCloudAPI) ObsidianCloudAPI.get()).getRemoteNodes());
+                    syncPacket.setLocalNodeServers(((NodeObsidianCloudAPI) ObsidianCloudAPI.get())
+                            .getLocalNode()
+                            .getLocalServers());
+                    syncPacket.setRemoteNodes(((NodeObsidianCloudAPI) ObsidianCloudAPI.get()).getRemoteNodes());
                     connection.send(syncPacket);
                     break;
                 }

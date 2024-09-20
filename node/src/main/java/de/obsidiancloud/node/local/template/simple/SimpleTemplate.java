@@ -19,8 +19,7 @@ public class SimpleTemplate extends OCTemplate {
     @Override
     public void apply(@NotNull Path targetDirectory) {
         try {
-            FileUtils.copyDirectory(
-                    templatesDirectory.resolve(getPath()).toFile(), targetDirectory.toFile());
+            FileUtils.copyDirectory(templatesDirectory.resolve(getPath()).toFile(), targetDirectory.toFile());
         } catch (Throwable exception) {
             logger.log(Level.SEVERE, "Failed to apply template " + getPath(), exception);
         }

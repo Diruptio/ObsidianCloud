@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class RemoteOCServer extends OCServer {
     private final @NotNull OCNode node;
 
-    public RemoteOCServer(
-            @NotNull TransferableServerData data, @NotNull Status status, @NotNull OCNode node) {
+    public RemoteOCServer(@NotNull TransferableServerData data, @NotNull Status status, @NotNull OCNode node) {
         super(data, status, new HashSet<>());
         this.node = node;
     }
@@ -39,207 +38,199 @@ public class RemoteOCServer extends OCServer {
     private void sendUpdatePacket(@NotNull TransferableServerData data) {
         ServerUpdatePacket packet = new ServerUpdatePacket();
         packet.setServerData(data);
-        ((RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode()).getConnection().send(packet);
+        ((RemoteLocalOCNode) ObsidianCloudAPI.get().getLocalNode())
+                .getConnection()
+                .send(packet);
     }
 
     @Override
     public void setName(@NotNull String name) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        name,
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                name,
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setAutoStart(boolean autoStart) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        autoStart,
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                autoStart,
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setExecutable(@NotNull String executable) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        executable,
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                executable,
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setMemory(int memory) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        memory,
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                memory,
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setJvmArgs(@NotNull List<String> jvmArgs) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        jvmArgs,
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                jvmArgs,
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setArgs(@NotNull List<String> args) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        args,
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                args,
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setEnvironmentVariables(@NotNull Map<String, String> environmentVariables) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        environmentVariables,
-                        data.port(),
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                environmentVariables,
+                data.port(),
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setPort(int port) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        port,
-                        data.linkToProxies(),
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                port,
+                data.linkToProxies(),
+                data.fallback()));
     }
 
     @Override
     public void setLinkToProxies(@Nullable List<String> linkToProxies) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        linkToProxies,
-                        data.fallback()));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                linkToProxies,
+                data.fallback()));
     }
 
     @Override
     public void setFallback(boolean fallback) {
-        sendUpdatePacket(
-                new TransferableServerData(
-                        data.task(),
-                        data.name(),
-                        data.type(),
-                        data.platform(),
-                        data.staticServer(),
-                        data.autoStart(),
-                        data.executable(),
-                        data.memory(),
-                        data.args(),
-                        data.jvmArgs(),
-                        data.environmentVariables(),
-                        data.port(),
-                        data.linkToProxies(),
-                        fallback));
+        sendUpdatePacket(new TransferableServerData(
+                data.task(),
+                data.name(),
+                data.type(),
+                data.platform(),
+                data.staticServer(),
+                data.autoStart(),
+                data.executable(),
+                data.memory(),
+                data.args(),
+                data.jvmArgs(),
+                data.environmentVariables(),
+                data.port(),
+                data.linkToProxies(),
+                fallback));
     }
 
     @Override

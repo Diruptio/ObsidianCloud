@@ -44,8 +44,7 @@ public class NetworkServer extends Thread {
     public void run() {
         try {
             ServerBootstrap serverBootstrap =
-                    NetworkHandler.buildServerBootstrap(
-                            clientConnectedCallback, clientDisconnectedCallback);
+                    NetworkHandler.buildServerBootstrap(clientConnectedCallback, clientDisconnectedCallback);
 
             ChannelFuture f = serverBootstrap.bind(host, port).sync();
             logger.log(Level.INFO, "ObsidianCloud Server started on %s:%d".formatted(host, port));
@@ -54,8 +53,7 @@ public class NetworkServer extends Thread {
             channel.closeFuture().sync();
             logger.log(Level.INFO, "ObsidianCloud Server stopped");
         } catch (Exception exception) {
-            logger.log(
-                    Level.SEVERE, "An error occurred while starting the network server", exception);
+            logger.log(Level.SEVERE, "An error occurred while starting the network server", exception);
         }
     }
 

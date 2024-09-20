@@ -9,10 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class LocalOCNode extends OCNode {
     private final List<LocalOCServer> servers;
 
-    public LocalOCNode(
-            @NotNull String name,
-            @NotNull InetAddress address,
-            @NotNull List<LocalOCServer> servers) {
+    public LocalOCNode(@NotNull String name, @NotNull InetAddress address, @NotNull List<LocalOCServer> servers) {
         super(name, address);
         this.servers = servers;
     }

@@ -68,8 +68,7 @@ public class PaperTemplateProvider implements TemplateProvider {
     private void loadBuilds(@NotNull String version) {
         if (builds.containsKey(version)) return;
         List<String> builds = new ArrayList<>();
-        String url =
-                "https://api.papermc.io/v2/projects/paper/versions/%s/builds".formatted(version);
+        String url = "https://api.papermc.io/v2/projects/paper/versions/%s/builds".formatted(version);
         try {
             HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
             con.setConnectTimeout(5000);
@@ -81,7 +80,8 @@ public class PaperTemplateProvider implements TemplateProvider {
                 JsonArray buildsArray = json.getAsJsonArray("builds");
                 if (buildsArray.isEmpty()) return;
                 for (JsonElement build : buildsArray) {
-                    builds.add(String.valueOf(build.getAsJsonObject().get("build").getAsInt()));
+                    builds.add(
+                            String.valueOf(build.getAsJsonObject().get("build").getAsInt()));
                 }
             }
         } catch (Throwable ignored) {

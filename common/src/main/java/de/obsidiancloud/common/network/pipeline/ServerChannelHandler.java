@@ -8,10 +8,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * The {@link ServerChannelHandler} is a {@link SimpleChannelInboundHandler} implementation for the
- * server side.
- */
+/** The {@link ServerChannelHandler} is a {@link SimpleChannelInboundHandler} implementation for the server side. */
 public class ServerChannelHandler extends SimpleChannelInboundHandler<Packet> {
     private final Consumer<Connection> clientConnectedCallback;
     private final Consumer<Connection> clientDisconnectedCallback;

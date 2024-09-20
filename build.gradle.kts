@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "diruptio"
-version = "0.1.0"
+version = "0.2.0"
 
 repositories {
     mavenCentral()
@@ -17,7 +17,7 @@ spotless {
     }
     java {
         target("**/src/**/*.java")
-        googleJavaFormat().aosp()
+        palantirJavaFormat("2.48.0").formatJavadoc(true)
         removeUnusedImports()
         indentWithSpaces()
         endWithNewline()

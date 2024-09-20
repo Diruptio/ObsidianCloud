@@ -138,8 +138,7 @@ public class EventManager {
      * @param listener The listener to register.
      * @param priority The priority of the listener.
      */
-    public static <T> void register(
-            Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
+    public static <T> void register(Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
         register(null, eventClass, listener, priority);
     }
 
@@ -153,10 +152,7 @@ public class EventManager {
      * @param priority The priority of the listener.
      */
     public static <T> void register(
-            Object owner,
-            Class<T> eventClass,
-            Listener<T> listener,
-            EventHandler.Priority priority) {
+            Object owner, Class<T> eventClass, Listener<T> listener, EventHandler.Priority priority) {
         Storage marker = priority.getExistingMarker();
         if (head == null) {
             head = new Storage(owner, eventClass, listener, null);

@@ -20,15 +20,15 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class FabricTemplate extends OCTemplate {
-    private static final Path templatesDirectory = Path.of("generated-templates").resolve("fabric");
+    private static final Path templatesDirectory =
+            Path.of("generated-templates").resolve("fabric");
     private static final Logger logger = ObsidianCloudNode.getLogger();
     private static final Set<FabricTemplate> locks = new HashSet<>();
     private final String version;
     private final String loader;
     private final String installer;
 
-    public FabricTemplate(
-            @NotNull String version, @NotNull String loader, @NotNull String installer) {
+    public FabricTemplate(@NotNull String version, @NotNull String loader, @NotNull String installer) {
         super("fabric/%s/%s/%s".formatted(version, loader, installer));
         this.version = version;
         this.loader = loader;
@@ -63,10 +63,7 @@ public class FabricTemplate extends OCTemplate {
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
                 for (Path file : files.toList()) {
-                    Files.copy(
-                            file,
-                            targetDirectory.resolve(file.getFileName()),
-                            StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file, targetDirectory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (Throwable exception) {
@@ -75,9 +72,8 @@ public class FabricTemplate extends OCTemplate {
     }
 
     private void download(@NotNull Path directory) throws IOException {
-        String url =
-                "https://meta.fabricmc.net/v2/versions/loader/%s/%s/%s/server/jar"
-                        .formatted(version, loader, installer);
+        String url = "https://meta.fabricmc.net/v2/versions/loader/%s/%s/%s/server/jar"
+                .formatted(version, loader, installer);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
@@ -114,7 +110,8 @@ public class FabricTemplate extends OCTemplate {
         Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
-        Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
+        Process process =
+                new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
             if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {

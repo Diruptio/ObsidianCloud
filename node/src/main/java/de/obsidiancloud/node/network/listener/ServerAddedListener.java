@@ -16,9 +16,7 @@ public class ServerAddedListener implements PacketListener<ServerAddedPacket> {
         if (node instanceof RemoteOCNode remoteNode
                 && packet.getServerData() != null
                 && packet.getServerStatus() != null) {
-            RemoteOCServer server =
-                    new RemoteOCServer(
-                            packet.getServerData(), packet.getServerStatus(), remoteNode);
+            RemoteOCServer server = new RemoteOCServer(packet.getServerData(), packet.getServerStatus(), remoteNode);
             node.getServers().add(server);
             // TODO: Call ServerAddedEvent
         }

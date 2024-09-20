@@ -10,10 +10,7 @@ public class RemoteOCNode extends OCNode {
     private boolean connected;
     private final List<RemoteOCServer> servers;
 
-    public RemoteOCNode(
-            @NotNull String name,
-            @NotNull InetAddress address,
-            @NotNull List<RemoteOCServer> servers) {
+    public RemoteOCNode(@NotNull String name, @NotNull InetAddress address, @NotNull List<RemoteOCServer> servers) {
         super(name, address);
         this.servers = servers;
     }

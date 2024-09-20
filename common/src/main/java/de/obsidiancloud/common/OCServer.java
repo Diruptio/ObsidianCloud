@@ -30,10 +30,7 @@ public abstract class OCServer {
      * @param status The status of the server
      * @param players The list of players currently connected to the server
      */
-    public OCServer(
-            @NotNull TransferableServerData data,
-            @NotNull Status status,
-            @NotNull Set<OCPlayer> players) {
+    public OCServer(@NotNull TransferableServerData data, @NotNull Status status, @NotNull Set<OCPlayer> players) {
         this.data = data;
         this.status = status;
         this.players = players;
@@ -216,9 +213,8 @@ public abstract class OCServer {
         PROXY,
 
         /**
-         * Everything that is <b>not supported</b> by ObsidianCloud <b>can be executed</b> with the
-         * custom server type. Fields platform, memory, jvmArgs and args will be <b>ignored</b> by
-         * ObsidianCloud.
+         * Everything that is <b>not supported</b> by ObsidianCloud <b>can be executed</b> with the custom server type.
+         * Fields platform, memory, jvmArgs and args will be <b>ignored</b> by ObsidianCloud.
          */
         CUSTOM
     }
@@ -232,19 +228,14 @@ public abstract class OCServer {
      * @param templates The list of templates to apply for the server
      */
     public record Platform(
-            @NotNull String name,
-            @NotNull Type type,
-            @NotNull String stopCommand,
-            @NotNull List<String> templates) {
+            @NotNull String name, @NotNull Type type, @NotNull String stopCommand, @NotNull List<String> templates) {
         private static final List<Platform> platforms = new ArrayList<>();
 
         /** A paper server. */
-        public static final Platform PAPER =
-                new Platform("paper", Type.SERVER, "stop", List.of("platform/paper"));
+        public static final Platform PAPER = new Platform("paper", Type.SERVER, "stop", List.of("platform/paper"));
 
         /** A fabric server. */
-        public static final Platform FABRIC =
-                new Platform("fabric", Type.SERVER, "stop", List.of("platform/fabric"));
+        public static final Platform FABRIC = new Platform("fabric", Type.SERVER, "stop", List.of("platform/fabric"));
 
         /** A velocity server. */
         public static final Platform VELOCITY =
@@ -262,6 +253,7 @@ public abstract class OCServer {
         /**
          * Gets a platform by its name.
          *
+         * @param name The name of the platform
          * @return The platform
          */
         public static @Nullable Platform getPlatform(@NotNull String name) {
@@ -301,21 +293,17 @@ public abstract class OCServer {
      * @param platform The platform of the server ({@code null} if type is {@link Type#CUSTOM})
      * @param staticServer If the server is static
      * @param autoStart If the server should be started automatically
-     * @param executable The execution string of the server. This is equivalent to a <b>shell
-     *     script</b> line. The placeholders <i>%SERVER_PORT%, %AIKARS_FLAGS%</i> will be replaced.
-     *     If the type is {@link Type#SERVER} or {@link Type#PROXY}, this should be a java
-     *     executable.
+     * @param executable The execution string of the server. This is equivalent to a <b>shell script</b> line. The
+     *     placeholders <i>%SERVER_PORT%, %AIKARS_FLAGS%</i> will be replaced. If the type is {@link Type#SERVER} or
+     *     {@link Type#PROXY}, this should be a java executable.
      * @param memory The memory of the server (will be ignored if type is {@link Type#CUSTOM})
-     * @param jvmArgs The JVM arguments of the server (will be ignored if type is {@link
-     *     Type#CUSTOM})
+     * @param jvmArgs The JVM arguments of the server (will be ignored if type is {@link Type#CUSTOM})
      * @param args The arguments of the server (will be ignored if type is {@link Type#CUSTOM})
      * @param environmentVariables The environment variables of the server
      * @param port The port of the server ({@code 0} if type is {@link Type#CUSTOM})
-     * @param linkToProxies The list of proxies the server should be linked to or {@code null} if
-     *     the server should not be linked to any proxies (will be ignored if type is {@link
-     *     Type#CUSTOM})
-     * @param fallback If the server is a fallback server (will be ignored if type is {@link
-     *     Type#CUSTOM})
+     * @param linkToProxies The list of proxies the server should be linked to or {@code null} if the server should not
+     *     be linked to any proxies (will be ignored if type is {@link Type#CUSTOM})
+     * @param fallback If the server is a fallback server (will be ignored if type is {@link Type#CUSTOM})
      */
     public record TransferableServerData(
             @Nullable String task,
@@ -372,7 +360,8 @@ public abstract class OCServer {
          */
         public static @NotNull TransferableServerData fromString(@NotNull String string) {
             JsonObject json = new JsonStreamParser(string).next().getAsJsonObject();
-            String task = json.get("task").isJsonNull() ? null : json.get("task").getAsString();
+            String task =
+                    json.get("task").isJsonNull() ? null : json.get("task").getAsString();
             String name = json.get("name").getAsString();
             Type type = Type.valueOf(json.get("type").getAsString());
             Platform platform = null;
@@ -389,19 +378,15 @@ public abstract class OCServer {
             String executable = json.get("executable").getAsString();
             int memory = json.get("memory").getAsInt();
             List<String> jvmArgs = new ArrayList<>();
-            json.get("jvmArgs")
-                    .getAsJsonArray()
-                    .forEach(element -> jvmArgs.add(element.getAsString()));
+            json.get("jvmArgs").getAsJsonArray().forEach(element -> jvmArgs.add(element.getAsString()));
             List<String> args = new ArrayList<>();
             json.get("args").getAsJsonArray().forEach(element -> args.add(element.getAsString()));
             Map<String, String> environmentVariables = new HashMap<>();
             json.get("environment_variables")
                     .getAsJsonObject()
                     .entrySet()
-                    .forEach(
-                            entry ->
-                                    environmentVariables.put(
-                                            entry.getKey(), entry.getValue().getAsString()));
+                    .forEach(entry -> environmentVariables.put(
+                            entry.getKey(), entry.getValue().getAsString()));
             int port = json.get("port").getAsInt();
             List<String> linkToProxies = null;
             if (json.has("linkToProxies")) {

@@ -29,8 +29,7 @@ public abstract class OCPlayer implements CommandExecutor {
      */
     public @Nullable OCServer getProxy() {
         for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getPlayers().contains(this)
-                    && server.getData().type() == OCServer.Type.PROXY) {
+            if (server.getPlayers().contains(this) && server.getData().type() == OCServer.Type.PROXY) {
                 return server;
             }
         }
@@ -44,8 +43,7 @@ public abstract class OCPlayer implements CommandExecutor {
      */
     public @Nullable OCServer getServer() {
         for (OCServer server : ObsidianCloudAPI.get().getServers()) {
-            if (server.getPlayers().contains(this)
-                    && server.getData().type() == OCServer.Type.SERVER) {
+            if (server.getPlayers().contains(this) && server.getData().type() == OCServer.Type.SERVER) {
                 return server;
             }
         }

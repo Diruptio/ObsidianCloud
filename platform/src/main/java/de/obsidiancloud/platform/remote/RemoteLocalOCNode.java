@@ -14,10 +14,7 @@ public class RemoteLocalOCNode extends OCNode {
     private final LocalOCServer localServer;
     private final List<RemoteOCServer> remoteServers = new ArrayList<>();
 
-    public RemoteLocalOCNode(
-            @NotNull String name,
-            @NotNull InetAddress address,
-            @NotNull LocalOCServer localServer) {
+    public RemoteLocalOCNode(@NotNull String name, @NotNull InetAddress address, @NotNull LocalOCServer localServer) {
         super(name, address);
         this.localServer = localServer;
     }

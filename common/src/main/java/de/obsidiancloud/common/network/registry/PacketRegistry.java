@@ -11,10 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * @since 02.06.2024
  */
 public class PacketRegistry {
-    private final @NotNull Map<String, Class<? extends Packet>> nameToClass =
-            new ConcurrentHashMap<>();
-    private final @NotNull Map<Class<? extends Packet>, String> classToName =
-            new ConcurrentHashMap<>();
+    private final @NotNull Map<String, Class<? extends Packet>> nameToClass = new ConcurrentHashMap<>();
+    private final @NotNull Map<Class<? extends Packet>, String> classToName = new ConcurrentHashMap<>();
 
     /**
      * Register a packet class.
