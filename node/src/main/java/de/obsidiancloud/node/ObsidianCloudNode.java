@@ -56,8 +56,7 @@ public class ObsidianCloudNode {
     public static void main(String[] args) {
         try {
             Files.createDirectories(Path.of("logs"));
-            LogManager.getLogManager()
-                    .readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+            LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
             console = new Console(logger, executor);
             console.start();
             loadConfig();
@@ -69,12 +68,8 @@ public class ObsidianCloudNode {
             ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
             String host = localNode.getString("host", "0.0.0.0");
             int port = localNode.getInt("port", 3005);
-            networkServer =
-                    new NetworkServer(
-                            host,
-                            port,
-                            ObsidianCloudNode::clientConnected,
-                            ObsidianCloudNode::clientDisconnected);
+            networkServer = new NetworkServer(
+                    host, port, ObsidianCloudNode::clientConnected, ObsidianCloudNode::clientDisconnected);
             networkServer.start();
 
             reload();
@@ -97,8 +92,7 @@ public class ObsidianCloudNode {
         config = new Config(Path.of("config.yml"), Config.Type.YAML);
         StringBuilder clusterKey = new StringBuilder();
         for (int i = 0; i < 32; i++) clusterKey.append((char) ('a' + new Random().nextInt(26)));
-        ObsidianCloudNode.clusterKey =
-                new ConfigProperty<>(config, "clusterkey", clusterKey.toString());
+        ObsidianCloudNode.clusterKey = new ConfigProperty<>(config, "clusterkey", clusterKey.toString());
         config.setDefault("local_node", new HashMap<>());
         ConfigSection localNode = Objects.requireNonNull(config.getSection("local_node"));
         localNode.setDefault("name", "Node-1");
@@ -112,10 +106,8 @@ public class ObsidianCloudNode {
         for (String name : serversConfig.getData().keySet()) {
             try {
                 String serverData = Objects.requireNonNull(serversConfig.getString(name));
-                servers.add(
-                        new LocalOCServer(
-                                OCServer.TransferableServerData.fromString(serverData),
-                                OCServer.Status.OFFLINE));
+                servers.add(new LocalOCServer(
+                        OCServer.TransferableServerData.fromString(serverData), OCServer.Status.OFFLINE));
             } catch (Throwable ignored) {
             }
         }
@@ -184,8 +176,7 @@ public class ObsidianCloudNode {
                 try {
                     api.getTasks().add(OCTask.fromFile(file));
                 } catch (Exception e) {
-                    logger.log(
-                            Level.SEVERE, "Failed to load task: " + directory.relativize(file), e);
+                    logger.log(Level.SEVERE, "Failed to load task: " + directory.relativize(file), e);
                 }
             }
             files.close();

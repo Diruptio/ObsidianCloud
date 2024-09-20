@@ -72,22 +72,19 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
         packet.setTask(task.name());
         connection.send(packet);
 
-        CompletableFuture<OCServer> future =
-                new CompletableFuture<OCServer>().orTimeout(20, TimeUnit.SECONDS);
-        PacketListener<ServerAddedPacket> listener =
-                new PacketListener<>() {
-                    @Override
-                    public void handle(
-                            @NotNull ServerAddedPacket response, @NotNull Connection connection) {
-                        if (response.getServerData() == null) {
-                            connection.removePacketListener(this);
-                            future.complete(null);
-                        } else if (response.getServerData().name().equals(name)) {
-                            connection.removePacketListener(this);
-                            future.complete(getServer(response.getServerData().name()));
-                        }
-                    }
-                };
+        CompletableFuture<OCServer> future = new CompletableFuture<OCServer>().orTimeout(20, TimeUnit.SECONDS);
+        PacketListener<ServerAddedPacket> listener = new PacketListener<>() {
+            @Override
+            public void handle(@NotNull ServerAddedPacket response, @NotNull Connection connection) {
+                if (response.getServerData() == null) {
+                    connection.removePacketListener(this);
+                    future.complete(null);
+                } else if (response.getServerData().name().equals(name)) {
+                    connection.removePacketListener(this);
+                    future.complete(getServer(response.getServerData().name()));
+                }
+            }
+        };
         connection.addPacketListener(listener);
         return future;
     }
@@ -101,19 +98,16 @@ public class PlatformObsidianCloudAPI extends ObsidianCloudAPI {
         packet.setName(name);
         connection.send(packet);
 
-        CompletableFuture<Void> future =
-                new CompletableFuture<Void>().orTimeout(20, TimeUnit.SECONDS);
-        PacketListener<ServerRemovedPacket> listener =
-                new PacketListener<>() {
-                    @Override
-                    public void handle(
-                            @NotNull ServerRemovedPacket response, @NotNull Connection connection) {
-                        if (response.getServerName().equals(name)) {
-                            connection.removePacketListener(this);
-                            future.complete(null);
-                        }
-                    }
-                };
+        CompletableFuture<Void> future = new CompletableFuture<Void>().orTimeout(20, TimeUnit.SECONDS);
+        PacketListener<ServerRemovedPacket> listener = new PacketListener<>() {
+            @Override
+            public void handle(@NotNull ServerRemovedPacket response, @NotNull Connection connection) {
+                if (response.getServerName().equals(name)) {
+                    connection.removePacketListener(this);
+                    future.complete(null);
+                }
+            }
+        };
         connection.addPacketListener(listener);
         return future;
     }

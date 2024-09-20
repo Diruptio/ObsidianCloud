@@ -25,8 +25,7 @@ public class HelpCommand extends Command {
                 List<String> names = new ArrayList<>();
                 names.add(command.getName());
                 names.addAll(Arrays.asList(command.getAliases()));
-                executor.sendMessage(
-                        "  §b" + String.join("§7, §b", names) + " §7- " + command.getDescription());
+                executor.sendMessage("  §b" + String.join("§7, §b", names) + " §7- " + command.getDescription());
             }
         } else {
             Command command = null;
@@ -36,16 +35,12 @@ public class HelpCommand extends Command {
                     command = cmd;
                 }
             }
-            if (command == null)
-                executor.sendMessage("§cCommand \"" + args[0] + "\" does not exist!");
+            if (command == null) executor.sendMessage("§cCommand \"" + args[0] + "\" does not exist!");
             else {
                 executor.sendMessage("§f§nHelp for " + command.getName() + ":");
                 executor.sendMessage("  §7Name: §b" + command.getName());
                 if (command.getAliases().length > 0) {
-                    executor.sendMessage(
-                            "  §7Aliases: [§b"
-                                    + String.join("§7, §b", command.getAliases())
-                                    + "§7]");
+                    executor.sendMessage("  §7Aliases: [§b" + String.join("§7, §b", command.getAliases()) + "§7]");
                 }
                 if (command.getUsage(executor) != null) {
                     executor.sendMessage("  §7Usage: §b" + command.getUsage(executor));

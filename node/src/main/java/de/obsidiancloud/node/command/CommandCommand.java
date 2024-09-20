@@ -41,8 +41,7 @@ public class CommandCommand extends Command {
                     writer.write(command + "\n");
                 }
             } else {
-                ObsidianCloudNode.getLogger()
-                        .warning("Cannot send command, the server is not running.");
+                ObsidianCloudNode.getLogger().warning("Cannot send command, the server is not running.");
             }
         } catch (IOException exception) {
             exception.printStackTrace(System.err);

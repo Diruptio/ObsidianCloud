@@ -25,10 +25,7 @@ public class ServerAddedPacket extends Packet {
     public void read(@NotNull ByteBuf byteBuf) {
         node = readString(byteBuf);
         String serverData = readString(byteBuf);
-        this.serverData =
-                serverData.isEmpty()
-                        ? null
-                        : OCServer.TransferableServerData.fromString(serverData);
+        this.serverData = serverData.isEmpty() ? null : OCServer.TransferableServerData.fromString(serverData);
         String serverStatus = readString(byteBuf);
         this.serverStatus = serverStatus.isEmpty() ? null : OCServer.Status.valueOf(serverStatus);
         port = byteBuf.readInt();

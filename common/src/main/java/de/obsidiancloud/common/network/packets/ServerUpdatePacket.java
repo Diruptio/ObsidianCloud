@@ -17,10 +17,7 @@ public class ServerUpdatePacket extends Packet {
     @Override
     public void read(@NotNull ByteBuf byteBuf) {
         String serverData = readString(byteBuf);
-        this.serverData =
-                serverData.isEmpty()
-                        ? null
-                        : OCServer.TransferableServerData.fromString(readString(byteBuf));
+        this.serverData = serverData.isEmpty() ? null : OCServer.TransferableServerData.fromString(readString(byteBuf));
     }
 
     /**

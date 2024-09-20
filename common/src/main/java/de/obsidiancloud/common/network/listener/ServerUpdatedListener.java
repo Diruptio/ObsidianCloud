@@ -11,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class ServerUpdatedListener implements PacketListener<ServerUpdatedPacket> {
     @Override
     public void handle(@NotNull ServerUpdatedPacket packet, @NotNull Connection connection) {
-        OCServer server = ObsidianCloudAPI.get().getServer(packet.getServerData().name());
+        OCServer server =
+                ObsidianCloudAPI.get().getServer(packet.getServerData().name());
         if (server != null) {
             server.updateData(packet.getServerData());
             // TODO: Call ServerUpdatedEvent

@@ -13,7 +13,8 @@ import org.jetbrains.annotations.NotNull;
 public class ServerUpdateListener implements PacketListener<ServerUpdatePacket> {
     @Override
     public void handle(@NotNull ServerUpdatePacket packet, @NotNull Connection connection) {
-        OCServer server = ObsidianCloudAPI.get().getServer(packet.getServerData().name());
+        OCServer server =
+                ObsidianCloudAPI.get().getServer(packet.getServerData().name());
         if (server instanceof RemoteOCServer remoteServer) {
             remoteServer.getNode().getConnection().send(packet);
         } else if (server != null) {

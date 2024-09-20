@@ -14,17 +14,13 @@ public class ConnectionTest {
 
         C2STestListener c2sTestListener = new C2STestListener();
         connection.addPacketListener(c2sTestListener);
-        Assertions.assertEquals(
-                List.of(c2sTestListener), connection.getPacketListeners(C2STestPacket.class));
+        Assertions.assertEquals(List.of(c2sTestListener), connection.getPacketListeners(C2STestPacket.class));
 
         S2CTestListener s2cTestListener = new S2CTestListener();
         connection.addPacketListener(s2cTestListener);
-        Assertions.assertEquals(
-                List.of(s2cTestListener), connection.getPacketListeners(S2CTestPacket.class));
+        Assertions.assertEquals(List.of(s2cTestListener), connection.getPacketListeners(S2CTestPacket.class));
 
-        Assertions.assertEquals(
-                List.of(c2sTestListener, s2cTestListener),
-                connection.getPacketListeners(Packet.class));
+        Assertions.assertEquals(List.of(c2sTestListener, s2cTestListener), connection.getPacketListeners(Packet.class));
     }
 
     private static class C2STestListener implements PacketListener<C2STestPacket> {

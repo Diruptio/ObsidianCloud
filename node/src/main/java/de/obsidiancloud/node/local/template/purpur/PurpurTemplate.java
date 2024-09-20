@@ -21,7 +21,8 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PurpurTemplate extends OCTemplate {
-    private static final Path templatesDirectory = Path.of("generated-templates").resolve("purpur");
+    private static final Path templatesDirectory =
+            Path.of("generated-templates").resolve("purpur");
     private static final Logger logger = ObsidianCloudNode.getLogger();
     private static final Set<PurpurTemplate> locks = new HashSet<>();
     private final String version;
@@ -61,10 +62,7 @@ public class PurpurTemplate extends OCTemplate {
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
                 for (Path file : files.toList()) {
-                    Files.copy(
-                            file,
-                            targetDirectory.resolve(file.getFileName()),
-                            StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file, targetDirectory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (Throwable exception) {
@@ -111,7 +109,8 @@ public class PurpurTemplate extends OCTemplate {
         Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
-        Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
+        Process process =
+                new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
             if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
@@ -133,9 +132,7 @@ public class PurpurTemplate extends OCTemplate {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof PurpurTemplate other
-                && version.equals(other.version)
-                && build.equals(other.build);
+        return o instanceof PurpurTemplate other && version.equals(other.version) && build.equals(other.build);
     }
 
     @Override

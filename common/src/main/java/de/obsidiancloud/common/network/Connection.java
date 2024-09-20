@@ -15,8 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class Connection {
     private @Nullable Channel channel;
     private final @NotNull Queue<Packet> backlog = new ArrayDeque<>();
-    private final @NotNull List<PacketListener<? extends Packet>> packetListeners =
-            new CopyOnWriteArrayList<>();
+    private final @NotNull List<PacketListener<? extends Packet>> packetListeners = new CopyOnWriteArrayList<>();
 
     /**
      * Send a packet.
@@ -95,8 +94,7 @@ public class Connection {
      * @return The packet listeners
      */
     @SuppressWarnings("unchecked")
-    public <P extends Packet> @NotNull List<PacketListener<P>> getPacketListeners(
-            Class<P> packetClass) {
+    public <P extends Packet> @NotNull List<PacketListener<P>> getPacketListeners(Class<P> packetClass) {
         List<PacketListener<P>> listeners = new ArrayList<>();
         for (PacketListener<?> listener : packetListeners) {
             for (Type type : listener.getClass().getGenericInterfaces()) {
@@ -104,8 +102,7 @@ public class Connection {
                     if (parameterizedType.getRawType().equals(PacketListener.class)) {
                         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
                         if (actualTypeArguments.length > 0
-                                && packetClass.isAssignableFrom(
-                                        (Class<?>) actualTypeArguments[0])) {
+                                && packetClass.isAssignableFrom((Class<?>) actualTypeArguments[0])) {
                             listeners.add((PacketListener<P>) listener);
                             break;
                         }

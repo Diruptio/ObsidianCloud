@@ -32,8 +32,7 @@ public class ScreenCommand extends Command {
             Set<CommandExecutor> screenReaders = localServer.getScreenReaders();
             if (screenReaders.contains(executor)) {
                 screenReaders.remove(executor);
-                executor.sendMessage(
-                        "§aScreen mirroring of §e" + args[0] + " §ahas been disabled.");
+                executor.sendMessage("§aScreen mirroring of §e" + args[0] + " §ahas been disabled.");
             } else {
                 screenReaders.add(executor);
                 executor.sendMessage("§aScreen mirroring of §e" + args[0] + " §ahas been enabled.");

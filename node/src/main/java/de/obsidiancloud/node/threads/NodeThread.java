@@ -45,7 +45,8 @@ public class NodeThread extends Thread {
 
     private void startServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getStatus() == OCServer.Status.OFFLINE && server.getData().autoStart()) {
+            if (server.getStatus() == OCServer.Status.OFFLINE
+                    && server.getData().autoStart()) {
                 server.start();
             }
         }
@@ -53,7 +54,8 @@ public class NodeThread extends Thread {
 
     private void deleteServers() {
         for (OCServer server : localNode.getServers()) {
-            if (server.getStatus() == OCServer.Status.OFFLINE && !server.getData().staticServer()) {
+            if (server.getStatus() == OCServer.Status.OFFLINE
+                    && !server.getData().staticServer()) {
                 ObsidianCloudAPI.get().deleteServer(server);
             }
         }

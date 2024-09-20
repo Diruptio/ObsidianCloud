@@ -63,10 +63,8 @@ public class ObsidianCloudPlatform {
         String nodeName = System.getenv("OC_NODE_NAME");
         String nodeHost = System.getenv("OC_NODE_HOST");
         try {
-            api =
-                    new PlatformObsidianCloudAPI(
-                            new RemoteLocalOCNode(
-                                    nodeName, InetAddress.getByName(nodeHost), localServer));
+            api = new PlatformObsidianCloudAPI(
+                    new RemoteLocalOCNode(nodeName, InetAddress.getByName(nodeHost), localServer));
         } catch (UnknownHostException e) {
             throw new RuntimeException(e);
         }

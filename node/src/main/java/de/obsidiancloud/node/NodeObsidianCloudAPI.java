@@ -74,24 +74,23 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
         String name = task.name() + "-" + n;
 
         // Create a server instance
-        LocalOCServer server =
-                new LocalOCServer(
-                        new OCServer.TransferableServerData(
-                                task.name(),
-                                name,
-                                task.type(),
-                                task.platform(),
-                                task.staticServer(),
-                                task.autoStart(),
-                                task.executable(),
-                                task.memory(),
-                                task.jvmArgs(),
-                                task.args(),
-                                task.environmentVariables(),
-                                task.port(),
-                                task.linkToProxies(),
-                                task.fallback()),
-                        OCServer.Status.CREATING);
+        LocalOCServer server = new LocalOCServer(
+                new OCServer.TransferableServerData(
+                        task.name(),
+                        name,
+                        task.type(),
+                        task.platform(),
+                        task.staticServer(),
+                        task.autoStart(),
+                        task.executable(),
+                        task.memory(),
+                        task.jvmArgs(),
+                        task.args(),
+                        task.environmentVariables(),
+                        task.port(),
+                        task.linkToProxies(),
+                        task.fallback()),
+                OCServer.Status.CREATING);
 
         ServerCreateEvent event = new ServerCreateEvent(server);
         EventManager.call(event);
@@ -118,31 +117,27 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
             packet.setName(name);
             connection.send(packet);
 
-            PacketListener<ServerRemovedPacket> listener =
-                    new PacketListener<>() {
-                        @Override
-                        public void handle(
-                                @NotNull ServerRemovedPacket response,
-                                @NotNull Connection connection) {
-                            if (response.getServerName().equals(name)) {
-                                connection.removePacketListener(this);
-                                future.complete(null);
-                            }
-                        }
-                    };
+            PacketListener<ServerRemovedPacket> listener = new PacketListener<>() {
+                @Override
+                public void handle(@NotNull ServerRemovedPacket response, @NotNull Connection connection) {
+                    if (response.getServerName().equals(name)) {
+                        connection.removePacketListener(this);
+                        future.complete(null);
+                    }
+                }
+            };
             connection.addPacketListener(listener);
             return future;
         } else {
-            future.thenRun(
-                    () -> {
-                        localNode.getServers().remove(server);
-                        ServerRemovedPacket packet = new ServerRemovedPacket();
-                        packet.setServerName(name);
-                        for (Connection connection :
-                                ObsidianCloudNode.getNetworkServer().getConnections()) {
-                            connection.send(packet);
-                        }
-                    });
+            future.thenRun(() -> {
+                localNode.getServers().remove(server);
+                ServerRemovedPacket packet = new ServerRemovedPacket();
+                packet.setServerName(name);
+                for (Connection connection :
+                        ObsidianCloudNode.getNetworkServer().getConnections()) {
+                    connection.send(packet);
+                }
+            });
             new Thread(new ServerDeleteThread((LocalOCServer) server, future)).start();
 
             return future;

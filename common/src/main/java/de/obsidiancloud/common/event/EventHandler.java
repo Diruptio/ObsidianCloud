@@ -18,10 +18,7 @@ public @interface EventHandler {
      */
     Priority priority() default Priority.NORMAL;
 
-    /**
-     * The priority of the event handler. Call order: LOWEST -> LOW -> NORMAL -> HIGH -> HIGHEST ->
-     * MONITOR
-     */
+    /** The priority of the event handler. Call order: LOWEST -> LOW -> NORMAL -> HIGH -> HIGHEST -> MONITOR */
     enum Priority {
         /** Called at last place. */
         MONITOR,

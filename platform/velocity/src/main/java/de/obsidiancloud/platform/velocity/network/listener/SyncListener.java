@@ -12,8 +12,7 @@ public class SyncListener implements PacketListener<N2SSyncPacket> {
     @Override
     public void handle(@NotNull N2SSyncPacket packet, @NotNull Connection connection) {
         for (OCServer server : packet.getLocalNodeServers()) {
-            ObsidianCloudVelocity.getInstance()
-                    .registerServer(server.getData(), server.getNode(), server.getPort());
+            ObsidianCloudVelocity.getInstance().registerServer(server.getData(), server.getNode(), server.getPort());
         }
         for (RemoteOCNode node : packet.getRemoteNodes()) {
             if (node.isConnected()) {

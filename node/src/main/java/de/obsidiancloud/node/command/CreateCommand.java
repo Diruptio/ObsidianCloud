@@ -35,14 +35,11 @@ public class CreateCommand extends Command {
             }
 
             for (int i = 0; i < amount; i++) {
-                ObsidianCloudAPI.get()
-                        .createServer(task)
-                        .thenAccept(
-                                server -> {
-                                    if (server == null) {
-                                        executor.sendMessage("§cThe server cloud not be created.");
-                                    }
-                                });
+                ObsidianCloudAPI.get().createServer(task).thenAccept(server -> {
+                    if (server == null) {
+                        executor.sendMessage("§cThe server cloud not be created.");
+                    }
+                });
             }
         } else {
             executor.sendMessage("§cUsage: " + getUsage(executor));

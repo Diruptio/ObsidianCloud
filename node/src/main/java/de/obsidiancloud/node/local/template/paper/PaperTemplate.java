@@ -21,7 +21,8 @@ import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PaperTemplate extends OCTemplate {
-    private static final Path templatesDirectory = Path.of("generated-templates").resolve("paper");
+    private static final Path templatesDirectory =
+            Path.of("generated-templates").resolve("paper");
     private static final Logger logger = ObsidianCloudNode.getLogger();
     private static final Set<PaperTemplate> locks = new HashSet<>();
     private final String version;
@@ -61,10 +62,7 @@ public class PaperTemplate extends OCTemplate {
 
             try (Stream<Path> files = Files.list(buildDirectory)) {
                 for (Path file : files.toList()) {
-                    Files.copy(
-                            file,
-                            targetDirectory.resolve(file.getFileName()),
-                            StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(file, targetDirectory.resolve(file.getFileName()), StandardCopyOption.REPLACE_EXISTING);
                 }
             }
         } catch (Throwable exception) {
@@ -73,9 +71,8 @@ public class PaperTemplate extends OCTemplate {
     }
 
     private void download(@NotNull Path directory) throws IOException {
-        String url =
-                "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
-                        .formatted(version, build, version, build);
+        String url = "https://papermc.io/api/v2/projects/paper/versions/%s/builds/%s/downloads/paper-%s-%s.jar"
+                .formatted(version, build, version, build);
         HttpURLConnection con = (HttpURLConnection) new URL(url).openConnection();
         con.setConnectTimeout(5000);
         con.setReadTimeout(5000);
@@ -113,7 +110,8 @@ public class PaperTemplate extends OCTemplate {
         Files.writeString(directory.resolve("server.properties"), serverProperties);
 
         // Second run
-        Process process = new ProcessBuilder(command).directory(directory.toFile()).start();
+        Process process =
+                new ProcessBuilder(command).directory(directory.toFile()).start();
         BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
         while (true) {
             if (reader.readLine().matches(".*Done.*For help, type \"help\".*")) {
@@ -135,9 +133,7 @@ public class PaperTemplate extends OCTemplate {
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof PaperTemplate other
-                && version.equals(other.version)
-                && build.equals(other.build);
+        return o instanceof PaperTemplate other && version.equals(other.version) && build.equals(other.build);
     }
 
     @Override

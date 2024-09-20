@@ -109,13 +109,11 @@ public class FabricTemplateProvider implements TemplateProvider {
                 JsonArray json = new JsonStreamParser(reader).next().getAsJsonArray();
                 if (json.isEmpty()) return;
                 for (JsonElement loader : json) {
-                    loaders.add(
-                            String.valueOf(
-                                    loader.getAsJsonObject()
-                                            .get("loader")
-                                            .getAsJsonObject()
-                                            .get("version")
-                                            .getAsString()));
+                    loaders.add(String.valueOf(loader.getAsJsonObject()
+                            .get("loader")
+                            .getAsJsonObject()
+                            .get("version")
+                            .getAsString()));
                 }
             }
         } catch (Throwable ignored) {
