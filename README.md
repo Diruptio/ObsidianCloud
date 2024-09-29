@@ -10,6 +10,7 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 - Java 17
 - Windows/Linux
 
+
 ## Platforms:
 ||✅ Supported|⚠ Not supported <br>but may work|❌ Does not work|
 |-|-|-|-|
@@ -33,3 +34,7 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 - [ ] Forge
 - [x] Velocity
 - [ ] Minestom
+
+
+## Thanks to our contributors
+<a href = "https://github.com/Diruptio/ObsidianCloud/graphs/contributors"><img src="https://contrib.rocks/image?repo=Diruptio/ObsidianCloud"></a>
