@@ -17,7 +17,7 @@ dependencies {
     implementation("org.jline:jline:3.27.0")
     implementation("io.netty:netty-all:4.1.114.Final")
     implementation("com.google.guava:guava:33.3.1-jre")
-    testImplementation(platform("org.junit:junit-bom:5.11.1"))
+    testImplementation(platform("org.junit:junit-bom:5.11.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
 
