@@ -12,28 +12,18 @@ ObsidianCloud is a modern Minecraft Cloud orchestrator - lightweight like a clou
 
 
 ## Platforms:
-||✅ Supported|⚠ Not supported <br>but may work|❌ Does not work|
+||❌ Does not work|⚠ Not supported <br>but may work|✅ Supported|
 |-|-|-|-|
 |Bukkit, Spigot, Folia||All versions||
-|Paper, Pufferfish,<br>Pufferfish+, Purpur,<br>Scissors, Grindstone|1.20.4-1.21.1|<1.20.4||
-|Fabric, Quilt|||All versions|
-|Forge|||All versions|
-|NeoForge|||All versions|
-|Minestom|||All versions|
+|Paper, Pufferfish,<br>Pufferfish+, Purpur,<br>Scissors, Grindstone||<1.20.4|1.20.4-1.21.1|
+|Fabric, Quilt|*|||
+|Forge|*|||
+|NeoForge|*|||
+|Minestom|*|||
 |||||
 |Bungeecord|||All versions|
-|Velocity|3.3.0-3.4.0|<3.3.0||
-|Gate|||All versions|
-
-
-## Goals
-- [x] Single Node
-- [ ] Multi Node
-- [x] Paper
-- [ ] Fabric
-- [ ] Forge
-- [x] Velocity
-- [ ] Minestom
+|Velocity||<3.3.0|3.3.0-3.4.0|
+|Gate|*|||
 
 
 ## Thanks to our contributors
