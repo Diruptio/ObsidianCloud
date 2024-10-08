@@ -11,7 +11,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":platform"))
     paperweight.paperDevBundle("1.20.4-R0.1-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.0")
 }
 
 tasks {
