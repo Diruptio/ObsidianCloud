@@ -9,7 +9,7 @@ repositories {
 
 dependencies {
     implementation(project(":common"))
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.0")
     implementation("commons-io:commons-io:2.17.0")
 }
 
