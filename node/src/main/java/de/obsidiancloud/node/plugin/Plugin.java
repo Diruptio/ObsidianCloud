@@ -1,4 +1,4 @@
-package de.obsidiancloud.common.addon;
+package de.obsidiancloud.node.plugin;
 
 import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandProvider;
@@ -7,12 +7,18 @@ import de.obsidiancloud.common.config.ConfigProvider;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 
-public class Addon implements CommandProvider, ConfigProvider {
+public class Plugin implements CommandProvider, ConfigProvider {
+    private Logger logger = null;
     private final List<Command> commands = new ArrayList<>();
-    private AddonManifest manifest;
-    private Config config = null;
+    PluginLoader loader = null;
+    DefaultPluginLoader.PluginClassLoader classLoader = null;
+    PluginInfo info = null;
+    Config config = null;
+
+    public void onLoad() {}
 
     public void onEnable() {}
 
@@ -52,26 +58,8 @@ public class Addon implements CommandProvider, ConfigProvider {
         return null;
     }
 
-    /**
-     * Gets the manifest of the addon
-     *
-     * @return The manifest of the addon
-     */
-    public AddonManifest getManifest() {
-        return manifest;
-    }
-
-    /**
-     * Gets the data folder of the addon
-     *
-     * @return The data folder of the addon
-     */
-    public Path getDataFolder() {
-        return manifest == null ? null : manifest.getFile().getParent().resolve(manifest.getName());
-    }
-
     @Override
-    public Config getConfig() {
+    public @NotNull Config getConfig() {
         return config;
     }
 
@@ -87,5 +75,53 @@ public class Addon implements CommandProvider, ConfigProvider {
     @Override
     public void saveConfig() {
         config.save();
+    }
+
+    /**
+     * Gets the data folder of the addon
+     *
+     * @return The data folder of the addon
+     */
+    public @NotNull Path getDataFolder() {
+        return Path.of("plugins").resolve(info.name());
+    }
+
+    /**
+     * Gets the logger of the plugin
+     *
+     * @return The logger
+     */
+    public @NotNull Logger getLogger() {
+        if (logger == null) {
+            logger = Logger.getLogger(info.name());
+        }
+        return logger;
+    }
+
+    /**
+     * Gets the loader of the plugin
+     *
+     * @return The plugin loader
+     */
+    public @NotNull PluginLoader getLoader() {
+        return loader;
+    }
+
+    /**
+     * Gets the class loader of the plugin
+     *
+     * @return The class loader
+     */
+    public @NotNull DefaultPluginLoader.PluginClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    /**
+     * Gets the info of the plugin
+     *
+     * @return The plugin info
+     */
+    public @NotNull PluginInfo getInfo() {
+        return info;
     }
 }
