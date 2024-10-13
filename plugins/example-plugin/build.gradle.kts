@@ -7,8 +7,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":node"))
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly(project(":node"))
 }
 
 java {
@@ -24,7 +23,7 @@ tasks {
     jar {
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        archiveBaseName = "ExamplePlugin"
+        archiveFileName = "ExamplePlugin.jar"
         doLast {
             copy {
                 from(archiveFile)

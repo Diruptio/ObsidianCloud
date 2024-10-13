@@ -18,7 +18,7 @@ public class DefaultPluginLoader implements PluginLoader {
     private final Logger logger = Logger.getLogger("DefaultPluginLoader");
     private final List<PluginInfo> pluginInfos = new ArrayList<>();
     private final Map<PluginInfo, PluginClassLoader> classLoaders = new HashMap<>();
-    private final Map<PluginInfo, Class<?>> pluginClasses = new HashMap<>();
+    private final Map<PluginInfo, Class<?>> mainClasses = new HashMap<>();
     private final Map<PluginInfo, Plugin> loadedPlugins = new HashMap<>();
 
     @Override
@@ -26,7 +26,9 @@ public class DefaultPluginLoader implements PluginLoader {
         try {
             Path pluginsDirectory = Path.of("plugins");
             Stream<Path> stream = Files.list(pluginsDirectory);
-            stream.forEach(this::loadPluginInfo);
+            stream.filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".jar"))
+                    .forEach(this::loadPluginInfo);
             stream.close();
         } catch (Throwable exception) {
             logger.log(Level.SEVERE, "An error occurred while loading plugins", exception);
@@ -94,16 +96,16 @@ public class DefaultPluginLoader implements PluginLoader {
             }
         }
         stack.remove(info);
-        Class<?> clazz = pluginClasses.get(info);
+        Class<?> mainClass = mainClasses.get(info);
         Constructor<?> constructor = null;
-        for (Constructor<?> declaredConstructor : clazz.getDeclaredConstructors()) {
+        for (Constructor<?> declaredConstructor : mainClass.getDeclaredConstructors()) {
             constructor = declaredConstructor;
             break;
         }
         if (constructor == null) {
             logger.log(
                     Level.SEVERE,
-                    "Plugin \"" + info.name() + "\" cannot be loaded because \"" + clazz.getName()
+                    "Plugin \"" + info.name() + "\" cannot be loaded because \"" + mainClass.getName()
                             + "\" it does not have a default constructor");
             unloadPlugin(info, new Stack<>());
             return false;
@@ -128,8 +130,7 @@ public class DefaultPluginLoader implements PluginLoader {
     private void loadPluginInfo(@NotNull Path path) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
             URL[] urls = new URL[] {new URL("jar:file:" + path.toAbsolutePath() + "!/")};
-            PluginClassLoader classLoader =
-                    new PluginClassLoader(urls, getClass().getClassLoader());
+            PluginClassLoader classLoader = new PluginClassLoader(urls);
 
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -141,11 +142,12 @@ public class DefaultPluginLoader implements PluginLoader {
                         .substring(0, entry.getName().length() - 6)
                         .replace('/', '.');
                 Class<?> clazz = classLoader.loadClass(className);
+                classLoader.classes.add(clazz);
                 PluginInfo info = clazz.getAnnotation(PluginInfo.class);
                 if (Plugin.class.isAssignableFrom(clazz) && info != null) {
                     pluginInfos.add(info);
                     classLoaders.put(info, classLoader);
-                    pluginClasses.put(info, clazz);
+                    mainClasses.put(info, clazz);
                 }
             }
         } catch (Throwable exception) {
@@ -182,7 +184,7 @@ public class DefaultPluginLoader implements PluginLoader {
             logger.info("Unloading plugin " + info.name());
             loadedPlugins.remove(info);
         }
-        pluginClasses.remove(info);
+        mainClasses.remove(info);
         try {
             classLoaders.get(info).close();
         } catch (Throwable exception) {
@@ -195,9 +197,15 @@ public class DefaultPluginLoader implements PluginLoader {
         return loadedPlugins;
     }
 
+    public @NotNull Map<PluginInfo, PluginClassLoader> getClassLoaders() {
+        return classLoaders;
+    }
+
     public class PluginClassLoader extends URLClassLoader {
-        public PluginClassLoader(@NotNull URL[] urls, @NotNull ClassLoader parent) {
-            super(urls, parent);
+        List<Class<?>> classes = new ArrayList<>();
+
+        public PluginClassLoader(@NotNull URL[] urls) {
+            super(urls);
         }
 
         @Override
@@ -205,7 +213,7 @@ public class DefaultPluginLoader implements PluginLoader {
             return internalLoadClass(name, resolve, true);
         }
 
-        private Class<?> internalLoadClass(String name, boolean resolve, boolean checkOther)
+        public Class<?> internalLoadClass(String name, boolean resolve, boolean checkOther)
                 throws ClassNotFoundException {
             try {
                 return super.loadClass(name, resolve);
