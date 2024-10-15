@@ -14,7 +14,7 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-gson:4.17.0")
     implementation("net.kyori:adventure-text-serializer-legacy:4.17.0")
     implementation("net.kyori:adventure-text-serializer-ansi:4.17.0")
-    implementation("org.jline:jline:3.27.0")
+    implementation("org.jline:jline:3.27.1")
     implementation("io.netty:netty-all:4.1.114.Final")
     implementation("com.google.guava:guava:33.3.1-jre")
     testImplementation(platform("org.junit:junit-bom:5.11.2"))
