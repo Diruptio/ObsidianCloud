@@ -281,7 +281,10 @@ public abstract class OCServer {
         READY,
 
         /** The server is online but not ready. */
-        NOT_READY
+        NOT_READY,
+
+        /** The server is being deleted. */
+        DELETING
     }
 
     /**
