@@ -15,6 +15,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 import net.lenni0451.classtransform.TransformerManager;
 import net.lenni0451.classtransform.additionalclassprovider.MutableBasicClassProvider;
+import net.lenni0451.classtransform.mixinstranslator.MixinsTranslator;
 import net.lenni0451.classtransform.utils.FailStrategy;
 import net.lenni0451.classtransform.utils.loader.InjectionClassLoader;
 import net.lenni0451.classtransform.utils.tree.IClassProvider;
@@ -39,6 +40,7 @@ public class ObsidianCloudNodeLoader {
             IClassProvider classProvider = new MutableBasicClassProvider(new SharedClassLoader());
             TransformerManager transformerManager = new TransformerManager(classProvider);
             transformerManager.setFailStrategy(FailStrategy.CONTINUE);
+            transformerManager.addTransformerPreprocessor(new MixinsTranslator());
             InjectionClassLoader nodeClassLoader = new InjectionClassLoader(
                     transformerManager,
                     new SharedClassLoader(),

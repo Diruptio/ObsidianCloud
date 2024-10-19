@@ -13,6 +13,8 @@ dependencies {
     compileOnly("org.jetbrains:annotations:25.0.0")
     implementation("net.lenni0451.classtransform:core:1.14.0")
     implementation("net.lenni0451.classtransform:additionalclassprovider:1.14.0")
+    implementation("net.lenni0451.classtransform:mixinstranslator:1.14.0")
+    implementation("net.lenni0451.classtransform:mixinsdummy:1.14.0")
 }
 
 val addJars =

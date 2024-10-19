@@ -7,10 +7,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
-    implementation(project(":node"))
     implementation(project(":node:loader"))
-    implementation(project(":node:plugin-api"))
+    implementation(project(":node"))
 }
 
 tasks {
