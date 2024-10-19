@@ -8,7 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":common"))
+    compileOnly(project(":common"))
+    compileOnly(project(":node:plugin-api"))
     compileOnly("org.jetbrains:annotations:25.0.0")
     implementation("commons-io:commons-io:2.17.0")
 }
@@ -59,7 +60,7 @@ tasks {
     jar {
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        archiveBaseName = "OCNode"
+        archiveFileName = "OCNode.jar"
         manifest.attributes["Implementation-Title"] = "ObsidianCloud"
         manifest.attributes["Implementation-Version"] = version
         manifest.attributes["Main-Class"] = "de.obsidiancloud.node.ObsidianCloudNode"

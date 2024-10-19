@@ -28,7 +28,6 @@ import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.local.template.velocity.VelocityTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.*;
-import de.obsidiancloud.node.plugin.DefaultPluginLoader;
 import de.obsidiancloud.node.plugin.PluginLoader;
 import de.obsidiancloud.node.threads.NodeThread;
 import java.net.InetAddress;
@@ -45,9 +44,9 @@ import org.jetbrains.annotations.NotNull;
 
 public class ObsidianCloudNode {
     private static final Logger logger = Logger.getLogger("main");
+    private static PluginLoader pluginLoader;
     private static final ConsoleCommandExecutor executor = new ConsoleCommandExecutor(logger);
     private static Console console;
-    private static final DefaultPluginLoader pluginLoader = new DefaultPluginLoader();
     private static Config config;
     private static ConfigProperty<String> clusterKey;
     private static NodeObsidianCloudAPI api;
@@ -59,11 +58,13 @@ public class ObsidianCloudNode {
     public static void main(String[] args) {
         try {
             Files.createDirectories(Path.of("logs"));
-            LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
+            LogManager.getLogManager()
+                    .readConfiguration(
+                            ObsidianCloudNode.class.getClassLoader().getResourceAsStream("logging.properties"));
+            logger.info("Starting ObsidianCloud " + NodeBuildConstants.VERSION);
+
             console = new Console(logger, executor);
             console.start();
-
-            pluginLoader.loadPlugins();
 
             loadConfig();
             List<LocalOCServer> servers = loadServersConfig();
