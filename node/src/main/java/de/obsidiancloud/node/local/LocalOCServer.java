@@ -371,7 +371,11 @@ public class LocalOCServer extends OCServer {
         for (Connection connection : ObsidianCloudNode.getNetworkServer().getConnections()) {
             connection.send(packet);
         }
-        setStatus(Status.OFFLINE);
+        if (data.staticServer()) {
+            setStatus(Status.OFFLINE);
+        } else {
+            ObsidianCloudAPI.get().deleteServer(this);
+        }
     }
 
     public @NotNull Set<CommandExecutor> getScreenReaders() {

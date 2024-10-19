@@ -22,10 +22,13 @@ public class N2SSyncPacket extends WritablePacket {
         for (LocalOCServer server : localNodeServers) {
             writeString(byteBuf, server.getData().toString());
             writeString(byteBuf, server.getStatus().toString());
-            byteBuf.writeInt(server.getPlayers().size());
-            for (OCPlayer player : server.getPlayers()) {
-                writeUUID(byteBuf, player.getUUID());
-                writeString(byteBuf, player.getName());
+            byteBuf.writeInt(server.getPort());
+            if (server.getPort() != -1) {
+                byteBuf.writeInt(server.getPlayers().size());
+                for (OCPlayer player : server.getPlayers()) {
+                    writeUUID(byteBuf, player.getUUID());
+                    writeString(byteBuf, player.getName());
+                }
             }
         }
         byteBuf.writeInt(remoteNodes.size());
