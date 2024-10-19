@@ -12,7 +12,6 @@ import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.util.Flags;
 import de.obsidiancloud.node.util.NetworkUtil;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -103,10 +102,8 @@ public class LocalOCServer extends OCServer {
                 if (platform == null) {
                     process.destroy();
                 } else {
-                    try (BufferedWriter writer = process.outputWriter()) {
-                        writer.write(getData().platform().stopCommand() + "\n");
-                        writer.flush();
-                    }
+                    process.outputWriter().write(getData().platform().stopCommand() + "\n");
+                    process.outputWriter().flush();
                 }
             }
         } catch (Throwable exception) {
@@ -365,6 +362,7 @@ public class LocalOCServer extends OCServer {
     private void stopped() {
         ObsidianCloudNode.getLogger().info("Server " + getName() + " stopped");
         NetworkUtil.unblockPort(port);
+        port = -1;
         ServerPortChangedPacket packet = new ServerPortChangedPacket();
         packet.setName(getName());
         packet.setPort(-1);
