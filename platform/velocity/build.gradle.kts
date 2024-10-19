@@ -12,7 +12,7 @@ dependencies {
     implementation(project(":platform"))
     compileOnly("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
     annotationProcessor("com.velocitypowered:velocity-api:3.3.0-SNAPSHOT")
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.0")
 }
 
 val generateSources =
