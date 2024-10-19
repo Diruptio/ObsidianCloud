@@ -28,6 +28,8 @@ import de.obsidiancloud.node.local.template.simple.SimpleTemplateProvider;
 import de.obsidiancloud.node.local.template.velocity.VelocityTemplateProvider;
 import de.obsidiancloud.node.network.listener.S2NHandshakeListener;
 import de.obsidiancloud.node.network.packets.*;
+import de.obsidiancloud.node.plugin.DefaultPluginLoader;
+import de.obsidiancloud.node.plugin.PluginLoader;
 import de.obsidiancloud.node.threads.NodeThread;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -42,9 +44,10 @@ import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 public class ObsidianCloudNode {
-    private static final @NotNull Logger logger = Logger.getLogger("main");
+    private static final Logger logger = Logger.getLogger("main");
     private static final ConsoleCommandExecutor executor = new ConsoleCommandExecutor(logger);
     private static Console console;
+    private static final DefaultPluginLoader pluginLoader = new DefaultPluginLoader();
     private static Config config;
     private static ConfigProperty<String> clusterKey;
     private static NodeObsidianCloudAPI api;
@@ -59,6 +62,9 @@ public class ObsidianCloudNode {
             LogManager.getLogManager().readConfiguration(ClassLoader.getSystemResourceAsStream("logging.properties"));
             console = new Console(logger, executor);
             console.start();
+
+            pluginLoader.loadPlugins();
+
             loadConfig();
             List<LocalOCServer> servers = loadServersConfig();
             api = new NodeObsidianCloudAPI(loadLocalNode(servers));
@@ -210,6 +216,7 @@ public class ObsidianCloudNode {
 
     /** Shuts down the node. */
     public static void shutdown() {
+        pluginLoader.unloadPlugins();
         nodeThread.interrupt();
         api.getLocalNode().getServers().forEach(OCServer::stop);
         networkServer.close();
@@ -219,16 +226,25 @@ public class ObsidianCloudNode {
     /**
      * Gets the main logger.
      *
-     * @return The main logger.
+     * @return The main logger
      */
     public static @NotNull Logger getLogger() {
         return logger;
     }
 
     /**
+     * Gets the plugin loader.
+     *
+     * @return The plugin loader
+     */
+    public static @NotNull PluginLoader getPluginLoader() {
+        return pluginLoader;
+    }
+
+    /**
      * Gets the cluster key config property.
      *
-     * @return The cluster key config property.
+     * @return The cluster key
      */
     public static @NotNull ConfigProperty<String> getClusterKey() {
         return clusterKey;
@@ -237,8 +253,8 @@ public class ObsidianCloudNode {
     /**
      * Gets a template by its name.
      *
-     * @param name The name of the template.
-     * @return The template or null if no template with the specified name exists.
+     * @param name The name of the template
+     * @return The template or {@code null} if no template with the specified name exists
      */
     public static OCTemplate getTemplate(@NotNull String name) {
         for (TemplateProvider provider : templateProviders) {
@@ -251,7 +267,7 @@ public class ObsidianCloudNode {
     /**
      * Gets the network server.
      *
-     * @return The network server.
+     * @return The network server
      */
     public static NetworkServer getNetworkServer() {
         return networkServer;
@@ -260,7 +276,7 @@ public class ObsidianCloudNode {
     /**
      * Gets the console command executor.
      *
-     * @return The console command executor.
+     * @return The console command executor
      */
     public static @NotNull ConsoleCommandExecutor getExecutor() {
         return executor;

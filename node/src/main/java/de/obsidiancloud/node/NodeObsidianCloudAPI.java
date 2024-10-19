@@ -23,9 +23,9 @@ import java.util.concurrent.CompletableFuture;
 import org.jetbrains.annotations.NotNull;
 
 public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
-    private final @NotNull LocalOCNode localNode;
-    private final @NotNull List<RemoteOCNode> remoteNodes = new ArrayList<>();
-    private final @NotNull List<OCTask> tasks = new ArrayList<>();
+    private final LocalOCNode localNode;
+    private final List<RemoteOCNode> remoteNodes = new ArrayList<>();
+    private final List<OCTask> tasks = new ArrayList<>();
 
     public NodeObsidianCloudAPI(@NotNull LocalOCNode localNode) {
         this.localNode = localNode;

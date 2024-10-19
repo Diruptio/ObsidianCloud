@@ -41,9 +41,6 @@ public class Config extends ConfigSection {
     /** Reloads the config from the file. */
     public void reload() {
         try {
-            if (Files.notExists(file.toAbsolutePath().getParent())) {
-                Files.createDirectories(file.toAbsolutePath().getParent());
-            }
             if (Files.exists(file)) {
                 data = type.serializer.deserialize(Files.readString(file));
             } else data = new HashMap<>();
