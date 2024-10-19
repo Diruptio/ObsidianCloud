@@ -6,7 +6,6 @@ import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandExecutor;
 import de.obsidiancloud.node.ObsidianCloudNode;
 import de.obsidiancloud.node.local.LocalOCServer;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
@@ -37,9 +36,8 @@ public class CommandCommand extends Command {
         Process process = localServer.getProcess();
         try {
             if (process != null && process.isAlive()) {
-                try (BufferedWriter writer = process.outputWriter()) {
-                    writer.write(command + "\n");
-                }
+                process.outputWriter().write(command + "\n");
+                process.outputWriter().flush();
             } else {
                 ObsidianCloudNode.getLogger().warning("Cannot send command, the server is not running.");
             }
