@@ -10,7 +10,7 @@ repositories {
 dependencies {
     compileOnly(project(":common"))
     compileOnly(project(":node:plugin-api"))
-    compileOnly("org.jetbrains:annotations:26.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.1")
     implementation("commons-io:commons-io:2.17.0")
 }
 

@@ -8,7 +8,7 @@ repositories {
 
 dependencies {
     compileOnly(project(":common"))
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.1")
     compileOnly("net.lenni0451.classtransform:core:1.14.0")
 }
 

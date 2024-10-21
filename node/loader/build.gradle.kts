@@ -10,7 +10,7 @@ repositories {
 dependencies {
     implementation(project(":common"))
     implementation(project(":node:plugin-api"))
-    compileOnly("org.jetbrains:annotations:25.0.0")
+    compileOnly("org.jetbrains:annotations:26.0.1")
     implementation("net.lenni0451.classtransform:core:1.14.0")
     implementation("net.lenni0451.classtransform:additionalclassprovider:1.14.0")
     implementation("net.lenni0451.classtransform:mixinstranslator:1.14.0")
