@@ -4,18 +4,22 @@ import de.obsidiancloud.common.command.Command;
 import de.obsidiancloud.common.command.CommandProvider;
 import de.obsidiancloud.common.config.Config;
 import de.obsidiancloud.common.config.ConfigProvider;
+import de.obsidiancloud.node.util.SharedClassLoader;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import net.lenni0451.classtransform.TransformerManager;
 import org.jetbrains.annotations.NotNull;
 
 public class Plugin implements CommandProvider, ConfigProvider {
     private Logger logger = null;
     private final List<Command> commands = new ArrayList<>();
-    PluginLoader loader = null;
-    DefaultPluginLoader.PluginClassLoader classLoader = null;
     PluginInfo info = null;
+    PluginLoader loader = null;
+    SharedClassLoader classLoader = null;
+    TransformerManager transformerManager = null;
     Config config = null;
 
     public void onLoad() {}
@@ -23,6 +27,26 @@ public class Plugin implements CommandProvider, ConfigProvider {
     public void onEnable() {}
 
     public void onDisable() {}
+
+    /**
+     * Applies all classes from the given package and sub-packages as class transformers.
+     *
+     * @param packageName The package name
+     */
+    protected void applyClassTransformers(@NotNull String packageName) {
+        int transformerCount = 0;
+        for (Class<?> clazz : classLoader.getClasses()) {
+            try {
+                if (clazz.getPackage().getName().startsWith(packageName)) {
+                    transformerManager.addTransformer(clazz.getName());
+                    transformerCount++;
+                }
+            } catch (Throwable exception) {
+                logger.log(Level.SEVERE, "An error occurred while adding transformer " + clazz.getName(), exception);
+            }
+        }
+        logger.info("Applied " + transformerCount + " class transformers");
+    }
 
     @Override
     public void registerCommand(@NotNull Command command) {
@@ -99,6 +123,15 @@ public class Plugin implements CommandProvider, ConfigProvider {
     }
 
     /**
+     * Gets the info of the plugin
+     *
+     * @return The plugin info
+     */
+    public @NotNull PluginInfo getInfo() {
+        return info;
+    }
+
+    /**
      * Gets the loader of the plugin
      *
      * @return The plugin loader
@@ -112,16 +145,16 @@ public class Plugin implements CommandProvider, ConfigProvider {
      *
      * @return The class loader
      */
-    public @NotNull DefaultPluginLoader.PluginClassLoader getClassLoader() {
+    public @NotNull SharedClassLoader getClassLoader() {
         return classLoader;
     }
 
     /**
-     * Gets the info of the plugin
+     * Gets the transformer manager of the plugin for class transformation
      *
-     * @return The plugin info
+     * @return The transformer manager
      */
-    public @NotNull PluginInfo getInfo() {
-        return info;
+    public @NotNull TransformerManager getTransformerManager() {
+        return transformerManager;
     }
 }

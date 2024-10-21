@@ -7,11 +7,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":node:bom"))
-}
-
-java {
-    withSourcesJar()
+    implementation(project(":node:loader"))
+    implementation(project(":node"))
 }
 
 tasks {
@@ -23,12 +20,5 @@ tasks {
     jar {
         from(configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) })
         duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        archiveFileName = "ExamplePlugin.jar"
-        doLast {
-            copy {
-                from(archiveFile)
-                into(rootProject.file("run/plugins"))
-            }
-        }
     }
 }

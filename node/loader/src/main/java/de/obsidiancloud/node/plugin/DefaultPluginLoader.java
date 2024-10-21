@@ -1,9 +1,9 @@
 package de.obsidiancloud.node.plugin;
 
 import de.obsidiancloud.common.config.Config;
+import de.obsidiancloud.node.util.SharedClassLoader;
 import java.lang.reflect.Constructor;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -12,17 +12,24 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
+import net.lenni0451.classtransform.TransformerManager;
 import org.jetbrains.annotations.NotNull;
 
 public class DefaultPluginLoader implements PluginLoader {
     private final Logger logger = Logger.getLogger("DefaultPluginLoader");
     private final List<PluginInfo> pluginInfos = new ArrayList<>();
-    private final Map<PluginInfo, PluginClassLoader> classLoaders = new HashMap<>();
+    private final Map<PluginInfo, SharedClassLoader> classLoaders = new HashMap<>();
     private final Map<PluginInfo, Class<?>> mainClasses = new HashMap<>();
     private final Map<PluginInfo, Plugin> loadedPlugins = new HashMap<>();
+    private final TransformerManager transformerManager;
+
+    public DefaultPluginLoader(@NotNull TransformerManager transformerManager) {
+        this.transformerManager = transformerManager;
+    }
 
     @Override
     public void loadPlugins() {
+        logger.info("Loading plugins");
         try {
             Path pluginsDirectory = Path.of("plugins");
             Stream<Path> stream = Files.list(pluginsDirectory);
@@ -113,9 +120,10 @@ public class DefaultPluginLoader implements PluginLoader {
         try {
             logger.info("Loading plugin " + info.name());
             Plugin plugin = (Plugin) constructor.newInstance();
+            plugin.info = info;
             plugin.loader = this;
             plugin.classLoader = classLoaders.get(info);
-            plugin.info = info;
+            plugin.transformerManager = transformerManager;
             plugin.config = new Config(Path.of("plugins", info.name(), "config.yml"), Config.Type.YAML);
             plugin.onLoad();
             loadedPlugins.put(info, plugin);
@@ -129,8 +137,8 @@ public class DefaultPluginLoader implements PluginLoader {
 
     private void loadPluginInfo(@NotNull Path path) {
         try (JarFile jarFile = new JarFile(path.toFile())) {
-            URL[] urls = new URL[] {new URL("jar:file:" + path.toAbsolutePath() + "!/")};
-            PluginClassLoader classLoader = new PluginClassLoader(urls);
+            URL url = new URL("jar:file:" + path.toAbsolutePath() + "!/");
+            SharedClassLoader classLoader = new SharedClassLoader(getClass().getClassLoader(), url);
 
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -142,7 +150,6 @@ public class DefaultPluginLoader implements PluginLoader {
                         .substring(0, entry.getName().length() - 6)
                         .replace('/', '.');
                 Class<?> clazz = classLoader.loadClass(className);
-                classLoader.classes.add(clazz);
                 PluginInfo info = clazz.getAnnotation(PluginInfo.class);
                 if (Plugin.class.isAssignableFrom(clazz) && info != null) {
                     pluginInfos.add(info);
@@ -157,6 +164,7 @@ public class DefaultPluginLoader implements PluginLoader {
 
     @Override
     public void unloadPlugins() {
+        logger.info("Unloading plugins");
         for (PluginInfo info : pluginInfos) {
             unloadPlugin(info, new Stack<>());
         }
@@ -197,40 +205,7 @@ public class DefaultPluginLoader implements PluginLoader {
         return loadedPlugins;
     }
 
-    public @NotNull Map<PluginInfo, PluginClassLoader> getClassLoaders() {
+    public @NotNull Map<PluginInfo, SharedClassLoader> getClassLoaders() {
         return classLoaders;
-    }
-
-    public class PluginClassLoader extends URLClassLoader {
-        List<Class<?>> classes = new ArrayList<>();
-
-        public PluginClassLoader(@NotNull URL[] urls) {
-            super(urls);
-        }
-
-        @Override
-        protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
-            return internalLoadClass(name, resolve, true);
-        }
-
-        public Class<?> internalLoadClass(String name, boolean resolve, boolean checkOther)
-                throws ClassNotFoundException {
-            try {
-                return super.loadClass(name, resolve);
-            } catch (ClassNotFoundException exception) {
-                if (checkOther) {
-                    for (PluginInfo info : loadedPlugins.keySet()) {
-                        try {
-                            PluginClassLoader classLoader = classLoaders.get(info);
-                            if (classLoader != this) {
-                                return classLoader.internalLoadClass(name, resolve, false);
-                            }
-                        } catch (Throwable ignored) {
-                        }
-                    }
-                }
-                throw exception;
-            }
-        }
     }
 }

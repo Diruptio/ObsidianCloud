@@ -9,6 +9,9 @@ rootProject.name = "ObsidianCloud"
 
 include("common")
 include("node")
+include("node:bom")
+include("node:loader")
+include("node:plugin-api")
 include("platform")
 include("platform:paper")
 include("platform:velocity")
