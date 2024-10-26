@@ -129,6 +129,7 @@ public class NodeObsidianCloudAPI extends ObsidianCloudAPI {
             connection.addPacketListener(listener);
             return future;
         } else {
+            server.setStatus(OCServer.Status.DELETING);
             future.thenRun(() -> {
                 localNode.getServers().remove(server);
                 ServerRemovedPacket packet = new ServerRemovedPacket();

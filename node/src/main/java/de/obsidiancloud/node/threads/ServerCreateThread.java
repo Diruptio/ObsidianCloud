@@ -2,8 +2,6 @@ package de.obsidiancloud.node.threads;
 
 import de.obsidiancloud.common.OCServer;
 import de.obsidiancloud.common.ObsidianCloudAPI;
-import de.obsidiancloud.common.event.EventManager;
-import de.obsidiancloud.common.event.ServerAddedEvent;
 import de.obsidiancloud.common.network.Connection;
 import de.obsidiancloud.common.network.packets.ServerAddedPacket;
 import de.obsidiancloud.node.ObsidianCloudNode;
@@ -53,7 +51,6 @@ public class ServerCreateThread extends Thread {
                 if (t != null) t.apply(directory);
             }
             server.setStatus(LocalOCServer.Status.OFFLINE);
-            EventManager.call(new ServerAddedEvent(server));
         } catch (Throwable exception) {
             ObsidianCloudNode.getLogger()
                     .log(Level.SEVERE, "An error occurred while creating server " + server.getName(), exception);
